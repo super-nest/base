@@ -13,7 +13,7 @@ import {
     RoleDocument,
 } from '@libs/super-authorize/modules/roles/entities/roles.entity';
 
-export type UserDocument = HydratedDocument<User>;
+export type UserDocument = User & Document;
 
 @Schema({
     timestamps: true,
