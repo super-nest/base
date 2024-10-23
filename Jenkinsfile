@@ -43,7 +43,7 @@ pipeline {
     environment {
         // Github
         GITHUB_URL = 'https://github.com/playgroundvina/tongram-be.git'
-        GITHUB_CREDENTIAL_ID = '8c967275-cc57-45ba-809b-e04c15877539'
+        GITHUB_CREDENTIAL_ID = '4113d2cf-0e7f-458f-b8f9-687ec233c2f4'
         // Dockerhub
         DOCKER_URL = 'https://hub.playgroundvina.com/'
         DOCKER_HUB_CREDENTIALS_ID = 'eeaa327e-4f33-4f7d-bfda-016f138a659d'
