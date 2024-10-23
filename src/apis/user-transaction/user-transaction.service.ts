@@ -1,17 +1,14 @@
+import { ExtendedInjectModel } from '@libs/super-core';
+import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
 import { Injectable } from '@nestjs/common';
-import { ModuleRef } from '@nestjs/core';
-import { InjectModel } from '@nestjs/mongoose';
 import _ from 'lodash';
-import { Model, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { BaseService } from 'src/base/service/base.service';
 import { COLLECTION_NAMES } from 'src/constants';
 import { MetadataType } from '../metadata/constants';
 import {
-    UserTransaction,
-    UserTransactionDocument,
+    UserTransactionDocument
 } from './entities/user-transaction.entity';
-import { ExtendedInjectModel } from '@libs/super-core';
-import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
 
 @Injectable()
 export class UserTransactionService extends BaseService<UserTransactionDocument> {
@@ -50,7 +47,7 @@ export class UserTransactionService extends BaseService<UserTransactionDocument>
         const data = await this.userTransactionModel
             .findOne({
                 createdBy: userId,
-                mission: missionId,
+                "mission._id": missionId,
             })
             .sort({ updatedAt: -1 })
             .autoPopulate(false)
