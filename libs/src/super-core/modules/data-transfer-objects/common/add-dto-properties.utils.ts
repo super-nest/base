@@ -37,6 +37,7 @@ export const addDtoProperties = (dto: new () => any) => {
             minimum: _.get(propertyData, 'minimum', null),
             maximum: _.get(propertyData, 'maximum', null),
             maxLength: _.get(propertyData, 'maxLength', null),
+            readOnly: _.get(propertyData, 'readOnly', false),
         };
 
         const type = _.get(propertyData, 'type');
