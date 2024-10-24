@@ -101,6 +101,7 @@ export class AppsService extends BaseService<AppDocument> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select(select)
+            .autoPopulate()
             .exec();
 
         const total = await this.appModel
@@ -151,6 +152,7 @@ export class AppsService extends BaseService<AppDocument> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select(select)
+            .autoPopulate()
             .exec();
 
         const total = await this.appModel
@@ -205,7 +207,6 @@ export class AppsService extends BaseService<AppDocument> {
             .limit(limit)
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
-            .autoPopulate(false)
             .exec();
 
         const appIds = tagApps.map(
@@ -232,6 +233,7 @@ export class AppsService extends BaseService<AppDocument> {
             )
             .select(select)
             .sort({ [sortBy]: sortDirection })
+            .autoPopulate()
             .exec();
 
         const total = await this.appModel
@@ -400,7 +402,6 @@ export class AppsService extends BaseService<AppDocument> {
                 createdBy: userId,
             })
             .sort({ updatedAt: -1 })
-            .autoPopulate(false)
             .exec();
 
         const appIds = userAppHistories.map(
@@ -429,6 +430,7 @@ export class AppsService extends BaseService<AppDocument> {
             .sort({ __order: 1 })
             .limit(limit)
             .skip(skip)
+            .autoPopulate()
             .exec();
 
         const items = apps.map(async (item) => {

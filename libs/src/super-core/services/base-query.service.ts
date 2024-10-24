@@ -5,10 +5,10 @@ export class CustomQueryBaseService<T extends Document> {
     protected id: string;
     protected collectionName: string;
     protected model: Model<T>;
-    protected _conditions: Record<string, any> = {};
-    protected _pipeline: PipelineStage[] = [];
+    protected conditions: Record<string, any> = {};
+    protected pipeline: PipelineStage[] = [];
     public static moduleRef: ModuleRef;
-    protected _entity: new () => any;
+    protected entity: new () => any;
 
     constructor(
         model: Model<T>,
@@ -21,9 +21,9 @@ export class CustomQueryBaseService<T extends Document> {
         this.id = CustomQueryBaseService.name;
         CustomQueryBaseService.moduleRef = moduleRef;
         this.model = model;
-        this._conditions = conditions;
-        this._pipeline = pipeline;
+        this.conditions = conditions;
+        this.pipeline = pipeline;
         this.collectionName = collectionName;
-        this._entity = entity;
+        this.entity = entity;
     }
 }

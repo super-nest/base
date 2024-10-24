@@ -38,13 +38,13 @@ export class BaseService<T extends Document> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select(select)
+            .autoPopulate()
             .exec();
 
         const total = this.model
             .countDocuments(
                 {
                     ...options,
-                    deletedAt: null,
                 },
                 filterPipeline,
             )
@@ -134,6 +134,7 @@ export class BaseService<T extends Document> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select({ longDescription: 0 })
+            .autoPopulate()
             .exec();
 
         const total = this.model

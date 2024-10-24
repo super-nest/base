@@ -41,7 +41,6 @@ export class BaseRepositories<T extends AggregateRoot, E>
         BaseRepositories.moduleRef = moduleRef;
     }
 
-    @DynamicLookup()
     @FindWithMultipleLanguage()
     find<ResultDoc = HydratedDocument<T>>(
         filter: FilterQuery<ResultDoc>,

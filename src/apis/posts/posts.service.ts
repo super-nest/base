@@ -107,7 +107,9 @@ export class PostsService extends BaseService<PostDocument> {
         user: UserPayload,
     ) {
         const { _id: userId } = user;
-        const data = await this.postModel.find({ _id: { $in: _ids }, type });
+        const data = await this.postModel
+            .find({ _id: { $in: _ids }, type })
+            .exec();
 
         await this.postModel.updateMany(
             { _id: { $in: _ids }, type },

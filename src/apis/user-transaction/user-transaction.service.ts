@@ -6,9 +6,7 @@ import { Types } from 'mongoose';
 import { BaseService } from 'src/base/service/base.service';
 import { COLLECTION_NAMES } from 'src/constants';
 import { MetadataType } from '../metadata/constants';
-import {
-    UserTransactionDocument
-} from './entities/user-transaction.entity';
+import { UserTransactionDocument } from './entities/user-transaction.entity';
 
 @Injectable()
 export class UserTransactionService extends BaseService<UserTransactionDocument> {
@@ -47,7 +45,7 @@ export class UserTransactionService extends BaseService<UserTransactionDocument>
         const data = await this.userTransactionModel
             .findOne({
                 createdBy: userId,
-                "mission._id": missionId,
+                'mission._id': missionId,
             })
             .sort({ updatedAt: -1 })
             .autoPopulate(false)

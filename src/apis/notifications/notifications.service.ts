@@ -68,6 +68,7 @@ export class NotificationsService extends BaseService<NotificationDocument> {
             .skip(skip)
             .limit(limit)
             .select(select)
+            .autoPopulate()
             .exec();
 
         const totalPromise = this.notificationModel

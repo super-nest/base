@@ -51,8 +51,8 @@ export interface ExtendedModel<T extends Document> {
         update: UpdateQuery<T>,
     ): Promise<ResultDoc>;
 
-    countDocuments(
-        filter: FilterQuery<T>,
+    countDocuments<ResultDoc = HydratedDocument<T>>(
+        filter: FilterQuery<ResultDoc>,
         pipeline?: PipelineStage[],
     ): CustomQueryCountDocumentsService<T>;
 

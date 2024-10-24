@@ -9,18 +9,18 @@ export class CustomQueryFindOneService<T extends Document>
     implements ICustomQueryFindOne<T>
 {
     select(fields: Record<string, number>): this {
-        this._pipeline.push({ $project: fields });
+        this.pipeline.push({ $project: fields });
         return this;
     }
 
     sort(sort: Record<string, 1 | -1 | Expression.Meta>): this {
-        this._pipeline.push({ $sort: sort });
+        this.pipeline.push({ $sort: sort });
         return this;
     }
 
     autoPopulate(autoPopulate: boolean): this {
         if (!autoPopulate) {
-            this._pipeline = deleteAllLookup(this._pipeline);
+            this.pipeline = deleteAllLookup(this.pipeline);
         }
         return this;
     }
@@ -28,11 +28,11 @@ export class CustomQueryFindOneService<T extends Document>
     @SGetCache()
     async exec(): Promise<T> {
         let pipeline: PipelineStage[] = [
-            { $match: { deletedAt: null, ...this._conditions } },
+            { $match: { deletedAt: null, ...this.conditions } },
         ];
 
-        if (this._pipeline.length) {
-            pipeline.push(...this._pipeline);
+        if (this.pipeline.length) {
+            pipeline.push(...this.pipeline);
         }
 
         pipeline = sortPipelines(pipeline);

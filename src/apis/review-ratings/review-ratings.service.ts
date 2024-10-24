@@ -79,6 +79,7 @@ export class ReviewRatingService extends BaseService<ReviewRatingDocument> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select(select)
+            .autoPopulate()
             .exec();
 
         const total = this.reviewModel
@@ -160,7 +161,6 @@ export class ReviewRatingService extends BaseService<ReviewRatingDocument> {
             .find({
                 app: app._id,
             })
-            .autoPopulate(false)
             .exec();
 
         const totalReviews = reviews.length;
