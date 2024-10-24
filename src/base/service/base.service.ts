@@ -48,6 +48,7 @@ export class BaseService<T extends Document> {
                 },
                 filterPipeline,
             )
+            .autoPopulate()
             .exec();
 
         return Promise.all([result, total]).then(([items, total]) => {
@@ -141,11 +142,11 @@ export class BaseService<T extends Document> {
         const total = this.model
             .countDocuments(
                 {
-                    deletedAt: null,
                     ...options,
                 },
                 filterPipeline,
             )
+            .autoPopulate()
             .exec();
 
         return Promise.all([result, total]).then(([items, total]) => {

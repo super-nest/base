@@ -89,6 +89,7 @@ export class ReviewRatingService extends BaseService<ReviewRatingDocument> {
                 },
                 filterPipeline,
             )
+            .autoPopulate()
             .exec();
 
         return Promise.all([result, total]).then(([items, total]) => {

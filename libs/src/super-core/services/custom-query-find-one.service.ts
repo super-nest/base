@@ -1,10 +1,6 @@
 import { Expression, Document, PipelineStage } from 'mongoose';
 import { ICustomQueryFindOne } from './interfaces/custom-query-find-one.interface';
-import {
-    deleteAllLookup,
-    dynamicLookupAggregates,
-    sortPipelines,
-} from '@libs/super-search';
+import { dynamicLookupAggregates, sortPipelines } from '@libs/super-search';
 import { SGetCache } from '@libs/super-cache';
 import { CustomQueryBaseService } from 'libs/src/super-core/services/base-query.service';
 
@@ -22,7 +18,7 @@ export class CustomQueryFindOneService<T extends Document>
         return this;
     }
 
-    autoPopulate(autoPopulate?: boolean): this {
+    autoPopulate(): this {
         const pipeline = dynamicLookupAggregates(this.entity);
         if (pipeline.length) {
             this.pipeline.push(...pipeline);

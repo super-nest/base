@@ -85,7 +85,6 @@ export class UserTransactionService extends BaseService<UserTransactionDocument>
                     $lte: new Date(new Date().setHours(23, 59, 59, 999)),
                 },
             })
-            .autoPopulate(false)
             .exec();
 
         return userTransactions;

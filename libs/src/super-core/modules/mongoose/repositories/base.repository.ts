@@ -57,7 +57,7 @@ export class BaseRepositories<T extends AggregateRoot, E>
         );
     }
 
-    @DynamicLookup()
+    @FindWithMultipleLanguage()
     findOne<ResultDoc = HydratedDocument<T>>(
         filter: FilterQuery<ResultDoc>,
         pipeline: PipelineStage[] = [],
@@ -151,7 +151,6 @@ export class BaseRepositories<T extends AggregateRoot, E>
         return result as unknown as ResultDoc;
     }
 
-    @DynamicLookup()
     countDocuments(filter: FilterQuery<T>, pipeline: PipelineStage[] = []) {
         const clonedPipeline = _.cloneDeep(pipeline);
         return new CustomQueryCountDocumentsService(

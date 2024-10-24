@@ -37,7 +37,6 @@ export class NotificationsService extends BaseService<NotificationDocument> {
                 user: userId,
                 status: UserNotificationStatus.UNREAD,
             })
-            .autoPopulate(false)
             .exec();
     }
 
@@ -76,6 +75,7 @@ export class NotificationsService extends BaseService<NotificationDocument> {
                 'user._id': _id,
                 ...filterPipeline,
             })
+            .autoPopulate()
             .exec();
 
         const [result, total] = await Promise.all([

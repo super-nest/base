@@ -108,10 +108,23 @@ export class AppsService extends BaseService<AppDocument> {
             .exec();
 
         const total = await this.appModel
-            .countDocuments({}, filterPipeline)
+            .countDocuments(
+                {
+                    $or: [
+                        {
+                            status: SubmitStatus.Approved,
+                        },
+                        {
+                            status: null,
+                        },
+                    ],
+                },
+                filterPipeline,
+            )
+            .autoPopulate()
             .exec();
-        const meta = pagination(result, page, limit, total);
 
+        const meta = pagination(result, page, limit, total);
         const items = result.map(async (item) => {
             return {
                 ...item,
@@ -159,7 +172,13 @@ export class AppsService extends BaseService<AppDocument> {
             .exec();
 
         const total = await this.appModel
-            .countDocuments({}, filterPipeline)
+            .countDocuments(
+                {
+                    createdBy: new mongoose.Types.ObjectId(userId),
+                },
+                filterPipeline,
+            )
+            .autoPopulate()
             .exec();
         const meta = pagination(result, page, limit, total);
 
@@ -249,6 +268,7 @@ export class AppsService extends BaseService<AppDocument> {
                 },
                 filterPipeline,
             )
+            .autoPopulate()
             .exec();
 
         const items = apps.map(async (item) => {
@@ -460,6 +480,7 @@ export class AppsService extends BaseService<AppDocument> {
                 },
                 filterPipeline,
             )
+            .autoPopulate()
             .exec();
 
         return Promise.all(items).then((items) => {

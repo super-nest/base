@@ -2,7 +2,11 @@ import { PipelineStage, Document, Expression } from 'mongoose';
 import { SGetCache } from '../../super-cache';
 import { ICustomQueryCountDocuments } from './interfaces/custom-query-count-documents.interface';
 import _ from 'lodash';
-import { deleteAllLookup, sortPipelines } from '@libs/super-search';
+import {
+    deleteAllLookup,
+    dynamicLookupAggregates,
+    sortPipelines,
+} from '@libs/super-search';
 import { CustomQueryBaseService } from 'libs/src/super-core/services/base-query.service';
 
 export class CustomQueryCountDocumentsService<T extends Document>
@@ -29,9 +33,10 @@ export class CustomQueryCountDocumentsService<T extends Document>
         return this;
     }
 
-    autoPopulate(autoPopulate: boolean): this {
-        if (!autoPopulate) {
-            this.pipeline = deleteAllLookup(this.pipeline);
+    autoPopulate(): this {
+        const pipeline = dynamicLookupAggregates(this.entity);
+        if (pipeline.length) {
+            this.pipeline.push(...pipeline);
         }
         return this;
     }
