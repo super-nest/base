@@ -1,4 +1,3 @@
-import { MongooseModule } from '@nestjs/mongoose';
 import { AppsService } from './apps.service';
 import { forwardRef, Module } from '@nestjs/common';
 import { COLLECTION_NAMES } from 'src/constants';

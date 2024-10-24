@@ -3,9 +3,8 @@ import { SuperAuthorize } from '@libs/super-authorize/decorators/authorize.decor
 import { SuperDelete, SuperPut } from '@libs/super-core';
 import { SuperGet } from '@libs/super-core/decorators/super-get.decorator';
 import { SuperPost } from '@libs/super-core/decorators/super-post.decorator';
-import { Body, Controller, Param, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import _ from 'lodash';
 import { Types } from 'mongoose';
 import { MetadataType } from 'src/apis/metadata/constants';
 import { UserPayload } from 'src/base/models/user-payload.model';

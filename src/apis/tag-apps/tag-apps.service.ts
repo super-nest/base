@@ -1,10 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { BaseService } from 'src/base/service/base.service';
-import { TagApp, TagAppDocument } from './entities/tag-apps.entity';
-import { InjectModel } from '@nestjs/mongoose';
+import { TagAppDocument } from './entities/tag-apps.entity';
 import { COLLECTION_NAMES } from 'src/constants';
-import { Model, Types } from 'mongoose';
-import { ModuleRef } from '@nestjs/core';
+import { Types } from 'mongoose';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { CreateTagAppDto } from './dto/create-tag-apps.dto';
 import { UpdateTagAppDto } from './dto/update-tag-apps.dto';

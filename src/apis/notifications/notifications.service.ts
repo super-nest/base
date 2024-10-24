@@ -1,13 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/base/service/base.service';
-import {
-    Notification,
-    NotificationDocument,
-} from './entities/notifications.entity';
-import { InjectModel } from '@nestjs/mongoose';
+import { NotificationDocument } from './entities/notifications.entity';
 import { COLLECTION_NAMES } from 'src/constants';
-import { Model, Types } from 'mongoose';
-import { ModuleRef } from '@nestjs/core';
+import { Types } from 'mongoose';
 import { ExtendedPagingDto } from 'src/pipes/page-result.dto.pipe';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { pagination } from '@libs/super-search';

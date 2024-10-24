@@ -1,7 +1,6 @@
-import { Body, Controller, Param, Query, Req } from '@nestjs/common';
+import { Body, Controller, Param, Query } from '@nestjs/common';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { TagsService } from '../tags.service';
-import _ from 'lodash';
 import { Types } from 'mongoose';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { COLLECTION_NAMES } from 'src/constants';

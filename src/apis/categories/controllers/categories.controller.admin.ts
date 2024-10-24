@@ -4,9 +4,8 @@ import { SuperDelete } from '@libs/super-core/decorators/super-delete.decorator'
 import { SuperGet } from '@libs/super-core/decorators/super-get.decorator';
 import { SuperPost } from '@libs/super-core/decorators/super-post.decorator';
 import { SuperPut } from '@libs/super-core/decorators/super-put.decorator';
-import { Body, Controller, Param, Query, Req } from '@nestjs/common';
+import { Body, Controller, Param, Query } from '@nestjs/common';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import _ from 'lodash';
 import { Types } from 'mongoose';
 import { CategoriesService } from 'src/apis/categories/categories.service';
 import { CreateCategoryDto } from 'src/apis/categories/dto/create-categories.dto';
@@ -22,7 +21,6 @@ import {
 } from 'src/pipes/page-result.dto.pipe';
 import { ParseObjectIdPipe } from 'src/pipes/parse-object-id.pipe';
 import { ParseObjectIdArrayPipe } from 'src/pipes/parse-object-ids.pipe';
-import { removeDiacritics } from 'src/utils/helper';
 
 @Controller('categories')
 @Resource('categories')

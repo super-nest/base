@@ -3,13 +3,11 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { Category, CategoryDocument } from './entities/categories.entity';
-import { InjectModel } from '@nestjs/mongoose';
+import { CategoryDocument } from './entities/categories.entity';
 import { COLLECTION_NAMES } from 'src/constants';
-import { Model, Types } from 'mongoose';
-import { UpdateCategoryDto } from './dto/update-categories.dto';
+import { Types } from 'mongoose';
 import { UserPayload } from 'src/base/models/user-payload.model';
-import { ModuleRef } from '@nestjs/core';
+import { UpdateCategoryDto } from './dto/update-categories.dto';
 import { CreateCategoryDto } from './dto/create-categories.dto';
 import { CategoryType } from './constants';
 import { BaseService } from 'src/base/service/base.service';

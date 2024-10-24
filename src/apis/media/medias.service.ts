@@ -1,12 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { IUploadedMulterFile, S3Service } from 'src/packages/s3/s3.service';
-import { File, FileDocument } from './entities/files.entity';
-import { Model } from 'mongoose';
+import { FileDocument } from './entities/files.entity';
 import { COLLECTION_NAMES } from 'src/constants';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { appSettings } from 'src/configs/app-settings';
-import { ModuleRef } from '@nestjs/core';
 import { BaseService } from 'src/base/service/base.service';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';

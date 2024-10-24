@@ -22,10 +22,7 @@ export interface ExtendedModel<T extends Document> {
         pipeline?: PipelineStage[],
     ): CustomQueryFindOneService<T>;
 
-    findById<ResultDoc = HydratedDocument<T>>(
-        id: any,
-        pipeline?: PipelineStage[],
-    ): CustomQueryFindOneService<T>;
+    findById(id: any, pipeline?: PipelineStage[]): CustomQueryFindOneService<T>;
 
     create<DocContents = Partial<T>>(doc: DocContents | T): Promise<T>;
 

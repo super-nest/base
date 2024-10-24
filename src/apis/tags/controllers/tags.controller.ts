@@ -10,8 +10,6 @@ import {
     ExtendedPagingDto,
     PagingDtoPipe,
 } from 'src/pipes/page-result.dto.pipe';
-import { ParseObjectIdPipe } from 'src/pipes/parse-object-id.pipe';
-import { Types } from 'mongoose';
 
 @Controller('tags')
 @Resource('tags')

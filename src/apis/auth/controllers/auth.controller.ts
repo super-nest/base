@@ -1,4 +1,4 @@
-import { Body, Controller, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, UseGuards } from '@nestjs/common';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
 import { AUDIT_EVENT } from 'src/packages/audits/constants';

@@ -23,14 +23,11 @@ export class SeedsService implements OnModuleInit {
             return;
         }
 
-        // await this.seedPermissions();
         await this.seedRoles();
         await this.seedMetadata();
         await this.seedUsers();
         this.logger.debug('Seeding completed');
     }
-
-    async seedPermissions() {}
 
     async seedRoles() {
         const roles = JSON.parse(

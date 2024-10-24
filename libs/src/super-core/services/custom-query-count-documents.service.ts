@@ -2,11 +2,7 @@ import { PipelineStage, Document, Expression } from 'mongoose';
 import { SGetCache } from '../../super-cache';
 import { ICustomQueryCountDocuments } from './interfaces/custom-query-count-documents.interface';
 import _ from 'lodash';
-import {
-    deleteAllLookup,
-    dynamicLookupAggregates,
-    sortPipelines,
-} from '@libs/super-search';
+import { dynamicLookupAggregates, sortPipelines } from '@libs/super-search';
 import { CustomQueryBaseService } from 'libs/src/super-core/services/base-query.service';
 
 export class CustomQueryCountDocumentsService<T extends Document>

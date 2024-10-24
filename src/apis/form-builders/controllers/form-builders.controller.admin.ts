@@ -1,4 +1,4 @@
-import { Controller, Param, Query, Req } from '@nestjs/common';
+import { Controller, Param, Query } from '@nestjs/common';
 import { ApiParam, ApiTags, ApiQuery } from '@nestjs/swagger';
 import { COLLECTION_NAMES } from 'src/constants';
 import {
