@@ -22,10 +22,7 @@ export interface ExtendedModel<T extends Document> {
         pipeline?: PipelineStage[],
     ): CustomQueryFindOneService<T>;
 
-    findById<ResultDoc = HydratedDocument<T>>(
-        id: any,
-        pipeline?: PipelineStage[],
-    ): CustomQueryFindOneService<T>;
+    findById(id: any, pipeline?: PipelineStage[]): CustomQueryFindOneService<T>;
 
     create<DocContents = Partial<T>>(doc: DocContents | T): Promise<T>;
 
@@ -51,8 +48,8 @@ export interface ExtendedModel<T extends Document> {
         update: UpdateQuery<T>,
     ): Promise<ResultDoc>;
 
-    countDocuments(
-        filter: FilterQuery<T>,
+    countDocuments<ResultDoc = HydratedDocument<T>>(
+        filter: FilterQuery<ResultDoc>,
         pipeline?: PipelineStage[],
     ): CustomQueryCountDocumentsService<T>;
 

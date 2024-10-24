@@ -1,4 +1,4 @@
-import { applyDecorators, Type } from '@nestjs/common';
+import { applyDecorators } from '@nestjs/common';
 import { Prop } from '@nestjs/mongoose';
 import { SchemaTypeOptions, Types } from 'mongoose';
 

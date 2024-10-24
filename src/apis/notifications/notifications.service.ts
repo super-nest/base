@@ -1,13 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BaseService } from 'src/base/service/base.service';
-import {
-    Notification,
-    NotificationDocument,
-} from './entities/notifications.entity';
-import { InjectModel } from '@nestjs/mongoose';
+import { NotificationDocument } from './entities/notifications.entity';
 import { COLLECTION_NAMES } from 'src/constants';
-import { Model, Types } from 'mongoose';
-import { ModuleRef } from '@nestjs/core';
+import { Types } from 'mongoose';
 import { ExtendedPagingDto } from 'src/pipes/page-result.dto.pipe';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { pagination } from '@libs/super-search';
@@ -32,13 +27,10 @@ export class NotificationsService extends BaseService<NotificationDocument> {
     }
 
     async countNotificationUnreadOfUser(userId: Types.ObjectId) {
-        return this.notificationModel
-            .countDocuments({
-                user: userId,
-                status: UserNotificationStatus.UNREAD,
-            })
-            .autoPopulate(false)
-            .exec();
+        return this.notificationModel.countDocuments({
+            user: userId,
+            status: UserNotificationStatus.UNREAD,
+        });
     }
 
     async getNotificationsOfUser(
@@ -68,14 +60,14 @@ export class NotificationsService extends BaseService<NotificationDocument> {
             .skip(skip)
             .limit(limit)
             .select(select)
-            .exec();
+            .autoPopulate();
 
         const totalPromise = this.notificationModel
             .countDocuments({
                 'user._id': _id,
                 ...filterPipeline,
             })
-            .exec();
+            .autoPopulate();
 
         const [result, total] = await Promise.all([
             resultPromise,
@@ -153,7 +145,7 @@ export class NotificationsService extends BaseService<NotificationDocument> {
                 .findOne({
                     _id: newNotification._id,
                 })
-                .exec();
+                .autoPopulate();
 
             this.websocketGateway.sendToClient(
                 userId,

@@ -40,7 +40,7 @@ export function DeleteCache() {
 
             await createRedisFolderCollection(
                 this.collectionName,
-                this._entity,
+                this.entity,
                 superCacheService,
             );
 
@@ -52,7 +52,7 @@ export function DeleteCache() {
 
             await createRedisFolderCollection(
                 this.collectionName,
-                this._entity,
+                this.entity,
                 superCacheService,
             );
 

@@ -1,5 +1,5 @@
 import { SchemaFactory, Schema } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { Types } from 'mongoose';
 import { COLLECTION_NAMES } from 'src/constants';
 import { UserStatus } from '../constants';
 import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft-delete';

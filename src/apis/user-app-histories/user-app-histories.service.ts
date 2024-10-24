@@ -22,14 +22,11 @@ export class UserAppHistoriesService extends BaseService<UserAppHistoryDocument>
         userId: Types.ObjectId,
         action?: ActionType,
     ) {
-        const userAppHistory = await this.userAppHistoryDocument
-            .findOne({
-                app: new Types.ObjectId(appId.toString()),
-                createdBy: new Types.ObjectId(userId.toString()),
-                action,
-            })
-            .autoPopulate(false)
-            .exec();
+        const userAppHistory = await this.userAppHistoryDocument.findOne({
+            app: new Types.ObjectId(appId.toString()),
+            createdBy: new Types.ObjectId(userId.toString()),
+            action,
+        });
 
         if (userAppHistory) {
             const history: any = userAppHistory;

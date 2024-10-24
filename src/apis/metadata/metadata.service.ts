@@ -19,16 +19,14 @@ export class MetadataService extends BaseService<MetadataDocument> {
     async getAmountRewardUserForApp(
         type: MetadataType,
     ): Promise<AmountRewardUserModel> {
-        const result = await this.metadataModel.findOne({ type }).exec();
+        const result = await this.metadataModel.findOne({ type });
         return result;
     }
 
     async getAmountRewardReferral(): Promise<MetadataDocument> {
-        const metadata = await this.metadataModel
-            .findOne({
-                type: MetadataType.AMOUNT_REWARD_REFERRAL,
-            })
-            .exec();
+        const metadata = await this.metadataModel.findOne({
+            type: MetadataType.AMOUNT_REWARD_REFERRAL,
+        });
 
         return metadata;
     }

@@ -37,7 +37,7 @@ export class PostsService extends BaseService<PostDocument> {
                 },
                 filterPipeline,
             )
-            .exec();
+            .autoPopulate();
 
         if (!result) {
             throw new NotFoundException('post_not_found', 'Post not found');
@@ -125,14 +125,11 @@ export class PostsService extends BaseService<PostDocument> {
         if (!position) {
             return;
         }
-        const post = await this.postModel
-            .findOne({
-                position,
-                type,
-                _id: { $ne: thisId },
-            })
-            .autoPopulate(false)
-            .exec();
+        const post = await this.postModel.findOne({
+            position,
+            type,
+            _id: { $ne: thisId },
+        });
 
         if (post) {
             position++;

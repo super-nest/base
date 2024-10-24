@@ -49,7 +49,7 @@ export class UserService
 {
     constructor(
         @ExtendedInjectModel(COLLECTION_NAMES.USER)
-        private readonly userModelExtend: ExtendedModel<UserDocument>,
+        private readonly userModel: ExtendedModel<UserDocument>,
         private readonly roleService: RolesService,
         private readonly superCacheService: SuperCacheService,
         private readonly mediaService: MediaService,
@@ -60,21 +60,17 @@ export class UserService
         private readonly eventEmitter: EventEmitter2,
         private readonly userReferralsService: UserReferralsService,
     ) {
-        super(userModelExtend);
+        super(userModel);
     }
 
     async onModuleInit() {
-        const usersBanned = await this.userModelExtend
-            .find({
-                status: UserStatus.INACTIVE,
-            })
-            .exec();
+        const usersBanned = await this.userModel.find({
+            status: UserStatus.INACTIVE,
+        });
 
-        const usersDeleted = await this.userModelExtend
-            .find({
-                deletedAt: { $ne: null },
-            })
-            .exec();
+        const usersDeleted = await this.userModel.find({
+            deletedAt: { $ne: null },
+        });
 
         if (usersBanned.length) {
             const ids = usersBanned.map((user) => user._id);
@@ -121,30 +117,26 @@ export class UserService
         lastOneMonth.setMonth(lastOneMonth.getMonth() - 1);
         lastOneMonth.setHours(0, 0, 0, 0);
 
-        const userTransactionToday = await this.userTransactionService.model
-            .find({
-                'createdBy._id': user._id,
+        const userTransactionToday =
+            await this.userTransactionService.model.find({
+                createdBy: user._id,
                 createdAt: { $gte: today },
                 action,
-            })
-            .exec();
+            });
 
-        const userTransactionYesterday = await this.userTransactionService.model
-            .find({
-                'createdBy._id': user._id,
+        const userTransactionYesterday =
+            await this.userTransactionService.model.find({
+                createdBy: user._id,
                 createdAt: { $gte: yesterday, $lt: today },
                 action,
-            })
-            .exec();
+            });
 
         const userTransactionLastOneMonth =
-            await this.userTransactionService.model
-                .find({
-                    'createdBy._id': user._id,
-                    createdAt: { $gte: lastOneMonth },
-                    action,
-                })
-                .exec();
+            await this.userTransactionService.model.find({
+                createdBy: user._id,
+                createdAt: { $gte: lastOneMonth },
+                action,
+            });
 
         result.today = userTransactionToday.reduce(
             (acc, cur) => acc + cur.amount,
@@ -175,9 +167,8 @@ export class UserService
                 createdBy: new Types.ObjectId(userId),
                 'mission._id': mission._id,
             })
-            .sort({ updatedAt: -1 })
-            .autoPopulate(false)
-            .exec();
+            .sort({ updatedAt: -1 });
+
         if (userTransactionThisApp) {
             if (userTransactionThisApp.mission.type !== EMissionType.Daily) {
                 return false;
@@ -187,7 +178,7 @@ export class UserService
                 }
             }
         }
-        const user = await this.userModelExtend.findOne({ _id: userId }).exec();
+        const user = await this.userModel.findOne({ _id: userId });
 
         const { currentPoint = 0, _id } = user;
         const after = parseFloat(currentPoint.toString()) + mission.reward;
@@ -202,7 +193,7 @@ export class UserService
         });
 
         if (userTransaction) {
-            await this.userModelExtend.updateOne(
+            await this.userModel.updateOne(
                 { _id },
                 {
                     currentPoint: after,
@@ -231,14 +222,12 @@ export class UserService
         const { point, type, action, app, name, limit } = addPointForUserDto;
         const { name: appName } = appDocument;
 
-        const userTransactionThisApp = await this.userTransactionService.model
-            .findOne({
+        const userTransactionThisApp =
+            await this.userTransactionService.model.findOne({
                 createdBy: new Types.ObjectId(userId),
                 app: new Types.ObjectId(app),
                 action: actionTransaction,
-            })
-            .autoPopulate(false)
-            .exec();
+            });
 
         if (userTransactionThisApp) {
             return await this.getMe(userPayload);
@@ -257,7 +246,7 @@ export class UserService
             );
         }
 
-        const user = await this.userModelExtend.findOne({ _id: userId }).exec();
+        const user = await this.userModel.findOne({ _id: userId });
 
         const { currentPoint = 0, _id } = user;
 
@@ -277,7 +266,7 @@ export class UserService
         });
 
         if (userTransaction) {
-            await this.userModelExtend.updateOne(
+            await this.userModel.updateOne(
                 { _id },
                 {
                     currentPoint: after,
@@ -312,9 +301,7 @@ export class UserService
             username,
         } = userLoginTelegramDto;
 
-        const user = await this.userModelExtend
-            .findOne({ telegramUserId: id })
-            .exec();
+        const user = await this.userModel.findOne({ telegramUserId: id });
 
         if (user) {
             return user;
@@ -331,7 +318,7 @@ export class UserService
 
         const role = await this.roleService.getRoleByType(RoleType.USER);
 
-        const newUser = await this.userModelExtend.create({
+        const newUser = await this.userModel.create({
             name: `${firstName} ${lastName}`,
             telegramUserId: id,
             telegramUsername: username,
@@ -357,7 +344,7 @@ export class UserService
         const { _id: userId } = user;
         const { password } = createUserDto;
 
-        const result = await this.userModelExtend.create({
+        const result = await this.userModel.create({
             ...createUserDto,
             ...options,
             createdBy: userId,
@@ -383,7 +370,7 @@ export class UserService
             password: await this.hashPassword(password),
         };
 
-        const user = await this.userModelExtend.findOne({ _id }).exec();
+        const user = await this.userModel.findOne({ _id });
 
         if (!user) {
             throw new BadRequestException(`Not found ${_id}`);
@@ -393,7 +380,7 @@ export class UserService
             delete update.password;
         }
 
-        const result = await this.userModelExtend.updateOne(
+        const result = await this.userModel.updateOne(
             { _id },
             {
                 ...update,
@@ -411,7 +398,7 @@ export class UserService
             );
         }
 
-        const user = await this.userModelExtend.findOne({ email }).exec();
+        const user = await this.userModel.findOne({ email });
 
         const isMatch =
             user &&
@@ -429,7 +416,7 @@ export class UserService
     }
 
     async updateMe(user: UserPayload, updateMeDto: UpdateMeDto) {
-        await this.userModelExtend.updateOne(
+        await this.userModel.updateOne(
             { _id: user._id },
             {
                 ...updateMeDto,
@@ -441,12 +428,12 @@ export class UserService
     }
 
     async getMe(user: UserPayload) {
-        const me = await this.userModelExtend
+        const me = await this.userModel
             .findOne({
                 _id: user._id,
             })
             .select({ password: 0 })
-            .exec();
+            .autoPopulate();
 
         if (!me) {
             throw new UnauthorizedException('user_not_found', 'User not found');
@@ -471,11 +458,9 @@ export class UserService
                 MetadataType.AMOUNT_REWARD_USER_COMMENT_APP,
             ]);
 
-        const introducer = await this.userReferralsService.model
-            .findOne({
-                telegramUserId: result?.telegramUserId,
-            })
-            .exec();
+        const introducer = await this.userReferralsService.model.findOne({
+            telegramUserId: result?.telegramUserId,
+        });
 
         return {
             ...result,
@@ -487,10 +472,8 @@ export class UserService
 
     async deletes(_ids: Types.ObjectId[], user: UserPayload) {
         const { _id: userId } = user;
-        const data = await this.userModelExtend
-            .find({ _id: { $in: _ids } })
-            .exec();
-        await this.userModelExtend.updateMany(
+        const data = await this.userModel.find({ _id: { $in: _ids } });
+        await this.userModel.updateMany(
             { _id: { $in: _ids } },
             { deletedAt: new Date(), deletedBy: userId },
         );
@@ -501,7 +484,7 @@ export class UserService
     }
 
     async ban(_ids: Types.ObjectId[], user: UserPayload) {
-        await this.userModelExtend.updateMany(
+        await this.userModel.updateMany(
             { _id: { $in: _ids } },
             { status: UserStatus.INACTIVE, updatedBy: user._id },
         );
@@ -512,7 +495,7 @@ export class UserService
     }
 
     async unBan(_ids: Types.ObjectId[], user: UserPayload) {
-        await this.userModelExtend.updateMany(
+        await this.userModel.updateMany(
             { _id: { $in: _ids } },
             { status: UserStatus.ACTIVE, updatedBy: user._id },
         );
@@ -601,14 +584,12 @@ export class UserService
     }
 
     private async addInviteCodeForUser() {
-        const users = await this.userModelExtend
-            .find({
-                inviteCode: { $exists: false },
-            })
-            .exec();
+        const users = await this.userModel.find({
+            inviteCode: { $exists: false },
+        });
 
         users.forEach(async (user) => {
-            await this.userModelExtend.updateOne(
+            await this.userModel.updateOne(
                 { _id: user._id },
                 {
                     inviteCode: generateRandomString(16),

@@ -22,7 +22,8 @@ export class PagesController {
         const result = await this.pagesService.model
             .findOne({ slug })
             .select({ createdBy: 0 })
-            .exec();
+            .autoPopulate();
+
         return result;
     }
 }

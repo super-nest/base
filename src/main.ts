@@ -3,7 +3,6 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { TransformInterceptor } from './interceptors/transform.interceptors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import _ from 'lodash';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import passport from 'passport';

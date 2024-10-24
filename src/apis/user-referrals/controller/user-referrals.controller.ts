@@ -1,4 +1,4 @@
-import { Controller, Query, Req } from '@nestjs/common';
+import { Controller, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { COLLECTION_NAMES } from 'src/constants';
@@ -19,7 +19,7 @@ import { Me } from 'src/decorators/me.decorator';
 @ApiTags('Front: User Referral')
 @AuditLog({
     events: [AUDIT_EVENT.POST, AUDIT_EVENT.PUT, AUDIT_EVENT.DELETE],
-    refSource: COLLECTION_NAMES.FILE,
+    refSource: COLLECTION_NAMES.USER_REFERRAL,
 })
 export class UserReferralsController {
     constructor(private readonly userReferral: UserReferralsService) {}

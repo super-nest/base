@@ -16,7 +16,7 @@ export class SuperAuthorizeService implements OnModuleInit {
 
     async onModuleInit() {
         const permissionMetadata = PermissionStorage.getPermissionMetadata();
-        const permissions = await this.permissionsService.model.find({}).exec();
+        const permissions = await this.permissionsService.model.find({});
 
         const newPermissions = _.differenceWith(
             permissionMetadata,

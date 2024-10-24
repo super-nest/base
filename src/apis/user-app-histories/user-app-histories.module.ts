@@ -1,4 +1,3 @@
-import { MongooseModule } from '@nestjs/mongoose';
 import { UserAppHistoriesService } from './user-app-histories.service';
 import { Module } from '@nestjs/common';
 import { COLLECTION_NAMES } from 'src/constants';

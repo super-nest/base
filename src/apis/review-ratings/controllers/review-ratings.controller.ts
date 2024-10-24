@@ -1,4 +1,4 @@
-import { Body, Req, Query, Param, Controller } from '@nestjs/common';
+import { Body, Query, Param, Controller } from '@nestjs/common';
 import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { ReviewRatingService } from '../review-ratings.service';
 import { COLLECTION_NAMES } from 'src/constants';

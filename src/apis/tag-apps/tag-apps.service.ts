@@ -1,10 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { BaseService } from 'src/base/service/base.service';
-import { TagApp, TagAppDocument } from './entities/tag-apps.entity';
-import { InjectModel } from '@nestjs/mongoose';
+import { TagAppDocument } from './entities/tag-apps.entity';
 import { COLLECTION_NAMES } from 'src/constants';
-import { Model, Types } from 'mongoose';
-import { ModuleRef } from '@nestjs/core';
+import { Types } from 'mongoose';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { CreateTagAppDto } from './dto/create-tag-apps.dto';
 import { UpdateTagAppDto } from './dto/update-tag-apps.dto';
@@ -72,13 +70,11 @@ export class TagAppsService extends BaseService<TagAppDocument> {
         app: Types.ObjectId,
         thisId?: Types.ObjectId,
     ) {
-        const tagApp = await this.tagAppModel
-            .findOne({
-                tag,
-                app,
-                _id: { $ne: thisId },
-            })
-            .exec();
+        const tagApp = await this.tagAppModel.findOne({
+            tag,
+            app,
+            _id: { $ne: thisId },
+        });
 
         if (tagApp) {
             throw new BadRequestException('Tag App already exists');
@@ -90,13 +86,11 @@ export class TagAppsService extends BaseService<TagAppDocument> {
         position: number,
         thisId?: Types.ObjectId,
     ) {
-        const tagApp = await this.tagAppModel
-            .findOne({
-                tag,
-                position,
-                _id: { $ne: thisId },
-            })
-            .exec();
+        const tagApp = await this.tagAppModel.findOne({
+            tag,
+            position,
+            _id: { $ne: thisId },
+        });
 
         if (tagApp) {
             position++;

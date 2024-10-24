@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller } from '@nestjs/common';
 import { appSettings } from 'src/configs/app-settings';
 import { ApiTags } from '@nestjs/swagger';
 import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';

@@ -6,9 +6,7 @@ import { Types } from 'mongoose';
 import { BaseService } from 'src/base/service/base.service';
 import { COLLECTION_NAMES } from 'src/constants';
 import { MetadataType } from '../metadata/constants';
-import {
-    UserTransactionDocument
-} from './entities/user-transaction.entity';
+import { UserTransactionDocument } from './entities/user-transaction.entity';
 
 @Injectable()
 export class UserTransactionService extends BaseService<UserTransactionDocument> {
@@ -47,11 +45,10 @@ export class UserTransactionService extends BaseService<UserTransactionDocument>
         const data = await this.userTransactionModel
             .findOne({
                 createdBy: userId,
-                "mission._id": missionId,
+                'mission._id': missionId,
             })
-            .sort({ updatedAt: -1 })
-            .autoPopulate(false)
-            .exec();
+            .sort({ updatedAt: -1 });
+
         return data;
     }
 
@@ -63,14 +60,11 @@ export class UserTransactionService extends BaseService<UserTransactionDocument>
         if (!userId || !appId) {
             return false;
         }
-        const userTransactions = await this.userTransactionModel
-            .findOne({
-                createdBy: userId,
-                app: appId,
-                action,
-            })
-            .autoPopulate(false)
-            .exec();
+        const userTransactions = await this.userTransactionModel.findOne({
+            createdBy: userId,
+            app: appId,
+            action,
+        });
 
         return !_.isEmpty(userTransactions);
     }
@@ -80,17 +74,16 @@ export class UserTransactionService extends BaseService<UserTransactionDocument>
             return 0;
         }
 
-        const userTransactions = await this.userTransactionModel
-            .countDocuments({
+        const userTransactions = await this.userTransactionModel.countDocuments(
+            {
                 createdBy: new Types.ObjectId(userId),
                 action: { $in: action },
                 createdAt: {
                     $gte: new Date(new Date().setHours(0, 0, 0, 0)),
                     $lte: new Date(new Date().setHours(23, 59, 59, 999)),
                 },
-            })
-            .autoPopulate(false)
-            .exec();
+            },
+        );
 
         return userTransactions;
     }
