@@ -43,7 +43,10 @@ export class AppsService extends BaseService<AppDocument> {
         super(appModel);
     }
     async getAppById(appId: Types.ObjectId) {
-        return await this.appModel.findOne({ _id: appId }).exec();
+        return await this.appModel
+            .findOne({ _id: appId })
+            .autoPopulate()
+            .exec();
     }
 
     async GetAppCountByStatus() {
@@ -186,6 +189,7 @@ export class AppsService extends BaseService<AppDocument> {
         const tag = await this.tagService.model
             .findOne({ slug: tagSlug })
             .exec();
+
         if (!tag) {
             throw new BadRequestException(`Not found tag ${tagSlug}`);
         }
@@ -337,17 +341,17 @@ export class AppsService extends BaseService<AppDocument> {
 
     async sumTotalRating(sumRatingAppModel: SumRatingAppModel) {
         const { app, star } = sumRatingAppModel;
-        const user = await this.appModel.findOne({ _id: app }).exec();
+        const appData = await this.appModel.findOne({ _id: app }).exec();
 
-        if (!user) {
+        if (!appData) {
             throw new UnprocessableEntityException(
                 'user_not_found',
                 'User not found',
             );
         }
 
-        const totalRating = (user.totalRating || 0) + star;
-        const totalRatingCount = (user.totalRatingCount || 0) + 1;
+        const totalRating = (appData.totalRating || 0) + star;
+        const totalRatingCount = (appData.totalRatingCount || 0) + 1;
         const avgRating = totalRating / totalRatingCount;
 
         await this.appModel.updateOne(
@@ -367,6 +371,7 @@ export class AppsService extends BaseService<AppDocument> {
 
         const result = await this.appModel
             .findOne({ slug: _id }, filterPipeline)
+            .autoPopulate()
             .exec();
 
         if (!result) {

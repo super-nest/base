@@ -154,6 +154,7 @@ export class NotificationsService extends BaseService<NotificationDocument> {
                 .findOne({
                     _id: newNotification._id,
                 })
+                .autoPopulate()
                 .exec();
 
             this.websocketGateway.sendToClient(

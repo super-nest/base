@@ -48,7 +48,6 @@ export class UserTransactionService extends BaseService<UserTransactionDocument>
                 'mission._id': missionId,
             })
             .sort({ updatedAt: -1 })
-            .autoPopulate(false)
             .exec();
         return data;
     }
@@ -67,7 +66,6 @@ export class UserTransactionService extends BaseService<UserTransactionDocument>
                 app: appId,
                 action,
             })
-            .autoPopulate(false)
             .exec();
 
         return !_.isEmpty(userTransactions);

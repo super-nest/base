@@ -40,6 +40,7 @@ export class AuditsService extends BaseService<AuditDocument> {
                 refSource,
                 refId,
             })
+            .autoPopulate()
             .sort({ createdAt: -1 })
             .exec();
 

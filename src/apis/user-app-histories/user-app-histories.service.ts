@@ -28,7 +28,6 @@ export class UserAppHistoriesService extends BaseService<UserAppHistoryDocument>
                 createdBy: new Types.ObjectId(userId.toString()),
                 action,
             })
-            .autoPopulate(false)
             .exec();
 
         if (userAppHistory) {

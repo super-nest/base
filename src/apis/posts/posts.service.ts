@@ -37,6 +37,7 @@ export class PostsService extends BaseService<PostDocument> {
                 },
                 filterPipeline,
             )
+            .autoPopulate()
             .exec();
 
         if (!result) {
@@ -133,7 +134,6 @@ export class PostsService extends BaseService<PostDocument> {
                 type,
                 _id: { $ne: thisId },
             })
-            .autoPopulate(false)
             .exec();
 
         if (post) {

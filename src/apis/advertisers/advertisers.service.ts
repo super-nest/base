@@ -28,6 +28,7 @@ export class AdvertisersService extends BaseService<AdvertiserDocument> {
                 },
                 populateGroupBannerImageAggregate,
             )
+            .autoPopulate()
             .exec();
 
         return result;

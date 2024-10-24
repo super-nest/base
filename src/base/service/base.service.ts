@@ -65,6 +65,7 @@ export class BaseService<T extends Document> {
                 $or: [{ _id }, { slug: _id }],
                 ...options,
             })
+            .autoPopulate()
             .exec();
 
         return result;

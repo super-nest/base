@@ -35,6 +35,7 @@ export class AdvertisersController {
     async getOneBySlug(@Param('slug') slug: string) {
         const result = await this.advertisersService.model
             .findOne({ slug }, populateGroupBannerImageAggregate)
+            .autoPopulate()
             .exec();
         return result;
     }

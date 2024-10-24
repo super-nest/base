@@ -138,7 +138,6 @@ export class ReviewRatingService extends BaseService<ReviewRatingDocument> {
                 createdBy: createdBy,
                 app: app,
             })
-            .autoPopulate(false)
             .exec();
 
         if (review) {
@@ -207,6 +206,7 @@ export class ReviewRatingService extends BaseService<ReviewRatingDocument> {
                     },
                 ],
             )
+            .autoPopulate()
             .exec();
 
         this.websocketGateway.sendNewReviewRating(appId, result);

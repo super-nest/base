@@ -176,8 +176,8 @@ export class UserService
                 'mission._id': mission._id,
             })
             .sort({ updatedAt: -1 })
-            .autoPopulate(false)
             .exec();
+
         if (userTransactionThisApp) {
             if (userTransactionThisApp.mission.type !== EMissionType.Daily) {
                 return false;
@@ -237,7 +237,6 @@ export class UserService
                 app: new Types.ObjectId(app),
                 action: actionTransaction,
             })
-            .autoPopulate(false)
             .exec();
 
         if (userTransactionThisApp) {
@@ -446,6 +445,7 @@ export class UserService
                 _id: user._id,
             })
             .select({ password: 0 })
+            .autoPopulate()
             .exec();
 
         if (!me) {

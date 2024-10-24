@@ -28,6 +28,7 @@ export class RolesService extends BaseService<RoleDocument> {
                 _id,
                 ...options,
             })
+            .autoPopulate()
             .exec();
 
         if (!result) {
@@ -51,9 +52,5 @@ export class RolesService extends BaseService<RoleDocument> {
         await this.superCacheService.set(`role:${roleId}`, role?.permissions);
 
         return role?.permissions;
-    }
-
-    async findRoleByType(type: number) {
-        return this.roleModel.findOne({ type });
     }
 }

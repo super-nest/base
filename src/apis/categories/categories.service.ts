@@ -123,7 +123,6 @@ export class CategoriesService extends BaseService<CategoryDocument> {
                 type,
                 _id: { $ne: thisId },
             })
-            .autoPopulate(false)
             .exec();
 
         if (category) {
@@ -147,6 +146,7 @@ export class CategoriesService extends BaseService<CategoryDocument> {
                 slug,
                 ...options,
             })
+            .autoPopulate()
             .exec();
 
         if (!result) {
