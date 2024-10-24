@@ -27,12 +27,10 @@ export class NotificationsService extends BaseService<NotificationDocument> {
     }
 
     async countNotificationUnreadOfUser(userId: Types.ObjectId) {
-        return this.notificationModel
-            .countDocuments({
-                user: userId,
-                status: UserNotificationStatus.UNREAD,
-            })
-            .exec();
+        return this.notificationModel.countDocuments({
+            user: userId,
+            status: UserNotificationStatus.UNREAD,
+        });
     }
 
     async getNotificationsOfUser(
@@ -62,16 +60,14 @@ export class NotificationsService extends BaseService<NotificationDocument> {
             .skip(skip)
             .limit(limit)
             .select(select)
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         const totalPromise = this.notificationModel
             .countDocuments({
                 'user._id': _id,
                 ...filterPipeline,
             })
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         const [result, total] = await Promise.all([
             resultPromise,
@@ -149,8 +145,7 @@ export class NotificationsService extends BaseService<NotificationDocument> {
                 .findOne({
                     _id: newNotification._id,
                 })
-                .autoPopulate()
-                .exec();
+                .autoPopulate();
 
             this.websocketGateway.sendToClient(
                 userId,

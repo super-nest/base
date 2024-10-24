@@ -39,9 +39,7 @@ export class UserReferralsService extends BaseService<UserReferralDocument> {
     }
 
     async getReferralFront(userId: Types.ObjectId, params: ExtendedPagingDto) {
-        const user = await this.userService.model
-            .findOne({ _id: userId })
-            .exec();
+        const user = await this.userService.model.findOne({ _id: userId });
 
         const referralList = await this.getAllForFront(params, {
             code: user.inviteCode,
@@ -53,8 +51,7 @@ export class UserReferralsService extends BaseService<UserReferralDocument> {
                     $in: referralList.items.map((r) => r.telegramUserId),
                 },
             })
-            .select({ name: 1 })
-            .exec();
+            .select({ name: 1 });
 
         const amount = await this.metadataService.getAmountRewardReferral();
         const response = result.map((r) => ({
@@ -70,16 +67,14 @@ export class UserReferralsService extends BaseService<UserReferralDocument> {
     async getReferral(users: UserDocument[]) {
         const result = await Promise.all(
             users.map(async (user) => {
-                const countReferral = await this.userReferralModel
-                    .countDocuments({
+                const countReferral =
+                    await this.userReferralModel.countDocuments({
                         code: user.inviteCode,
-                    })
-                    .exec();
-                const introducer = await this.userReferralModel
-                    .findOne({
-                        telegramUserId: user.telegramUserId,
-                    })
-                    .exec();
+                    });
+
+                const introducer = await this.userReferralModel.findOne({
+                    telegramUserId: user.telegramUserId,
+                });
 
                 return {
                     ...user,
@@ -145,11 +140,9 @@ export class UserReferralsService extends BaseService<UserReferralDocument> {
     }
 
     async validateUserAndReferral(inviteCode: string) {
-        const referralCode = await this.userService.model
-            .findOne({
-                inviteCode,
-            })
-            .exec();
+        const referralCode = await this.userService.model.findOne({
+            inviteCode,
+        });
 
         if (!referralCode) {
             throw new BadRequestException('Invalid referral code');
@@ -182,11 +175,9 @@ export class UserReferralsService extends BaseService<UserReferralDocument> {
         code: string,
     ) {
         // Add point for referrer
-        const referrer = await this.userService.model
-            .findOne({
-                inviteCode: code,
-            })
-            .exec();
+        const referrer = await this.userService.model.findOne({
+            inviteCode: code,
+        });
 
         await this.addPointForReferral(
             referrer,
@@ -197,11 +188,9 @@ export class UserReferralsService extends BaseService<UserReferralDocument> {
 
         // Add point for user referred
 
-        const user = await this.userService.model
-            .findOne({
-                telegramUserId: telegramId,
-            })
-            .exec();
+        const user = await this.userService.model.findOne({
+            telegramUserId: telegramId,
+        });
 
         await this.addPointForReferral(user, UserTransactionAction.REFERRED);
     }

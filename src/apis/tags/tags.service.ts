@@ -18,12 +18,10 @@ export class TagsService extends BaseService<TagDocument> {
         slug: string,
         options?: Record<string, any>,
     ): Promise<any> {
-        const result = await this.tagModel
-            .findOne({
-                slug,
-                ...options,
-            })
-            .exec();
+        const result = await this.tagModel.findOne({
+            slug,
+            ...options,
+        });
 
         if (!result) {
             throw new NotFoundException('tag_not_found', 'Tag not found');

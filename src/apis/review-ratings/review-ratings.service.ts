@@ -42,11 +42,9 @@ export class ReviewRatingService extends BaseService<ReviewRatingDocument> {
             select,
         } = queryParams;
 
-        const app = await this.appService.model
-            .findOne({
-                $or: [{ _id: appId }, { slug: appId }],
-            })
-            .exec();
+        const app = await this.appService.model.findOne({
+            $or: [{ _id: appId }, { slug: appId }],
+        });
 
         if (!app) {
             return null;
@@ -79,8 +77,7 @@ export class ReviewRatingService extends BaseService<ReviewRatingDocument> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select(select)
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         const total = this.reviewModel
             .countDocuments(
@@ -89,8 +86,7 @@ export class ReviewRatingService extends BaseService<ReviewRatingDocument> {
                 },
                 filterPipeline,
             )
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         return Promise.all([result, total]).then(([items, total]) => {
             const meta = pagination(items, page, limit, total);
@@ -134,12 +130,10 @@ export class ReviewRatingService extends BaseService<ReviewRatingDocument> {
         createdBy: Types.ObjectId,
         app: Types.ObjectId,
     ) {
-        const review = await this.reviewModel
-            .findOne({
-                createdBy: createdBy,
-                app: app,
-            })
-            .exec();
+        const review = await this.reviewModel.findOne({
+            createdBy: createdBy,
+            app: app,
+        });
 
         if (review) {
             throw new BadRequestException('You have already reviewed this app');
@@ -147,21 +141,17 @@ export class ReviewRatingService extends BaseService<ReviewRatingDocument> {
     }
 
     async reviewRatingOverviewForApp(appId: Types.ObjectId) {
-        const app = await this.appService.model
-            .findOne({
-                $or: [{ _id: appId }, { slug: appId }],
-            })
-            .exec();
+        const app = await this.appService.model.findOne({
+            $or: [{ _id: appId }, { slug: appId }],
+        });
 
         if (!app) {
             return null;
         }
 
-        const reviews = await this.reviewModel
-            .find({
-                app: app._id,
-            })
-            .exec();
+        const reviews = await this.reviewModel.find({
+            app: app._id,
+        });
 
         const totalReviews = reviews.length;
         const starRatingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
@@ -207,8 +197,7 @@ export class ReviewRatingService extends BaseService<ReviewRatingDocument> {
                     },
                 ],
             )
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         this.websocketGateway.sendNewReviewRating(appId, result);
     }

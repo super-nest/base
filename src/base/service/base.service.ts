@@ -38,8 +38,7 @@ export class BaseService<T extends Document> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select(select)
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         const total = this.model
             .countDocuments(
@@ -48,8 +47,7 @@ export class BaseService<T extends Document> {
                 },
                 filterPipeline,
             )
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         return Promise.all([result, total]).then(([items, total]) => {
             const meta = pagination(items, page, limit, total);
@@ -66,8 +64,7 @@ export class BaseService<T extends Document> {
                 $or: [{ _id }, { slug: _id }],
                 ...options,
             })
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         return result;
     }
@@ -89,7 +86,7 @@ export class BaseService<T extends Document> {
 
     async deletes(_ids: Types.ObjectId[], user: UserPayload): Promise<T[]> {
         const { _id: userId } = user;
-        const data = await this.model.find({ _id: { $in: _ids } }).exec();
+        const data = await this.model.find({ _id: { $in: _ids } });
         await this.model.updateMany(
             { _id: { $in: _ids } },
             { deletedAt: new Date(), deletedBy: userId },
@@ -136,8 +133,7 @@ export class BaseService<T extends Document> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select({ longDescription: 0 })
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         const total = this.model
             .countDocuments(
@@ -146,8 +142,7 @@ export class BaseService<T extends Document> {
                 },
                 filterPipeline,
             )
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         return Promise.all([result, total]).then(([items, total]) => {
             const meta = pagination(items, page, limit, total);
@@ -169,7 +164,7 @@ export class BaseService<T extends Document> {
 
     async generateSlug(name: string) {
         const slug = _.kebabCase(removeDiacritics(name));
-        const exist = await this.model.findOne({ slug }).exec();
+        const exist = await this.model.findOne({ slug });
 
         if (exist) {
             return await this.generateSlug(

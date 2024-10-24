@@ -76,7 +76,7 @@ export class CategoriesService extends BaseService<CategoryDocument> {
             type,
         };
 
-        const data = await this.categoryModel.find(condition).exec();
+        const data = await this.categoryModel.find(condition);
 
         await this.categoryModel.updateMany(condition, {
             deletedAt: new Date(),
@@ -115,13 +115,11 @@ export class CategoriesService extends BaseService<CategoryDocument> {
             return;
         }
 
-        const category = await this.categoryModel
-            .findOne({
-                position,
-                type,
-                _id: { $ne: thisId },
-            })
-            .exec();
+        const category = await this.categoryModel.findOne({
+            position,
+            type,
+            _id: { $ne: thisId },
+        });
 
         if (category) {
             position++;
@@ -144,8 +142,7 @@ export class CategoriesService extends BaseService<CategoryDocument> {
                 slug,
                 ...options,
             })
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         if (!result) {
             throw new NotFoundException(

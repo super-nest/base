@@ -47,8 +47,8 @@ export class UserTransactionService extends BaseService<UserTransactionDocument>
                 createdBy: userId,
                 'mission._id': missionId,
             })
-            .sort({ updatedAt: -1 })
-            .exec();
+            .sort({ updatedAt: -1 });
+
         return data;
     }
 
@@ -60,13 +60,11 @@ export class UserTransactionService extends BaseService<UserTransactionDocument>
         if (!userId || !appId) {
             return false;
         }
-        const userTransactions = await this.userTransactionModel
-            .findOne({
-                createdBy: userId,
-                app: appId,
-                action,
-            })
-            .exec();
+        const userTransactions = await this.userTransactionModel.findOne({
+            createdBy: userId,
+            app: appId,
+            action,
+        });
 
         return !_.isEmpty(userTransactions);
     }
@@ -76,16 +74,16 @@ export class UserTransactionService extends BaseService<UserTransactionDocument>
             return 0;
         }
 
-        const userTransactions = await this.userTransactionModel
-            .countDocuments({
+        const userTransactions = await this.userTransactionModel.countDocuments(
+            {
                 createdBy: new Types.ObjectId(userId),
                 action: { $in: action },
                 createdAt: {
                     $gte: new Date(new Date().setHours(0, 0, 0, 0)),
                     $lte: new Date(new Date().setHours(23, 59, 59, 999)),
                 },
-            })
-            .exec();
+            },
+        );
 
         return userTransactions;
     }

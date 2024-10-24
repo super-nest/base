@@ -70,13 +70,11 @@ export class TagAppsService extends BaseService<TagAppDocument> {
         app: Types.ObjectId,
         thisId?: Types.ObjectId,
     ) {
-        const tagApp = await this.tagAppModel
-            .findOne({
-                tag,
-                app,
-                _id: { $ne: thisId },
-            })
-            .exec();
+        const tagApp = await this.tagAppModel.findOne({
+            tag,
+            app,
+            _id: { $ne: thisId },
+        });
 
         if (tagApp) {
             throw new BadRequestException('Tag App already exists');
@@ -88,13 +86,11 @@ export class TagAppsService extends BaseService<TagAppDocument> {
         position: number,
         thisId?: Types.ObjectId,
     ) {
-        const tagApp = await this.tagAppModel
-            .findOne({
-                tag,
-                position,
-                _id: { $ne: thisId },
-            })
-            .exec();
+        const tagApp = await this.tagAppModel.findOne({
+            tag,
+            position,
+            _id: { $ne: thisId },
+        });
 
         if (tagApp) {
             position++;

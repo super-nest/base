@@ -43,10 +43,7 @@ export class AppsService extends BaseService<AppDocument> {
         super(appModel);
     }
     async getAppById(appId: Types.ObjectId) {
-        return await this.appModel
-            .findOne({ _id: appId })
-            .autoPopulate()
-            .exec();
+        return await this.appModel.findOne({ _id: appId }).autoPopulate();
     }
 
     async GetAppCountByStatus() {
@@ -59,13 +56,11 @@ export class AppsService extends BaseService<AppDocument> {
         const result = await Promise.all(
             statusApp.map(async (status) => {
                 return {
-                    [status]: await this.appModel
-                        .countDocuments({ status })
-                        .exec(),
+                    [status]: await this.appModel.countDocuments({ status }),
                 };
             }),
         );
-        result.unshift({ All: await this.appModel.countDocuments({}).exec() });
+        result.unshift({ All: await this.appModel.countDocuments({}) });
 
         return result;
     }
@@ -104,8 +99,7 @@ export class AppsService extends BaseService<AppDocument> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select(select)
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         const total = await this.appModel
             .countDocuments(
@@ -121,8 +115,7 @@ export class AppsService extends BaseService<AppDocument> {
                 },
                 filterPipeline,
             )
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         const meta = pagination(result, page, limit, total);
         const items = result.map(async (item) => {
@@ -168,8 +161,7 @@ export class AppsService extends BaseService<AppDocument> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select(select)
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         const total = await this.appModel
             .countDocuments(
@@ -178,8 +170,8 @@ export class AppsService extends BaseService<AppDocument> {
                 },
                 filterPipeline,
             )
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
+
         const meta = pagination(result, page, limit, total);
 
         const items = result.map(async (item) => {
@@ -205,9 +197,7 @@ export class AppsService extends BaseService<AppDocument> {
         userPayload: UserPayload,
     ) {
         const { _id: userId } = userPayload;
-        const tag = await this.tagService.model
-            .findOne({ slug: tagSlug })
-            .exec();
+        const tag = await this.tagService.model.findOne({ slug: tagSlug });
 
         if (!tag) {
             throw new BadRequestException(`Not found tag ${tagSlug}`);
@@ -229,8 +219,7 @@ export class AppsService extends BaseService<AppDocument> {
             })
             .limit(limit)
             .skip(skip)
-            .sort({ [sortBy]: sortDirection })
-            .exec();
+            .sort({ [sortBy]: sortDirection });
 
         const appIds = tagApps.map(
             (item) => new Types.ObjectId(item.app.toString()),
@@ -256,8 +245,7 @@ export class AppsService extends BaseService<AppDocument> {
             )
             .select(select)
             .sort({ [sortBy]: sortDirection })
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         const total = await this.appModel
             .countDocuments(
@@ -268,8 +256,7 @@ export class AppsService extends BaseService<AppDocument> {
                 },
                 filterPipeline,
             )
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         const items = apps.map(async (item) => {
             return {
@@ -294,7 +281,7 @@ export class AppsService extends BaseService<AppDocument> {
         type: MetadataType,
         userPayload: UserPayload,
     ) {
-        const app = await this.appModel.findOne({ _id: appId }).exec();
+        const app = await this.appModel.findOne({ _id: appId });
         const { _id: userId } = userPayload;
 
         const addPointForUserDto: AddPointForUserDto = {
@@ -361,7 +348,7 @@ export class AppsService extends BaseService<AppDocument> {
 
     async sumTotalRating(sumRatingAppModel: SumRatingAppModel) {
         const { app, star } = sumRatingAppModel;
-        const appData = await this.appModel.findOne({ _id: app }).exec();
+        const appData = await this.appModel.findOne({ _id: app });
 
         if (!appData) {
             throw new UnprocessableEntityException(
@@ -391,8 +378,7 @@ export class AppsService extends BaseService<AppDocument> {
 
         const result = await this.appModel
             .findOne({ slug: _id }, filterPipeline)
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         if (!result) {
             throw new NotFoundException('app_not_found', 'App not found');
@@ -426,8 +412,7 @@ export class AppsService extends BaseService<AppDocument> {
             .find({
                 createdBy: userId,
             })
-            .sort({ updatedAt: -1 })
-            .exec();
+            .sort({ updatedAt: -1 });
 
         const appIds = userAppHistories.map(
             (item) => new Types.ObjectId(item?.app?.toString()),
@@ -455,8 +440,7 @@ export class AppsService extends BaseService<AppDocument> {
             .sort({ __order: 1 })
             .limit(limit)
             .skip(skip)
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         const items = apps.map(async (item) => {
             return {
@@ -480,8 +464,7 @@ export class AppsService extends BaseService<AppDocument> {
                 },
                 filterPipeline,
             )
-            .autoPopulate()
-            .exec();
+            .autoPopulate();
 
         return Promise.all(items).then((items) => {
             const meta = pagination(items, page, limit, total);
@@ -490,6 +473,6 @@ export class AppsService extends BaseService<AppDocument> {
     }
 
     async getAllSlug() {
-        return (await this.appModel.find({}).exec()).map((p) => p.slug);
+        return (await this.appModel.find({})).map((p) => p.slug);
     }
 }

@@ -14,6 +14,11 @@ export class CustomQueryCountDocumentsService<T extends Document>
         return this;
     }
 
+    sort(sort: Record<string, 1 | -1 | Expression.Meta>): this {
+        this.pipeline.push({ $sort: sort });
+        return this;
+    }
+
     skip(value: number): this {
         this.pipeline.push({ $skip: value });
         return this;
@@ -21,11 +26,6 @@ export class CustomQueryCountDocumentsService<T extends Document>
 
     limit(value: number): this {
         this.pipeline.push({ $limit: value });
-        return this;
-    }
-
-    sort(sort: Record<string, 1 | -1 | Expression.Meta>): this {
-        this.pipeline.push({ $sort: sort });
         return this;
     }
 
@@ -38,7 +38,7 @@ export class CustomQueryCountDocumentsService<T extends Document>
     }
 
     @SGetCache()
-    async exec(): Promise<number> {
+    private async exec(): Promise<number> {
         let pipeline: PipelineStage[] = [
             { $match: { deletedAt: null, ...this.conditions } },
         ];
@@ -53,5 +53,18 @@ export class CustomQueryCountDocumentsService<T extends Document>
 
         const result = await this.model.aggregate(pipeline).exec();
         return _.get(result, '[0].totalCount', 0);
+    }
+
+    async then<TResult1 = number, TResult2 = never>(
+        onfulfilled?:
+            | ((value: number) => TResult1 | PromiseLike<TResult1>)
+            | undefined
+            | null,
+        onrejected?:
+            | ((reason: any) => TResult2 | PromiseLike<TResult2>)
+            | undefined
+            | null,
+    ): Promise<TResult1 | TResult2> {
+        return this.exec().then(onfulfilled, onrejected);
     }
 }

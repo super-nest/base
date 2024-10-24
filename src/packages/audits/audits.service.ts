@@ -41,8 +41,7 @@ export class AuditsService extends BaseService<AuditDocument> {
                 refId,
             })
             .autoPopulate()
-            .sort({ createdAt: -1 })
-            .exec();
+            .sort({ createdAt: -1 });
 
         return _.get(result, 'newValues', {});
     }

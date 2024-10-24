@@ -6,7 +6,7 @@ import { CustomQueryBaseService } from 'libs/src/super-core/services/base-query.
 
 export class CustomQueryFindOneService<T extends Document>
     extends CustomQueryBaseService<T>
-    implements ICustomQueryFindOne<T>
+    implements ICustomQueryFindOne
 {
     select(fields: Record<string, number>): this {
         this.pipeline.push({ $project: fields });
@@ -27,7 +27,7 @@ export class CustomQueryFindOneService<T extends Document>
     }
 
     @SGetCache()
-    async exec(): Promise<T> {
+    private async exec(): Promise<T> {
         let pipeline: PipelineStage[] = [
             { $match: { deletedAt: null, ...this.conditions } },
         ];
@@ -40,5 +40,24 @@ export class CustomQueryFindOneService<T extends Document>
 
         const result = await this.model.aggregate(pipeline).exec();
         return result?.length ? result[0] : null;
+    }
+
+    async then<TResult1 = T | null, TResult2 = never>(
+        onfulfilled?:
+            | ((value: T | null) => TResult1 | PromiseLike<TResult1>)
+            | null,
+        onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null,
+    ): Promise<TResult1 | TResult2> {
+        try {
+            const result = await this.exec();
+            return onfulfilled
+                ? (onfulfilled(result) as TResult1)
+                : (result as unknown as TResult1);
+        } catch (error) {
+            if (onrejected) {
+                return onrejected(error) as TResult2;
+            }
+            throw error;
+        }
     }
 }

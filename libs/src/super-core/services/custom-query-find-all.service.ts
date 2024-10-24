@@ -6,7 +6,7 @@ import { CustomQueryBaseService } from 'libs/src/super-core/services/base-query.
 
 export class CustomQueryFindAllService<T extends Document>
     extends CustomQueryBaseService<T>
-    implements ICustomQueryFindAll<T>
+    implements ICustomQueryFindAll
 {
     select(fields: Record<string, number>): this {
         if (!fields) {
@@ -40,7 +40,7 @@ export class CustomQueryFindAllService<T extends Document>
     }
 
     @SGetCache()
-    async exec(): Promise<T[]> {
+    private async exec(): Promise<T[]> {
         let pipeline: PipelineStage[] = [
             { $match: { deletedAt: null, ...this.conditions } },
         ];
@@ -52,5 +52,23 @@ export class CustomQueryFindAllService<T extends Document>
         pipeline = sortPipelines(pipeline);
 
         return await this.model.aggregate(pipeline).exec();
+    }
+
+    async then<TResult1 = T[], TResult2 = never>(
+        onfulfilled?: ((value: T[]) => TResult1 | PromiseLike<TResult1>) | null,
+        onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | null,
+    ): Promise<TResult1 | TResult2> {
+        try {
+            const result = await this.exec();
+            return onfulfilled
+                ? (onfulfilled(result) as TResult1)
+                : (result as TResult1);
+        } catch (error) {
+            if (onrejected) {
+                return onrejected(error) as TResult2;
+            } else {
+                throw error;
+            }
+        }
     }
 }
