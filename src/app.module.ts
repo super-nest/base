@@ -12,7 +12,7 @@ import { appSettings } from './configs/app-settings';
 import { AuditsModule } from './packages/audits/audits.module';
 import { MultipleLanguageModule } from '@libs/super-multiple-language/multiple-language.module';
 import { SuperCacheModule } from '@libs/super-cache/super-cache.module';
-import { CorsMiddleware } from './apis/middlewares/cors.middleware';
+import { CorsMiddleware } from './middlewares/cors.middleware';
 
 @Module({
     imports: [
