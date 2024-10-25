@@ -46,7 +46,7 @@ export class RolesService extends BaseService<RoleDocument> {
             return cachePermissions;
         }
 
-        const role = await this.roleModel.findById(roleId);
+        const role = await this.roleModel.findById(roleId).autoPopulate();
 
         await this.superCacheService.set(`role:${roleId}`, role?.permissions);
 
