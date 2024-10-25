@@ -50,10 +50,10 @@ export class MediaService extends BaseService<FileDocument> {
     async deleteMedia(fileName: string) {
         const uploadedAvatar = await this.s3Service.deletePublicFile(
             fileName,
-            'marketplace',
+            appSettings.s3.folder,
         );
         if (!uploadedAvatar)
-            throw new BadRequestException('Can not delte image');
+            throw new BadRequestException('Can not delete image');
 
         return uploadedAvatar;
     }

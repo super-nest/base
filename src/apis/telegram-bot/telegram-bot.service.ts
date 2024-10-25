@@ -21,4 +21,9 @@ export class TelegramBotService extends BaseService<TelegramBotDocument> {
         const result = await this.telegramBotModel.findOne({ domain });
         return result;
     }
+
+    async getDomains() {
+        const result = await this.telegramBotModel.find({});
+        return result.map((item) => item.domain);
+    }
 }
