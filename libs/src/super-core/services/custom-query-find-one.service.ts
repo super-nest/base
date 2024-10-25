@@ -20,7 +20,7 @@ export class CustomQueryFindOneService<T extends Document>
 
     autoPopulate(): this {
         const pipeline = dynamicLookupAggregates(this.entity);
-        if (pipeline.length) {
+        if (pipeline?.length) {
             this.pipeline.push(...pipeline);
         }
         return this;
