@@ -1,7 +1,7 @@
 import { SuperAuthorizeModule } from './../libs/src/super-authorize/super-authorize.module';
 import { SuperCoreModule } from 'libs/src/super-core/super-core.module';
 import { RoutersModule } from './routers/routers.module';
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { CommonModule } from './common/common.module';
@@ -12,6 +12,7 @@ import { appSettings } from './configs/app-settings';
 import { AuditsModule } from './packages/audits/audits.module';
 import { MultipleLanguageModule } from '@libs/super-multiple-language/multiple-language.module';
 import { SuperCacheModule } from '@libs/super-cache/super-cache.module';
+import { CorsMiddleware } from './apis/middlewares/cors.middleware';
 
 @Module({
     imports: [
@@ -28,7 +29,6 @@ import { SuperCacheModule } from '@libs/super-cache/super-cache.module';
         RoutersModule.forRoot(),
         SuperCoreModule,
         CommonModule,
-        SeedsModule,
         MultipleLanguageModule,
         AuditsModule,
         SuperAuthorizeModule.forRoot({
@@ -47,8 +47,13 @@ import { SuperCacheModule } from '@libs/super-cache/super-cache.module';
                 password: appSettings.redis.password,
             },
         }),
+        SeedsModule,
     ],
     controllers: [],
     providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+    configure(consumer: MiddlewareConsumer) {
+        consumer.apply(CorsMiddleware).forRoutes('*');
+    }
+}
