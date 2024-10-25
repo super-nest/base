@@ -1,4 +1,4 @@
-import { Controller, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Controller, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { COLLECTION_NAMES } from 'src/constants';
 import { appSettings } from 'src/configs/app-settings';

@@ -3,10 +3,6 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { TransformInterceptor } from './interceptors/transform.interceptors';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import _ from 'lodash';
-import session from 'express-session';
-import MongoStore from 'connect-mongo';
-import passport from 'passport';
 import { useContainer } from 'class-validator';
 import { appSettings } from './configs/app-settings';
 import compression from 'compression';
@@ -37,26 +33,6 @@ async function bootstrap() {
         }),
     );
     app.useGlobalInterceptors(new TransformInterceptor());
-
-    const refreshTokenExpireMillisecond =
-        Number(appSettings.jwt.refreshExpireIn) * 1000;
-    const minuteMillisecond = 60 * 1000;
-    app.use(
-        session({
-            store: new MongoStore({ mongoUrl: appSettings.mongoose.uri }),
-            secret: appSettings.openIdConnect.sessionSecret,
-            resave: false,
-            saveUninitialized: false,
-            rolling: true,
-            cookie: {
-                maxAge: refreshTokenExpireMillisecond + minuteMillisecond,
-                httpOnly: true,
-            },
-        }),
-    );
-
-    app.use(passport.initialize());
-    app.use(passport.session());
 
     if (appSettings.development) {
         const config = new DocumentBuilder()

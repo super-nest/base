@@ -5,8 +5,6 @@ import {
     ExtendedPagingDto,
     PagingDtoPipe,
 } from 'src/pipes/page-result.dto.pipe';
-import { ParseObjectIdPipe } from 'src/pipes/parse-object-id.pipe';
-import { Types } from 'mongoose';
 import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
 import { AUDIT_EVENT } from 'src/packages/audits/constants';
 import { CategoriesService } from '../categories.service';

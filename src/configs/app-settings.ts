@@ -4,6 +4,7 @@ export const appSettings = {
     port: Number(process.env.PORT) || 3000,
     development: process.env.DEVELOPMENT,
     mainLanguage: process.env.MAIN_LANGUAGE || 'en',
+    corsURLs: process.env.CORS_URLS ? process.env.CORS_URLS.split(',') : [],
     maxFileSize: {
         admin: Number(process.env.MAX_FILE_SIZE_UPLOAD_ADMIN),
         front: Number(process.env.MAX_FILE_SIZE_UPLOAD_USER),

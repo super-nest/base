@@ -1,4 +1,4 @@
-import { Body, Controller, Req } from '@nestjs/common';
+import { Body, Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { COLLECTION_NAMES } from 'src/constants';

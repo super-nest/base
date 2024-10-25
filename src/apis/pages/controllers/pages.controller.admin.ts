@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Query, Req } from '@nestjs/common';
+import { Body, Controller, Param, Query } from '@nestjs/common';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PagesService } from '../pages.service';
 import {
@@ -16,7 +16,6 @@ import { PERMISSION, Resource, SuperAuthorize } from '@libs/super-authorize';
 import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
 import { AUDIT_EVENT } from 'src/packages/audits/constants';
 import { COLLECTION_NAMES } from 'src/constants';
-import _ from 'lodash';
 import { Me } from 'src/decorators/me.decorator';
 
 @Controller('pages')

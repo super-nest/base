@@ -19,7 +19,7 @@ export class RolesService extends BaseService<RoleDocument> {
     }
 
     async getRoleByType(type: RoleType) {
-        return await this.roleModel.findOne({ type }).exec();
+        return await this.roleModel.findOne({ type });
     }
 
     async getOne(_id: Types.ObjectId, options?: Record<string, any>) {
@@ -28,7 +28,7 @@ export class RolesService extends BaseService<RoleDocument> {
                 _id,
                 ...options,
             })
-            .exec();
+            .autoPopulate();
 
         if (!result) {
             throw new BadRequestException(`Not found ${_id}`);
@@ -46,14 +46,10 @@ export class RolesService extends BaseService<RoleDocument> {
             return cachePermissions;
         }
 
-        const role = await this.roleModel.findById(roleId).exec();
+        const role = await this.roleModel.findById(roleId);
 
         await this.superCacheService.set(`role:${roleId}`, role?.permissions);
 
         return role?.permissions;
-    }
-
-    async findRoleByType(type: number) {
-        return this.roleModel.findOne({ type });
     }
 }

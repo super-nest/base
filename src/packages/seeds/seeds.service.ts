@@ -23,14 +23,11 @@ export class SeedsService implements OnModuleInit {
             return;
         }
 
-        // await this.seedPermissions();
         await this.seedRoles();
         // await this.seedMetadata();
         await this.seedUsers();
         this.logger.debug('Seeding completed');
     }
-
-    async seedPermissions() {}
 
     async seedRoles() {
         const roles = JSON.parse(
@@ -44,17 +41,13 @@ export class SeedsService implements OnModuleInit {
             delete role.updatedAt;
             const { type } = role;
             if (type === RoleType.SUPER_ADMIN) {
-                const permissions = await this.permissionService.model
-                    .find({
-                        path: 'admin',
-                    })
-                    .exec();
+                const permissions = await this.permissionService.model.find({
+                    path: 'admin',
+                });
 
-                const superAdmin = await this.roleService.model
-                    .findOne({
-                        type: RoleType.SUPER_ADMIN,
-                    })
-                    .exec();
+                const superAdmin = await this.roleService.model.findOne({
+                    type: RoleType.SUPER_ADMIN,
+                });
 
                 if (!superAdmin) {
                     await this.roleService.model.create({
@@ -73,15 +66,13 @@ export class SeedsService implements OnModuleInit {
             }
 
             if (type === RoleType.USER) {
-                const permissions = await this.permissionService.model
-                    .find({ path: 'front' })
-                    .exec();
+                const permissions = await this.permissionService.model.find({
+                    path: 'front',
+                });
 
-                const userRole = await this.roleService.model
-                    .findOne({
-                        type: RoleType.USER,
-                    })
-                    .exec();
+                const userRole = await this.roleService.model.findOne({
+                    type: RoleType.USER,
+                });
 
                 if (!userRole) {
                     await this.roleService.model.create({
@@ -116,7 +107,7 @@ export class SeedsService implements OnModuleInit {
             const { _id } = user;
             delete user.createdAt;
             delete user.updatedAt;
-            const exit = await this.userService.model.findById(_id.$oid).exec();
+            const exit = await this.userService.model.findById(_id.$oid);
 
             if (!exit) {
                 await this.userService.model.create({

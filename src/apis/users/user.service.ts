@@ -2,6 +2,7 @@ import {
     BadRequestException,
     Injectable,
     OnModuleInit,
+    UnauthorizedException,
     UnprocessableEntityException,
 } from '@nestjs/common';
 import { Types } from 'mongoose';
@@ -14,13 +15,10 @@ import _ from 'lodash';
 import bcrypt from 'bcrypt';
 import { UserCacheKey, UserStatus } from './constants';
 import { SuperCacheService } from '@libs/super-cache/super-cache.service';
-import { ModuleRef } from '@nestjs/core';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ExtendedInjectModel } from '@libs/super-core';
-import { ExtendedPagingDto } from 'src/pipes/page-result.dto.pipe';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
-import { RolesService } from '@libs/super-authorize/modules/roles/roles.service';
 
 @Injectable()
 export class UserService
@@ -36,17 +34,13 @@ export class UserService
     }
 
     async onModuleInit() {
-        const usersBanned = await this.userModel
-            .find({
-                status: UserStatus.INACTIVE,
-            })
-            .exec();
+        const usersBanned = await this.userModel.find({
+            status: UserStatus.INACTIVE,
+        });
 
-        const usersDeleted = await this.userModel
-            .find({
-                deletedAt: { $ne: null },
-            })
-            .exec();
+        const usersDeleted = await this.userModel.find({
+            deletedAt: { $ne: null },
+        });
 
         if (usersBanned.length) {
             const ids = usersBanned.map((user) => user._id);
@@ -59,11 +53,6 @@ export class UserService
 
             await this.addCacheBannedUser(ids);
         }
-    }
-
-    async getAllAdmin(queryParams: ExtendedPagingDto) {
-        const result = await this.getAll(queryParams);
-        return result;
     }
 
     async createOne(
@@ -100,7 +89,7 @@ export class UserService
             password: await this.hashPassword(password),
         };
 
-        const user = await this.userModel.findOne({ _id }).exec();
+        const user = await this.userModel.findOne({ _id });
 
         if (!user) {
             throw new BadRequestException(`Not found ${_id}`);
@@ -128,7 +117,7 @@ export class UserService
             );
         }
 
-        const user = await this.userModel.findOne({ email }).exec();
+        const user = await this.userModel.findOne({ email });
 
         const isMatch =
             user &&
@@ -158,17 +147,23 @@ export class UserService
     }
 
     async getMe(user: UserPayload) {
-        return await this.userModel
+        const me = await this.userModel
             .findOne({
                 _id: user._id,
             })
             .select({ password: 0 })
-            .exec();
+            .autoPopulate();
+
+        if (!me) {
+            throw new UnauthorizedException('user_not_found', 'User not found');
+        }
+
+        return me;
     }
 
     async deletes(_ids: Types.ObjectId[], user: UserPayload) {
         const { _id: userId } = user;
-        const data = await this.userModel.find({ _id: { $in: _ids } }).exec();
+        const data = await this.userModel.find({ _id: { $in: _ids } });
         await this.userModel.updateMany(
             { _id: { $in: _ids } },
             { deletedAt: new Date(), deletedBy: userId },

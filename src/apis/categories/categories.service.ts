@@ -3,13 +3,11 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { Category, CategoryDocument } from './entities/categories.entity';
-import { InjectModel } from '@nestjs/mongoose';
+import { CategoryDocument } from './entities/categories.entity';
 import { COLLECTION_NAMES } from 'src/constants';
-import { Model, Types } from 'mongoose';
-import { UpdateCategoryDto } from './dto/update-categories.dto';
+import { Types } from 'mongoose';
 import { UserPayload } from 'src/base/models/user-payload.model';
-import { ModuleRef } from '@nestjs/core';
+import { UpdateCategoryDto } from './dto/update-categories.dto';
 import { CreateCategoryDto } from './dto/create-categories.dto';
 import { CategoryType } from './constants';
 import { BaseService } from 'src/base/service/base.service';
@@ -78,7 +76,7 @@ export class CategoriesService extends BaseService<CategoryDocument> {
             type,
         };
 
-        const data = await this.categoryModel.find(condition).exec();
+        const data = await this.categoryModel.find(condition);
 
         await this.categoryModel.updateMany(condition, {
             deletedAt: new Date(),
@@ -117,14 +115,11 @@ export class CategoriesService extends BaseService<CategoryDocument> {
             return;
         }
 
-        const category = await this.categoryModel
-            .findOne({
-                position,
-                type,
-                _id: { $ne: thisId },
-            })
-            .autoPopulate(false)
-            .exec();
+        const category = await this.categoryModel.findOne({
+            position,
+            type,
+            _id: { $ne: thisId },
+        });
 
         if (category) {
             position++;
@@ -147,7 +142,7 @@ export class CategoriesService extends BaseService<CategoryDocument> {
                 slug,
                 ...options,
             })
-            .exec();
+            .autoPopulate();
 
         if (!result) {
             throw new NotFoundException(

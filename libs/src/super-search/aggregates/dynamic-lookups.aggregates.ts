@@ -2,8 +2,6 @@ import { PipelineStage } from 'mongoose';
 import { AutoPopulateMetadataStorage } from '../storages/auto-populate-metadata.storage';
 import { getSchemaMetadata, SuperPropOptions } from '@libs/super-core';
 import { Type } from '@nestjs/common';
-import { COLLECTION_NAMES } from 'src/constants';
-import { User } from 'src/apis/users/entities/user.entity';
 
 export const dynamicLookupAggregates = (target: Type<unknown>) => {
     const pipelines: PipelineStage[] = [];

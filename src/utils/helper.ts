@@ -46,3 +46,11 @@ export const hasOneHourPassed = (timestamp: Date): boolean => {
 
     return now.isAfter(dayjs(timestamp).add(1, 'hour'));
 };
+
+export const cleanOrigin = (origin: string): string => {
+    return origin ? origin.replace(/(^\w+:|^)\/\//, '') : '';
+};
+
+export const cleanOrigins = (origins: string[]): string[] => {
+    return origins.map((origin) => cleanOrigin(origin));
+};
