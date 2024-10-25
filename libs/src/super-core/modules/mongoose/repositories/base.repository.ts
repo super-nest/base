@@ -74,7 +74,6 @@ export class BaseRepositories<T extends AggregateRoot, E>
     }
 
     @FindWithMultipleLanguage()
-    @DynamicLookup()
     findById(id: any, pipeline: PipelineStage[] = []) {
         return new CustomQueryFindOneService(
             this.model,
