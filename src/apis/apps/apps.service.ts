@@ -26,6 +26,7 @@ import { MetadataType } from '../metadata/constants';
 import { BaseService } from 'src/base/service/base.service';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
+import { appSettings } from 'src/configs/app-settings';
 
 @Injectable()
 export class AppsService extends BaseService<AppDocument> {
@@ -99,7 +100,8 @@ export class AppsService extends BaseService<AppDocument> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select(select)
-            .autoPopulate();
+            .autoPopulate()
+            .multipleLanguage(appSettings.mainLanguage);
 
         const total = await this.appModel
             .countDocuments(
@@ -161,7 +163,8 @@ export class AppsService extends BaseService<AppDocument> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select(select)
-            .autoPopulate();
+            .autoPopulate()
+            .multipleLanguage(appSettings.mainLanguage);
 
         const total = await this.appModel
             .countDocuments(
@@ -245,7 +248,8 @@ export class AppsService extends BaseService<AppDocument> {
             )
             .select(select)
             .sort({ [sortBy]: sortDirection })
-            .autoPopulate();
+            .autoPopulate()
+            .multipleLanguage(appSettings.mainLanguage);
 
         const total = await this.appModel
             .countDocuments(
@@ -378,7 +382,8 @@ export class AppsService extends BaseService<AppDocument> {
 
         const result = await this.appModel
             .findOne({ slug: _id }, filterPipeline)
-            .autoPopulate();
+            .autoPopulate()
+            .multipleLanguage(appSettings.mainLanguage);
 
         if (!result) {
             throw new NotFoundException('app_not_found', 'App not found');
@@ -440,7 +445,8 @@ export class AppsService extends BaseService<AppDocument> {
             .sort({ __order: 1 })
             .limit(limit)
             .skip(skip)
-            .autoPopulate();
+            .autoPopulate()
+            .multipleLanguage(appSettings.mainLanguage);
 
         const items = apps.map(async (item) => {
             return {

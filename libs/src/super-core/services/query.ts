@@ -1,3 +1,4 @@
+import { findDocumentMultipleLanguage } from '@libs/super-multiple-language/common/find.utils';
 import { dynamicLookupAggregates } from '@libs/super-search';
 import { Expression, PipelineStage } from 'mongoose';
 
@@ -70,4 +71,19 @@ export function applyMatch(
         return pipeline;
     }
     pipeline.push({ $match: match });
+}
+
+export function applyMultipleLanguage(
+    pipeline: PipelineStage[],
+    entity: new () => any,
+    defaultLocale: string,
+): PipelineStage[] {
+    if (!defaultLocale) {
+        return pipeline;
+    }
+    const multipleLanguagePipeline = findDocumentMultipleLanguage(
+        entity,
+        defaultLocale,
+    );
+    pipeline.push(...multipleLanguagePipeline);
 }

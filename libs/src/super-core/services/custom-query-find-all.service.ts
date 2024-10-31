@@ -5,6 +5,7 @@ import { CustomQueryBaseService } from 'libs/src/super-core/services/base-query.
 import {
     applyAutoPopulate,
     applyLimit,
+    applyMultipleLanguage,
     applySelect,
     applySkip,
     applySort,
@@ -35,6 +36,11 @@ export class CustomQueryFindAllService<
 
     autoPopulate(): this {
         applyAutoPopulate(this.pipeline, this.entity);
+        return this;
+    }
+
+    multipleLanguage(defaultLocale: string): this {
+        applyMultipleLanguage(this.pipeline, this.entity, defaultLocale);
         return this;
     }
 

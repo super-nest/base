@@ -11,7 +11,6 @@ import {
 } from 'mongoose';
 import {
     CreateWithMultipleLanguage,
-    FindWithMultipleLanguage,
     UpdateWithMultipleLanguage,
 } from '@libs/super-multiple-language';
 import { DeleteCache } from '@libs/super-cache';
@@ -44,7 +43,6 @@ export class BaseRepositories<T extends AggregateRoot, E>
         return new this.model(doc);
     }
 
-    @FindWithMultipleLanguage()
     find<ResultDoc = HydratedDocument<T>>(
         filter: FilterQuery<ResultDoc>,
         pipeline: PipelineStage[] = [],
@@ -60,7 +58,6 @@ export class BaseRepositories<T extends AggregateRoot, E>
         );
     }
 
-    @FindWithMultipleLanguage()
     findOne<ResultDoc = HydratedDocument<T>>(
         filter: FilterQuery<ResultDoc>,
         pipeline: PipelineStage[] = [],
@@ -76,7 +73,6 @@ export class BaseRepositories<T extends AggregateRoot, E>
         );
     }
 
-    @FindWithMultipleLanguage()
     findById(id: any, pipeline: PipelineStage[] = []) {
         return new CustomQueryFindOneService(
             this.model,

@@ -13,6 +13,7 @@ import { CategoryType } from './constants';
 import { BaseService } from 'src/base/service/base.service';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
+import { appSettings } from 'src/configs/app-settings';
 
 @Injectable()
 export class CategoriesService extends BaseService<CategoryDocument> {
@@ -142,7 +143,8 @@ export class CategoriesService extends BaseService<CategoryDocument> {
                 slug,
                 ...options,
             })
-            .autoPopulate();
+            .autoPopulate()
+            .multipleLanguage(appSettings.mainLanguage);
 
         if (!result) {
             throw new NotFoundException(

@@ -2,7 +2,12 @@ import { Expression, Document, PipelineStage } from 'mongoose';
 import { sortPipelines } from '@libs/super-search';
 import { SGetCache } from '@libs/super-cache';
 import { CustomQueryBaseService } from 'libs/src/super-core/services/base-query.service';
-import { applyAutoPopulate, applySelect, applySort } from './query';
+import {
+    applyAutoPopulate,
+    applyMultipleLanguage,
+    applySelect,
+    applySort,
+} from './query';
 
 export class CustomQueryFindOneService<
     T extends Document,
@@ -19,6 +24,11 @@ export class CustomQueryFindOneService<
 
     autoPopulate(): this {
         applyAutoPopulate(this.pipeline, this.entity);
+        return this;
+    }
+
+    multipleLanguage(defaultLocale: string): this {
+        applyMultipleLanguage(this.pipeline, this.entity, defaultLocale);
         return this;
     }
 
