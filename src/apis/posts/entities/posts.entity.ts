@@ -12,8 +12,17 @@ import { AutoPopulate } from '@libs/super-search';
 import { Category } from 'src/apis/categories/entities/categories.entity';
 import { File } from 'src/apis/media/entities/files.entity';
 import { SuperProp } from '@libs/super-core/decorators/super-prop.decorator';
-import { SEOTag } from 'src/apis/pages/entities/pages.entity';
 import { User } from 'src/apis/users/entities/user.entity';
+
+@Schema({})
+export class SEOTag {
+    @SuperProp({ type: String })
+    title: string;
+
+    @SuperProp({ type: String })
+    description: string;
+}
+
 @Schema({
     timestamps: true,
     collection: COLLECTION_NAMES.POST,

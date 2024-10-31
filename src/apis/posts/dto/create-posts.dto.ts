@@ -17,7 +17,36 @@ import { COLLECTION_NAMES } from 'src/constants';
 import { PostStatus } from '../constants';
 import { convertStringToObjectId } from 'src/utils/helper';
 import { SuperApiProperty } from '@libs/super-core/decorators/super-api-property.decorator';
-import { SEOTagDto } from 'src/apis/pages/dto/create-pages.dto';
+import { SEOTag } from '../entities/posts.entity';
+
+export class SEOTagDto extends SEOTag {
+    @SuperApiProperty({
+        type: String,
+        description: 'Title of the seo tag',
+        default: 'Post',
+        title: 'Title',
+        required: true,
+        maxLength: 255,
+    })
+    @MaxLength(255)
+    @IsString()
+    @IsOptional()
+    title: string;
+
+    @SuperApiProperty({
+        type: String,
+        description: 'Description of the seo tag',
+        default: 'Post',
+        title: 'Description',
+        required: true,
+        cms: {
+            widget: 'textarea',
+        },
+    })
+    @IsString()
+    @IsOptional()
+    description: string;
+}
 
 export class CreatePostDto extends PartialType(ExcludeDto) {
     @SuperApiProperty({

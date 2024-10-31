@@ -8,19 +8,6 @@ export enum COLLECTION_NAMES {
     CATEGORIES = 'categories',
     POST = 'posts',
     AUDIT = 'audits',
-    APP = 'apps',
-    REVIEW_RATING = 'review-ratings',
-    ADVERTISER = 'advertisers',
-    USER_APP_HISTORY = 'userAppHistories',
-    TELEGRAM_BOT = 'telegramBots',
-    TAG = 'tags',
-    TAG_APP = 'tagApps',
-    USER_TRANSACTION = 'userTransactions',
-    NOTIFICATION = 'notifications',
-    FORM_BUILDER = 'formBuilders',
-    MISSION = 'mission',
-    USER_REFERRAL = 'userReferrals',
-    PAGE = 'pages',
 }
 
 export enum CountryCode {

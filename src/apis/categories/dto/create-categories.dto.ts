@@ -16,7 +16,7 @@ import { IsExist } from 'src/common/services/is-exist-constraint.service';
 import { COLLECTION_NAMES } from 'src/constants';
 import { convertStringToObjectId } from 'src/utils/helper';
 import { CategoryType } from '../constants';
-import { SEOTagDto } from 'src/apis/pages/dto/create-pages.dto';
+import { SEOTagDto } from 'src/apis/posts/dto/create-posts.dto';
 
 export class CreateCategoryDto extends PartialType(ExcludeDto) {
     @SuperApiProperty({
