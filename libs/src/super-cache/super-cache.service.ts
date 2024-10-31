@@ -20,7 +20,10 @@ export class SuperCacheService implements OnModuleInit {
         return await this.cacheManager.get<T>(key);
     }
 
-    // auto set ttl ~  1 hour and fix cache avalanche
+    async delete(key: string) {
+        return await this.cacheManager.del(key);
+    }
+
     async set(key: string, data: any, ttl = 1) {
         const randomFactor = Math.floor(
             Math.random() * (ttl * 0.1 * 60 * 60 * 1000),
