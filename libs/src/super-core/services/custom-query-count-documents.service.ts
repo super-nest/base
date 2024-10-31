@@ -1,39 +1,25 @@
-import { PipelineStage, Document, Expression } from 'mongoose';
+import { PipelineStage, Document } from 'mongoose';
 import { SGetCache } from '../../super-cache';
-import { ICustomQueryCountDocuments } from './interfaces/custom-query-count-documents.interface';
 import _ from 'lodash';
-import { dynamicLookupAggregates, sortPipelines } from '@libs/super-search';
+import { sortPipelines } from '@libs/super-search';
 import { CustomQueryBaseService } from 'libs/src/super-core/services/base-query.service';
+import { applyAutoPopulate, applyLimit, applySkip } from './query';
 
-export class CustomQueryCountDocumentsService<T extends Document>
-    extends CustomQueryBaseService<T>
-    implements ICustomQueryCountDocuments
-{
-    select(fields: Record<string, number>): this {
-        this.pipeline.push({ $project: fields });
-        return this;
-    }
-
-    sort(sort: Record<string, 1 | -1 | Expression.Meta>): this {
-        this.pipeline.push({ $sort: sort });
-        return this;
-    }
-
+export class CustomQueryCountDocumentsService<
+    T extends Document,
+> extends CustomQueryBaseService<T> {
     skip(value: number): this {
-        this.pipeline.push({ $skip: value });
+        applySkip(this.pipeline, value);
         return this;
     }
 
     limit(value: number): this {
-        this.pipeline.push({ $limit: value });
+        applyLimit(this.pipeline, value);
         return this;
     }
 
     autoPopulate(): this {
-        const pipeline = dynamicLookupAggregates(this.entity);
-        if (pipeline?.length) {
-            this.pipeline.push(...pipeline);
-        }
+        applyAutoPopulate(this.pipeline, this.entity);
         return this;
     }
 

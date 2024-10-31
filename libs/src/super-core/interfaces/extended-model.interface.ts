@@ -12,6 +12,8 @@ import { CustomQueryFindOneService } from '../services/custom-query-find-one.ser
 import { CustomQueryCountDocumentsService } from '../services/custom-query-count-documents.service';
 
 export interface ExtendedModel<T extends Document> {
+    createInstance(doc: Partial<T>): HydratedDocument<T>;
+
     find<ResultDoc = HydratedDocument<T>>(
         filter: FilterQuery<ResultDoc>,
         pipeline?: PipelineStage[],

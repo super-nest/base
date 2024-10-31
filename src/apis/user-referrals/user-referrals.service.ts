@@ -41,7 +41,7 @@ export class UserReferralsService extends BaseService<UserReferralDocument> {
     async getReferralFront(userId: Types.ObjectId, params: ExtendedPagingDto) {
         const user = await this.userService.model.findOne({ _id: userId });
 
-        const referralList = await this.getAllForFront(params, {
+        const referralList = await this.getAll(params, {
             code: user.inviteCode,
         });
 

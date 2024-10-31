@@ -15,6 +15,9 @@ import { calculateEstimatedReadingTime } from './common/calculate-estimated-read
 import { activePublications } from 'src/base/aggregates/active-publications.aggregates';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
+import { ExtendedPagingDto } from 'src/pipes/page-result.dto.pipe';
+import { pagination } from '@libs/super-search';
+import { appSettings } from 'src/configs/app-settings';
 
 @Injectable()
 export class PostsService extends BaseService<PostDocument> {
@@ -23,6 +26,44 @@ export class PostsService extends BaseService<PostDocument> {
         private readonly postModel: ExtendedModel<PostDocument>,
     ) {
         super(postModel);
+    }
+
+    async getAllForFront(
+        queryParams: ExtendedPagingDto,
+        options?: Record<string, any>,
+    ) {
+        const { page, limit, sortBy, sortDirection, skip, filterPipeline } =
+            queryParams;
+
+        activePublications(queryParams.filterPipeline);
+
+        const result = this.model
+            .find(
+                {
+                    ...options,
+                },
+                filterPipeline,
+            )
+            .limit(limit)
+            .skip(skip)
+            .sort({ [sortBy]: sortDirection })
+            .select({ longDescription: 0 })
+            .autoPopulate()
+            .multipleLanguage(appSettings.mainLanguage);
+
+        const total = this.model
+            .countDocuments(
+                {
+                    ...options,
+                },
+                filterPipeline,
+            )
+            .autoPopulate();
+
+        return Promise.all([result, total]).then(([items, total]) => {
+            const meta = pagination(items, page, limit, total);
+            return { items, meta };
+        });
     }
 
     async getOneByIdForFront(slug: string, options?: Record<string, any>) {
@@ -37,7 +78,8 @@ export class PostsService extends BaseService<PostDocument> {
                 },
                 filterPipeline,
             )
-            .autoPopulate();
+            .autoPopulate()
+            .multipleLanguage(appSettings.mainLanguage);
 
         if (!result) {
             throw new NotFoundException('post_not_found', 'Post not found');

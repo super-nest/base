@@ -4,6 +4,7 @@ import { TagDocument } from './entities/tags.entity';
 import { COLLECTION_NAMES } from 'src/constants';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
+import { appSettings } from 'src/configs/app-settings';
 
 @Injectable()
 export class TagsService extends BaseService<TagDocument> {
@@ -18,10 +19,13 @@ export class TagsService extends BaseService<TagDocument> {
         slug: string,
         options?: Record<string, any>,
     ): Promise<any> {
-        const result = await this.tagModel.findOne({
-            slug,
-            ...options,
-        });
+        const result = await this.tagModel
+            .findOne({
+                slug,
+                ...options,
+            })
+            .autoPopulate()
+            .multipleLanguage(appSettings.mainLanguage);
 
         if (!result) {
             throw new NotFoundException('tag_not_found', 'Tag not found');

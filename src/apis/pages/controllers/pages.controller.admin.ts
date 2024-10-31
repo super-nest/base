@@ -79,14 +79,10 @@ export class PagesControllerAdmin {
         @Body() updatePagesDto: UpdatePagesDto,
         @Me() user: UserPayload,
     ) {
-        const { name } = updatePagesDto;
         const result = await this.pagesService.updateOneById(
             _id,
             updatePagesDto,
             user,
-            {
-                slug: await this.pagesService.generateSlug(name),
-            },
         );
         return result;
     }
