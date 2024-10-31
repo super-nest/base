@@ -1,13 +1,16 @@
 import { PipelineStage } from 'mongoose';
 import { TypeMetadataMultipleLanguageStorage } from '../storages/type-metadata.storage';
-import { appSettings } from 'src/configs/app-settings';
+// import { appSettings } from 'src/configs/app-settings';
 import _ from 'lodash';
 import { getSchemaMetadata } from '@libs/super-core';
+import { RequestContext } from '@libs/super-request-context';
+import { query } from 'express';
 
 const applyMultipleLanguageFields = (
     entity: any,
     addFieldsStage: any,
     locale: string,
+    defaultLocale: string,
     prefix = '',
     isArray = false,
 ) => {
@@ -31,7 +34,7 @@ const applyMultipleLanguageFields = (
                                     [`${propertyKey}`]: {
                                         $ifNull: [
                                             `$$item.${propertyKey}.${locale}`,
-                                            `$$item.${propertyKey}.${appSettings.mainLanguage}`,
+                                            `$$item.${propertyKey}.${defaultLocale}`,
                                         ],
                                     },
                                 },
@@ -50,7 +53,7 @@ const applyMultipleLanguageFields = (
                     [`${propertyKey}`]: {
                         $ifNull: [
                             `$$item.${propertyKey}.${locale}`,
-                            `$$item.${propertyKey}.${appSettings.mainLanguage}`,
+                            `$$item.${propertyKey}.${defaultLocale}`,
                         ],
                     },
                 });
@@ -62,7 +65,7 @@ const applyMultipleLanguageFields = (
             _.set(addFieldsStage, fieldPath, {
                 $ifNull: [
                     `$${_prefix}${propertyKey}.${locale}`,
-                    `$${_prefix}${propertyKey}.${appSettings.mainLanguage}`,
+                    `$${_prefix}${propertyKey}.${defaultLocale}`,
                 ],
             });
         }
@@ -73,6 +76,7 @@ const traverseEntityMultipleLanguage = (
     entity: any,
     pipeline: PipelineStage[],
     locale: string,
+    defaultLocale: string,
     prefix = '',
     isArray = false,
     relationLevel = 0,
@@ -91,6 +95,7 @@ const traverseEntityMultipleLanguage = (
         entity,
         addFieldsStage,
         locale,
+        defaultLocale,
         prefix,
         isArray,
     );
@@ -110,6 +115,7 @@ const traverseEntityMultipleLanguage = (
                 nestedEntity,
                 pipeline,
                 locale,
+                defaultLocale,
                 `${prefix}${property.propertyKey}`,
                 isArray,
                 relationLevel,
@@ -120,9 +126,12 @@ const traverseEntityMultipleLanguage = (
 
 export const findDocumentMultipleLanguage = (
     entity: any,
-    locale = appSettings.mainLanguage,
+    defaultLocale: string,
 ) => {
+    const req: Request = _.get(RequestContext, 'currentContext.req', null);
+    const query = _.get(req, 'query', {});
+    const locale = _.get(query, 'locale', defaultLocale);
     const pipeline: PipelineStage[] = [];
-    traverseEntityMultipleLanguage(entity, pipeline, locale);
+    traverseEntityMultipleLanguage(entity, pipeline, locale, defaultLocale);
     return pipeline;
 };

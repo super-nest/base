@@ -77,13 +77,10 @@ export class CategoriesControllerAdmin {
         @Body() updateCategoryDto: UpdateCategoryDto,
         @Me() user: UserPayload,
     ) {
-        const { name } = updateCategoryDto;
-
         const result = await this.categoriesService.updateOneById(
             _id,
             updateCategoryDto,
             user,
-            { slug: await this.categoriesService.generateSlug(name) },
         );
         return result;
     }

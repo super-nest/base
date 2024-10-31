@@ -1,41 +1,46 @@
 import { PipelineStage, Document, Expression } from 'mongoose';
 import { SGetCache } from '../../super-cache';
-import { ICustomQueryFindAll } from './interfaces/custom-query-find-all.interface';
-import { dynamicLookupAggregates, sortPipelines } from '@libs/super-search';
+import { sortPipelines } from '@libs/super-search';
 import { CustomQueryBaseService } from 'libs/src/super-core/services/base-query.service';
+import {
+    applyAutoPopulate,
+    applyLimit,
+    applyMultipleLanguage,
+    applySelect,
+    applySkip,
+    applySort,
+} from './query';
 
-export class CustomQueryFindAllService<T extends Document>
-    extends CustomQueryBaseService<T>
-    implements ICustomQueryFindAll
-{
+export class CustomQueryFindAllService<
+    T extends Document,
+> extends CustomQueryBaseService<T> {
     select(fields: Record<string, number>): this {
-        if (!fields) {
-            return this;
-        }
-        this.pipeline.push({ $project: fields });
+        applySelect(this.pipeline, fields);
         return this;
     }
 
     skip(value: number): this {
-        this.pipeline.push({ $skip: value });
+        applySkip(this.pipeline, value);
         return this;
     }
 
     limit(value: number): this {
-        this.pipeline.push({ $limit: value });
+        applyLimit(this.pipeline, value);
         return this;
     }
 
     sort(sort: Record<string, 1 | -1 | Expression.Meta>): this {
-        this.pipeline.push({ $sort: sort });
+        applySort(this.pipeline, sort);
         return this;
     }
 
     autoPopulate(): this {
-        const pipeline = dynamicLookupAggregates(this.entity);
-        if (pipeline?.length) {
-            this.pipeline.push(...pipeline);
-        }
+        applyAutoPopulate(this.pipeline, this.entity);
+        return this;
+    }
+
+    multipleLanguage(defaultLocale: string): this {
+        applyMultipleLanguage(this.pipeline, this.entity, defaultLocale);
         return this;
     }
 

@@ -3,11 +3,11 @@ import { Document, FilterQuery, Types } from 'mongoose';
 import { ExtendedPagingDto } from 'src/pipes/page-result.dto.pipe';
 import { pagination } from '@libs/super-search';
 import { UserPayload } from '../models/user-payload.model';
-import { activePublications } from '../aggregates/active-publications.aggregates';
 import { removeDiacritics } from 'src/utils/helper';
 import _ from 'lodash';
 import { generateRandomString } from 'src/apis/users/common/generate-random-string.util';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
+import { appSettings } from 'src/configs/app-settings';
 
 @Injectable()
 export class BaseService<T extends Document> {
@@ -38,7 +38,8 @@ export class BaseService<T extends Document> {
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .select(select)
-            .autoPopulate();
+            .autoPopulate()
+            .multipleLanguage(appSettings.mainLanguage);
 
         const total = this.model
             .countDocuments(
@@ -64,7 +65,8 @@ export class BaseService<T extends Document> {
                 $or: [{ _id }, { slug: _id }],
                 ...options,
             })
-            .autoPopulate();
+            .autoPopulate()
+            .multipleLanguage(appSettings.mainLanguage);
 
         return result;
     }
@@ -111,43 +113,6 @@ export class BaseService<T extends Document> {
         }
 
         return result;
-    }
-
-    async getAllForFront(
-        queryParams: ExtendedPagingDto,
-        options?: Record<string, any>,
-    ) {
-        const { page, limit, sortBy, sortDirection, skip, filterPipeline } =
-            queryParams;
-
-        activePublications(queryParams.filterPipeline);
-
-        const result = this.model
-            .find(
-                {
-                    ...options,
-                },
-                filterPipeline,
-            )
-            .limit(limit)
-            .skip(skip)
-            .sort({ [sortBy]: sortDirection })
-            .select({ longDescription: 0 })
-            .autoPopulate();
-
-        const total = this.model
-            .countDocuments(
-                {
-                    ...options,
-                },
-                filterPipeline,
-            )
-            .autoPopulate();
-
-        return Promise.all([result, total]).then(([items, total]) => {
-            const meta = pagination(items, page, limit, total);
-            return { items, meta };
-        });
     }
 
     async delete(filter: FilterQuery<T>) {

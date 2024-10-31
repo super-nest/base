@@ -104,16 +104,11 @@ export class PostsControllerAdmin {
         @Param('type') type: PostType,
         @Me() user: UserPayload,
     ) {
-        const { name } = updatePostDto;
-
         const result = await this.postsService.updateOneByIdAndType(
             _id,
             type,
             updatePostDto,
             user,
-            {
-                slug: await this.postsService.generateSlug(name),
-            },
         );
 
         return result;

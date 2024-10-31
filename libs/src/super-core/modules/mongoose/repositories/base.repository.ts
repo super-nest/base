@@ -9,10 +9,8 @@ import {
     HydratedDocument,
     MergeType,
 } from 'mongoose';
-import { DynamicLookup } from '@libs/super-search';
 import {
     CreateWithMultipleLanguage,
-    FindWithMultipleLanguage,
     UpdateWithMultipleLanguage,
 } from '@libs/super-multiple-language';
 import { DeleteCache } from '@libs/super-cache';
@@ -41,7 +39,10 @@ export class BaseRepositories<T extends AggregateRoot, E>
         BaseRepositories.moduleRef = moduleRef;
     }
 
-    @FindWithMultipleLanguage()
+    createInstance(doc: Partial<T>): HydratedDocument<T> {
+        return new this.model(doc);
+    }
+
     find<ResultDoc = HydratedDocument<T>>(
         filter: FilterQuery<ResultDoc>,
         pipeline: PipelineStage[] = [],
@@ -57,7 +58,6 @@ export class BaseRepositories<T extends AggregateRoot, E>
         );
     }
 
-    @FindWithMultipleLanguage()
     findOne<ResultDoc = HydratedDocument<T>>(
         filter: FilterQuery<ResultDoc>,
         pipeline: PipelineStage[] = [],
@@ -73,7 +73,6 @@ export class BaseRepositories<T extends AggregateRoot, E>
         );
     }
 
-    @FindWithMultipleLanguage()
     findById(id: any, pipeline: PipelineStage[] = []) {
         return new CustomQueryFindOneService(
             this.model,
