@@ -78,15 +78,10 @@ export class AppsControllerAdmin {
         @Body() updateAppDto: UpdateAppDto,
         @Me() user: UserPayload,
     ) {
-        const { name } = updateAppDto;
-
         const result = await this.appsService.updateOneById(
             _id,
             updateAppDto,
             user,
-            {
-                slug: await this.appsService.generateSlug(name),
-            },
         );
 
         return result;

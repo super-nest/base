@@ -69,15 +69,10 @@ export class TagsControllerAdmin {
         @Body() updateTagDto: UpdateTagDto,
         @Me() user: UserPayload,
     ) {
-        const { name } = updateTagDto;
-
         const result = await this.tagsService.updateOneById(
             _id,
             updateTagDto,
             user,
-            {
-                slug: await this.tagsService.generateSlug(name),
-            },
         );
 
         return result;
