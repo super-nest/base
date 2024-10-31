@@ -9,7 +9,6 @@ import {
     HydratedDocument,
     MergeType,
 } from 'mongoose';
-import { DynamicLookup } from '@libs/super-search';
 import {
     CreateWithMultipleLanguage,
     FindWithMultipleLanguage,
@@ -39,6 +38,10 @@ export class BaseRepositories<T extends AggregateRoot, E>
         public moduleRef: ModuleRef,
     ) {
         BaseRepositories.moduleRef = moduleRef;
+    }
+
+    createInstance(doc: Partial<T>): HydratedDocument<T> {
+        return new this.model(doc);
     }
 
     @FindWithMultipleLanguage()

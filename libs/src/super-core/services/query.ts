@@ -9,7 +9,6 @@ export function applySelect(
         return pipeline;
     }
     pipeline.push({ $project: fields });
-    return pipeline;
 }
 
 export function applySort(
@@ -20,19 +19,17 @@ export function applySort(
         return pipeline;
     }
     pipeline.push({ $sort: sort });
-    return pipeline;
 }
 
 export function applyAutoPopulate(
     pipeline: PipelineStage[],
     entity: new () => any,
-    autoPopulate: boolean,
 ): PipelineStage[] {
-    if (!autoPopulate) {
+    if (!entity) {
         return pipeline;
     }
-
-    return pipeline.concat(dynamicLookupAggregates(entity));
+    const dynamicLookupPipeline = dynamicLookupAggregates(entity);
+    pipeline.push(...dynamicLookupPipeline);
 }
 
 export function applySkip(
@@ -43,7 +40,6 @@ export function applySkip(
         return pipeline;
     }
     pipeline.push({ $skip: value });
-    return pipeline;
 }
 
 export function applyLimit(
@@ -54,7 +50,6 @@ export function applyLimit(
         return pipeline;
     }
     pipeline.push({ $limit: value });
-    return pipeline;
 }
 
 export function applyLookup(
@@ -65,7 +60,6 @@ export function applyLookup(
         return pipeline;
     }
     pipeline.push(lookup);
-    return pipeline;
 }
 
 export function applyMatch(
@@ -76,5 +70,4 @@ export function applyMatch(
         return pipeline;
     }
     pipeline.push({ $match: match });
-    return pipeline;
 }

@@ -3,7 +3,9 @@ import { AutoPopulateMetadataStorage } from '../storages/auto-populate-metadata.
 import { getSchemaMetadata, SuperPropOptions } from '@libs/super-core';
 import { Type } from '@nestjs/common';
 
-export const dynamicLookupAggregates = (target: Type<unknown>) => {
+export const dynamicLookupAggregates = (
+    target: Type<unknown>,
+): PipelineStage[] => {
     const pipelines: PipelineStage[] = [];
     const autoPopulateOptions =
         AutoPopulateMetadataStorage.getAutoPopulateMetadata(target);
