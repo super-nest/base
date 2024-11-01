@@ -1,6 +1,6 @@
 export const Entities = (name) => {
-    return `import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+    return `import { Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 import { AggregateRoot } from 'src/base/entities/aggregate-root.schema';
 import { COLLECTION_NAMES } from 'src/constants';
 import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft-delete';

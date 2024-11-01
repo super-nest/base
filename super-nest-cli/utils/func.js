@@ -52,7 +52,7 @@ function capitalizeFirstLetter(string) {
 }
 
 export const logDirectoryStructure = (name) => {
-    const baseDir = `./src/${name}`;
+    const baseDir = `./src/apis/${name}`;
     const tree = {};
     const addNode = (dirPath, node) => {
         const segments = dirPath.split(path.sep);
@@ -94,7 +94,7 @@ export const createFile = (filePath, content = '') => {
 
 export const createModuleStructure = (name) => {
     console.log('name', name[0], name[1], name[2], name[3], name[4]);
-    const baseDir = path.join('src', name[0]);
+    const baseDir = path.join('src/apis', name[0]);
     // Create directories and files
     createFile(
         path.join(baseDir, 'dto', `create-${name[0]}.dto.ts`),
