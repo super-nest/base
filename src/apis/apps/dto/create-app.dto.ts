@@ -22,7 +22,8 @@ export class CreateAppDto extends PartialType(ExcludeDto) {
         type: String,
         required: true,
         maxLength: 50,
-        title: 'Name Of App',
+        title: 'Name',
+        description: 'Name of the app',
     })
     @IsNotEmpty()
     @MaxLength(50)
@@ -34,7 +35,8 @@ export class CreateAppDto extends PartialType(ExcludeDto) {
         default: 'https://example.com',
         required: true,
         maxLength: 100,
-        title: 'Url Of App',
+        title: 'App',
+        description: 'URL of the app',
     })
     @IsNotEmpty()
     @IsString()
@@ -46,7 +48,8 @@ export class CreateAppDto extends PartialType(ExcludeDto) {
         default: 'Caption',
         required: true,
         maxLength: 500,
-        title: 'Caption Of App',
+        title: 'Caption',
+        description: 'Caption of the app',
     })
     @IsNotEmpty()
     @IsString()
@@ -57,7 +60,7 @@ export class CreateAppDto extends PartialType(ExcludeDto) {
         type: String,
         required: false,
         description: 'Status for App',
-        title: 'Status for App',
+        title: 'Status',
         enum: SubmitStatus,
         default: SubmitStatus.Approved,
     })
@@ -68,7 +71,7 @@ export class CreateAppDto extends PartialType(ExcludeDto) {
         type: [String],
         description: 'Categories of the app',
         default: ['60f3b3b3b3b3b3b3b3b3b3'],
-        title: 'Categories Of App',
+        title: 'Categories',
         cms: {
             ref: COLLECTION_NAMES.CATEGORIES,
         },
@@ -87,7 +90,7 @@ export class CreateAppDto extends PartialType(ExcludeDto) {
         type: String,
         description: 'Featured image id of the app',
         default: '60f3b3b3b3b3b3b3b3b3b3',
-        title: 'Featured Image Of App',
+        title: 'Featured Image',
         cms: {
             ref: COLLECTION_NAMES.FILE,
         },
@@ -104,7 +107,7 @@ export class CreateAppDto extends PartialType(ExcludeDto) {
         type: [String],
         description: 'Preview images id of the app',
         default: ['60f3b3b3b3b3b3b3b3b3b3'],
-        title: 'Preview Images Of App',
+        title: 'Preview Images',
         cms: {
             ref: COLLECTION_NAMES.FILE,
         },
@@ -122,7 +125,7 @@ export class CreateAppDto extends PartialType(ExcludeDto) {
         type: String,
         description: 'Short description of the app',
         default: 'Short description',
-        title: 'Short Description Of App',
+        title: 'Short Description',
         maxLength: 1000,
         cms: {
             widget: 'textarea',
@@ -137,10 +140,7 @@ export class CreateAppDto extends PartialType(ExcludeDto) {
         type: Date,
         description: 'Published date of the app',
         default: new Date(),
-        title: 'Published Date Of App',
-        cms: {
-            isShow: false,
-        },
+        title: 'Published Date',
     })
     @IsOptional()
     @IsDate()
@@ -151,10 +151,7 @@ export class CreateAppDto extends PartialType(ExcludeDto) {
         type: Date,
         default: new Date(),
         description: 'Published end date of the app',
-        title: 'Published End Date Of App',
-        cms: {
-            isShow: false,
-        },
+        title: 'Published End Date',
     })
     @IsOptional()
     @IsDate()

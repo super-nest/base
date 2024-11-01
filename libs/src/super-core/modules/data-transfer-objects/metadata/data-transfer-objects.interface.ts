@@ -12,6 +12,7 @@ export interface DTOMetadataForm {
         maxLength?: number;
         maximum?: number;
         minimum?: number;
+        description?: string;
     };
 }
 
