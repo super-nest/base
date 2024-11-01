@@ -40,8 +40,8 @@ import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
 import { Me } from 'src/decorators/me.decorator';
 import { AUDIT_EVENT } from 'src/packages/audits/constants';
 import { COLLECTION_NAMES } from 'src/constants';
-import { Create${name[2]}Dto } from '../dto/create-${name[0]}.dto';
-import { Update${name[2]}Dto } from '../dto/update-${name[0]}.dto';
+import { Create${name[5]}Dto } from '../dto/create-${name[0]}.dto';
+import { Update${name[5]}Dto } from '../dto/update-${name[0]}.dto';
 import { ${name[2]}Service } from '../${name[0]}.service';
 
 @Controller('${name[0]}')
@@ -73,28 +73,31 @@ export class ${name[2]}ControllerAdmin {
     }
 
     @SuperPost({
-        dto: Create${name[2]}Dto,
+        dto: Create${name[5]}Dto,
     })
     @SuperAuthorize(PERMISSION.POST)
     async create(
-        @Body() create${name[2]}Dto: Create${name[2]}Dto,
+        @Body() create${name[5]}Dto: Create${name[5]}Dto,
         @Me() user: UserPayload,
     ) {
-        const result = await this.${name[1]}Service.createOne(create${name[2]}Dto, user);
+        const result = await this.${name[1]}Service.createOne(
+            create${name[5]}Dto,
+            user,
+        );
         return result;
     }
 
-    @SuperPut({ route: ':id', dto: Update${name[2]}Dto })
+    @SuperPut({ route: ':id', dto: Update${name[5]}Dto })
     @SuperAuthorize(PERMISSION.PUT)
     @ApiParam({ name: 'id', type: String })
     async update(
         @Param('id', ParseObjectIdPipe) _id: Types.ObjectId,
-        @Body() update${name[2]}Dto: Update${name[2]}Dto,
+        @Body() update${name[5]}Dto: Update${name[5]}Dto,
         @Me() user: UserPayload,
     ) {
         const result = await this.${name[1]}Service.updateOneById(
             _id,
-            update${name[2]}Dto,
+            update${name[5]}Dto,
             user,
         );
         return result;

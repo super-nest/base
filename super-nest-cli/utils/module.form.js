@@ -9,7 +9,7 @@ import { ${name[5]}, ${name[5]}Schema } from './entities/${name[0]}.entity';
     imports: [
         ExtendedMongooseModule.forFeature([
             {
-                name: COLLECTION_NAMES.${name[4]}, 
+                name: COLLECTION_NAMES.${name[4]},
                 schema: ${name[5]}Schema,
                 entity: ${name[5]},
             },
