@@ -8,7 +8,7 @@ import { Resource } from '@libs/super-authorize';
 import { ${name[2]}Service } from '../${name[0]}.service';
 
 @Controller('${name[0]}')
-@Resource('users')
+@Resource('${name[0]}')
 @ApiTags('Front: ${name[2]}')
 @AuditLog({
     events: [AUDIT_EVENT.POST, AUDIT_EVENT.PUT, AUDIT_EVENT.DELETE],

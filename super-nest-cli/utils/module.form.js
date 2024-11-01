@@ -3,15 +3,15 @@ export const Module = (name) => {
 import { ExtendedMongooseModule } from '@libs/super-core/modules/mongoose/extended-mongoose.module';
 import { COLLECTION_NAMES } from 'src/constants';
 import { ${name[2]}Service } from './${name[0]}.service';
-import { ${name[2]}, ${name[2]}Schema } from './entities/${name[0]}.entity';
+import { ${name[5]}, ${name[5]}Schema } from './entities/${name[0]}.entity';
 
 @Module({
     imports: [
         ExtendedMongooseModule.forFeature([
             {
                 name: COLLECTION_NAMES.${name[4]}, 
-                schema: ${name[2]}Schema,
-                entity: ${name[2]},
+                schema: ${name[5]}Schema,
+                entity: ${name[5]},
             },
         ]),
     ],

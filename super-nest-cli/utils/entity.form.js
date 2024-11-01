@@ -8,10 +8,10 @@ import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft
     timestamps: true,
     collection: COLLECTION_NAMES.${name[4]},
 })
-export class ${name[2]} extends AggregateRoot {}
+export class ${name[5]} extends AggregateRoot {}
 
-export type ${name[2]}Document = ${name[2]} & Document;
-export const ${name[2]}Schema = SchemaFactory.createForClass(${name[2]});
-${name[2]}Schema.plugin(autopopulateSoftDelete);
+export type ${name[5]}Document = ${name[5]} & Document;
+export const ${name[5]}Schema = SchemaFactory.createForClass(${name[5]});
+${name[5]}Schema.plugin(autopopulateSoftDelete);
 `;
 };
