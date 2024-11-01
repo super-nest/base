@@ -10,15 +10,12 @@ import treeify from 'treeify';
 import chalk from 'chalk';
 
 export function isValidString(input) {
-    // Sử dụng biểu thức chính quy để kiểm tra chuỗi
     const regex = /^[a-zA-Z-]+$/;
     return regex.test(input);
 }
 export function generateStringVariations(input) {
-    // Chia chuỗi thành các phần dựa trên dấu gạch ngang
     let parts = input.split('-');
 
-    // Các biến thể của từng phần
     let lowerCase = parts.map((part) => part.toLowerCase()).join('-');
     let capitalized = parts.map((part) => capitalizeFirstLetter(part)).join('');
     let upperCase = parts.map((part) => part.toUpperCase()).join('');
@@ -31,28 +28,31 @@ export function generateStringVariations(input) {
         .map((part) => part.toUpperCase())
         .join('_');
 
-    // Nếu không có dấu gạch ngang, chỉ viết hoa toàn bộ
-    if (parts.length === 1) {
-        upperCaseWithUnderscore = upperCase; // Không có dấu gạch ngang, chỉ viết hoa toàn bộ
+    let singularCapitalized = capitalized;
+    if (singularCapitalized.endsWith('s')) {
+        singularCapitalized = singularCapitalized.slice(0, -1);
     }
 
-    // Trả về các biến thể
+    if (parts.length === 1) {
+        upperCaseWithUnderscore = upperCase;
+    }
+
     return [
-        lowerCase, // Dạng gốc: aav hoặc aav-ag
-        camelCase, // Dạng aavAg hoặc aavAg
-        capitalized, // Dạng Aav hoặc AavAg
-        upperCase, // Dạng AAV hoặc AAVAG
-        upperCaseWithUnderscore, // Dạng AAV hoặc AAV_AG
+        lowerCase,
+        camelCase,
+        capitalized,
+        upperCase,
+        upperCaseWithUnderscore,
+        singularCapitalized,
     ];
 }
 
-// Hàm để viết hoa ký tự đầu tiên của chuỗi
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }
 
 export const logDirectoryStructure = (name) => {
-    const baseDir = `./src/${name}`;
+    const baseDir = `./src/apis/${name}`;
     const tree = {};
     const addNode = (dirPath, node) => {
         const segments = dirPath.split(path.sep);
@@ -94,7 +94,7 @@ export const createFile = (filePath, content = '') => {
 
 export const createModuleStructure = (name) => {
     console.log('name', name[0], name[1], name[2], name[3], name[4]);
-    const baseDir = path.join('src', name[0]);
+    const baseDir = path.join('src/apis', name[0]);
     // Create directories and files
     createFile(
         path.join(baseDir, 'dto', `create-${name[0]}.dto.ts`),

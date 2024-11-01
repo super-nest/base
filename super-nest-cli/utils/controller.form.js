@@ -1,27 +1,33 @@
 export const Controller = (name) => {
     return `import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { COLLECTION_NAMES } from 'src/constants';
+import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
+import { AUDIT_EVENT } from 'src/packages/audits/constants';
+import { Resource } from '@libs/super-authorize';
 import { ${name[2]}Service } from '../${name[0]}.service';
 
 @Controller('${name[0]}')
+@Resource('${name[0]}')
 @ApiTags('Front: ${name[2]}')
+@AuditLog({
+    events: [AUDIT_EVENT.POST, AUDIT_EVENT.PUT, AUDIT_EVENT.DELETE],
+    refSource: COLLECTION_NAMES.${name[4]},
+})
 export class ${name[2]}Controller {
     constructor(private readonly ${name[1]}Service: ${name[2]}Service) {}
 }
 `;
 };
 export const controllerAdmin = (name) => {
-    return `import { Body, Controller, Param, Query, Req } from '@nestjs/common';
+    return `import { Body, Controller, Param, Query } from '@nestjs/common';
+import { SuperGet } from '@libs/super-core/decorators/super-get.decorator';
+import { SuperPost } from '@libs/super-core/decorators/super-post.decorator';
+import { SuperDelete } from '@libs/super-core/decorators/super-delete.decorator';
+import { SuperPut } from '@libs/super-core/decorators/super-put.decorator';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
-import { ${name[2]}Service } from '../${name[0]}.service';
-import {
-    DefaultDelete,
-    DefaultGet,
-    DefaultPost,
-    DefaultPut,
-} from 'src/base/controllers/base.controller';
-import { PERMISSIONS } from 'src/constants';
-import { Authorize } from 'src/decorators/authorize.decorator';
+import { PERMISSION, Resource } from '@libs/super-authorize';
+import { SuperAuthorize } from '@libs/super-authorize/decorators/authorize.decorator';
 import {
     ExtendedPagingDto,
     PagingDtoPipe,
@@ -30,16 +36,26 @@ import { ParseObjectIdPipe } from 'src/pipes/parse-object-id.pipe';
 import { ParseObjectIdArrayPipe } from 'src/pipes/parse-object-ids.pipe';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { Types } from 'mongoose';
-import { Create${name[2]}Dto } from '../dto/create-${name[0]}.dto';
-import { Update${name[2]}Dto } from '../dto/update-${name[0]}.dto';
+import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
+import { Me } from 'src/decorators/me.decorator';
+import { AUDIT_EVENT } from 'src/packages/audits/constants';
+import { COLLECTION_NAMES } from 'src/constants';
+import { Create${name[5]}Dto } from '../dto/create-${name[0]}.dto';
+import { Update${name[5]}Dto } from '../dto/update-${name[0]}.dto';
+import { ${name[2]}Service } from '../${name[0]}.service';
 
 @Controller('${name[0]}')
+@Resource('${name[0]}')
 @ApiTags('Admin: ${name[2]}')
+@AuditLog({
+    events: [AUDIT_EVENT.POST, AUDIT_EVENT.PUT, AUDIT_EVENT.DELETE],
+    refSource: COLLECTION_NAMES.${name[4]},
+})
 export class ${name[2]}ControllerAdmin {
     constructor(private readonly ${name[1]}Service: ${name[2]}Service) {}
 
-    @DefaultGet('')
-    @Authorize(PERMISSIONS.${name[4]}.index)
+    @SuperGet()
+    @SuperAuthorize(PERMISSION.GET)
     async getAll(
         @Query(new PagingDtoPipe())
         queryParams: ExtendedPagingDto,
@@ -48,66 +64,52 @@ export class ${name[2]}ControllerAdmin {
         return result;
     }
 
-    @DefaultGet(':id')
-    @Authorize(PERMISSIONS.${name[4]}.index)
+    @SuperGet({ route: ':id' })
+    @SuperAuthorize(PERMISSION.GET)
     @ApiParam({ name: 'id', type: String })
     async getOne(@Param('id', ParseObjectIdPipe) _id: Types.ObjectId) {
         const result = await this.${name[1]}Service.getOne(_id);
         return result;
     }
 
-    @DefaultPost('')
-    @Authorize(PERMISSIONS.${name[4]}.create)
-    @ApiParam({
-        name: 'locale',
-        required: false,
-        type: String,
-        description: 'The locale of the content',
+    @SuperPost({
+        dto: Create${name[5]}Dto,
     })
+    @SuperAuthorize(PERMISSION.POST)
     async create(
-        @Body() createPostDto: Create${name[2]}Dto,
-        @Req() req: { user: UserPayload },
+        @Body() create${name[5]}Dto: Create${name[5]}Dto,
+        @Me() user: UserPayload,
     ) {
-        const { user } = req;
         const result = await this.${name[1]}Service.createOne(
-            createPostDto,
+            create${name[5]}Dto,
             user,
         );
         return result;
     }
 
-    @DefaultPut(':id')
-    @Authorize(PERMISSIONS.${name[4]}.edit)
-    @ApiParam({ name: 'id' })
-    @ApiParam({
-        name: 'locale',
-        required: false,
-        type: String,
-        description: 'The locale of the content',
-    })
+    @SuperPut({ route: ':id', dto: Update${name[5]}Dto })
+    @SuperAuthorize(PERMISSION.PUT)
+    @ApiParam({ name: 'id', type: String })
     async update(
         @Param('id', ParseObjectIdPipe) _id: Types.ObjectId,
-        @Body() updatePostDto: Update${name[2]}Dto,
-        @Req() req: { user: UserPayload },
+        @Body() update${name[5]}Dto: Update${name[5]}Dto,
+        @Me() user: UserPayload,
     ) {
-        const { user } = req;
-        const result = await this.${name[1]}Service.updateOne(
+        const result = await this.${name[1]}Service.updateOneById(
             _id,
-            updatePostDto,
+            update${name[5]}Dto,
             user,
         );
         return result;
     }
 
-    @DefaultDelete()
-    @Authorize(PERMISSIONS.${name[4]}.destroy)
+    @SuperDelete()
+    @SuperAuthorize(PERMISSION.DELETE)
     @ApiQuery({ name: 'ids', type: [String] })
     async deletes(
         @Query('ids', ParseObjectIdArrayPipe) _ids: Types.ObjectId[],
-        @Req() req: { user: UserPayload },
+        @Me() user: UserPayload,
     ) {
-        const { user } = req;
-
         const result = await this.${name[1]}Service.deletes(_ids, user);
         return result;
     }
