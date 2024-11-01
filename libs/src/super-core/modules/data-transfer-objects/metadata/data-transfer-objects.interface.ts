@@ -13,6 +13,7 @@ export interface DTOMetadataForm {
         maximum?: number;
         minimum?: number;
         readOnly?: boolean;
+        description?: string;
     };
 }
 
