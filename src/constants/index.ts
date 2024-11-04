@@ -23,6 +23,8 @@ export enum COLLECTION_NAMES {
     PAGE = 'pages',
     WHEEL = 'wheels',
     USER_WHEEL = 'userWheels',
+    USER_SWAP = 'userSwaps',
+    JETTON_TRANSACTION = 'jettonTransactions',
 }
 
 export enum CountryCode {

@@ -1,3 +1,4 @@
+import { Address } from '@ton/core';
 import 'dotenv/config';
 
 export const appSettings = {
@@ -59,6 +60,20 @@ export const appSettings = {
             growingCircleId: process.env.MISSION_ID_GROWING_CIRCLE,
             friendGrathererId: process.env.MISSION_ID_FRIEND_GRATHERER,
             communityBuilderId: process.env.MISSION_ID_COMMUNITY_BUILDER,
+        },
+    },
+    swap: {
+        walletMNEMONIC: process.env.WALLET_MNEMONIC,
+        walletJettonAddress: process.env.WALLET_JETTON_ADDRESS
+            ? Address.parse(process.env.WALLET_JETTON_ADDRESS)
+            : null,
+        walletAddress: process.env.WALLET_JETTON_ADDRESS
+            ? Address.parse(process.env.WALLET_ADDRESS)
+            : null,
+    },
+    ton: {
+        apiClient: {
+            url: process.env.TON_API_CLIENT_URL,
         },
     },
 };

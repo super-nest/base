@@ -3,9 +3,10 @@ import { BaseService } from 'src/base/service/base.service';
 import { MetadataDocument } from './entities/metadata.entity';
 import { COLLECTION_NAMES } from 'src/constants';
 import { MetadataType } from './constants';
-import { AmountRewardUserModel } from './models/amount-reward-user.model';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
+import { GetMetadataSwapDto } from './outputs/get-metadata-swap.dto';
+import { AmountRewardUserModel } from './outputs/amount-reward-user.model';
 
 @Injectable()
 export class MetadataService extends BaseService<MetadataDocument> {
@@ -29,5 +30,16 @@ export class MetadataService extends BaseService<MetadataDocument> {
         });
 
         return metadata;
+    }
+
+    async getOneSwapInfoByKey(
+        key: 'rate' | 'fee' | 'min-amount' | 'max-amount' | 'expire',
+    ): Promise<GetMetadataSwapDto> {
+        const result = await this.metadataModel.findOne({
+            type: MetadataType.SWAP,
+            key,
+        });
+
+        return result as GetMetadataSwapDto;
     }
 }

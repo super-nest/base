@@ -16,6 +16,8 @@ export enum UserTransactionAction {
     REFERRAL = 'REFERRAL',
     REFERRED = 'REFERRED',
     WHEEL = 'WHEEL',
+    SWAP = 'SWAP',
+    ROLLBACK_SWAP = 'ROLLBACK_SWAP',
 }
 
 export enum ParamTimeType {
