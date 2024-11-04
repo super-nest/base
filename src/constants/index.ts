@@ -21,6 +21,8 @@ export enum COLLECTION_NAMES {
     MISSION = 'mission',
     USER_REFERRAL = 'userReferrals',
     PAGE = 'pages',
+    WHEEL = 'wheels',
+    USER_WHEEL = 'userWheels',
 }
 
 export enum CountryCode {
