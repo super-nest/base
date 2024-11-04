@@ -4,11 +4,15 @@ import { COLLECTION_NAMES } from 'src/constants';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
 import { UserWheelTicketDocument } from './entities/user-wheel-ticket.entity';
-import { Types } from 'mongoose';
 import { CreateUserWheelTicketDto } from './dto/create-user-wheel-ticket.dto';
 import dayjs from 'dayjs';
 import { WheelsService } from '../wheels/wheels.service';
 import { UserPayload } from 'src/base/models/user-payload.model';
+import { UserService } from '../users/user.service';
+import {
+    UserTransactionAction,
+    UserTransactionType,
+} from '../user-transaction/constants';
 
 @Injectable()
 export class UserWheelTicketsService extends BaseService<UserWheelTicketDocument> {
@@ -16,6 +20,7 @@ export class UserWheelTicketsService extends BaseService<UserWheelTicketDocument
         @ExtendedInjectModel(COLLECTION_NAMES.USER_WHEEL_TICKET)
         private readonly userWheelTicketsModel: ExtendedModel<UserWheelTicketDocument>,
         private readonly WheelService: WheelsService,
+        private readonly userService: UserService,
     ) {
         super(userWheelTicketsModel);
     }
@@ -40,6 +45,16 @@ export class UserWheelTicketsService extends BaseService<UserWheelTicketDocument
                 'The number of tickets you can buy today has been set to the maximum',
             );
         }
+
+        await this.userService.createUserTransaction(
+            _id,
+            UserTransactionType.SUB,
+            5,
+            COLLECTION_NAMES.USER_WHEEL_TICKET,
+            null,
+            UserTransactionAction.BUY_TICKET,
+            null,
+        );
 
         const result = await this.userWheelTicketsModel.create({
             ...createUserWheelTicketDto,
