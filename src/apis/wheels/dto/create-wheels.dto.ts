@@ -89,14 +89,14 @@ export class CreateWheelsDto extends PartialType(ExcludeDto) {
 
     @SuperApiProperty({
         type: Number,
-        description: 'Free daily of the wheel',
+        description: 'Limit ticket can buy',
         example: 1,
         required: true,
-        title: 'Free Daily Of Wheel',
+        title: 'Limit Ticket Can Buy',
     })
     @IsNotEmpty()
     @IsNumber()
-    freeDaily: number;
+    limit: number;
 
     @SuperApiProperty({
         type: [WheelPrizeDto],

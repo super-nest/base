@@ -31,8 +31,6 @@ export class WheelsService extends BaseService<WheelDocument> {
     }
 
     async getWheel(user: UserPayload) {
-        const { _id: userId } = user;
-
         const wheels = await this.wheelsModel.find({}).limit(1).select({
             'prizes.rate': 0,
         });
@@ -43,13 +41,7 @@ export class WheelsService extends BaseService<WheelDocument> {
 
         const [wheel] = wheels;
 
-        return {
-            ...wheel,
-            freeDaily: await this.userWheelsService.findFreeDaily(
-                userId,
-                wheel.freeDaily,
-            ),
-        };
+        return wheel;
     }
 
     async play(user: UserPayload, origin: string) {
@@ -64,11 +56,7 @@ export class WheelsService extends BaseService<WheelDocument> {
             throw new BadRequestException('Not found any wheel');
         }
 
-        const freeDaily = await this.userWheelsService.findFreeDaily(
-            userId,
-            wheel.freeDaily,
-        );
-        await this.buyTicket(userId, wheel, telegramBot, freeDaily);
+        await this.buyTicket(userId, wheel, telegramBot);
 
         const { prizes } = wheel;
         const totalRate = prizes.reduce((sum, prize) => sum + prize.rate, 0);
@@ -174,7 +162,6 @@ export class WheelsService extends BaseService<WheelDocument> {
         userId: Types.ObjectId,
         wheel: WheelDocument,
         telegramBot: TelegramBotDocument,
-        freeDaily: number,
     ) {
         const user = await this.userService.model.findOne({ _id: userId });
 
@@ -184,10 +171,6 @@ export class WheelsService extends BaseService<WheelDocument> {
 
         const { currentPoint, telegramUserId } = user;
         const { _id: telegramBotId } = telegramBot || {};
-
-        if (freeDaily > 0) {
-            wheel.fee = 0;
-        }
 
         const after = currentPoint - wheel.fee;
         if (after < 0) {
