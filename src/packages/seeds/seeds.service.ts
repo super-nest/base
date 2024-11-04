@@ -7,6 +7,7 @@ import { MetadataService } from 'src/apis/metadata/metadata.service';
 import { RolesService } from '@libs/super-authorize/modules/roles/roles.service';
 import { PermissionsService } from '@libs/super-authorize/modules/permissions/permissions.service';
 import { RoleType } from '@libs/super-authorize/modules/roles/constants';
+import { WheelsService } from 'src/apis/wheels/wheels.service';
 
 @Injectable()
 export class SeedsService implements OnModuleInit {
@@ -16,6 +17,7 @@ export class SeedsService implements OnModuleInit {
         private readonly userService: UserService,
         private readonly permissionService: PermissionsService,
         private readonly metadataService: MetadataService,
+        private readonly wheelsService: WheelsService,
     ) {}
 
     async onModuleInit() {
@@ -26,6 +28,7 @@ export class SeedsService implements OnModuleInit {
         await this.seedRoles();
         await this.seedMetadata();
         await this.seedUsers();
+        await this.seedWheels();
         this.logger.debug('Seeding completed');
     }
 
@@ -140,5 +143,31 @@ export class SeedsService implements OnModuleInit {
         });
 
         await this.metadataService.model.insertMany(result);
+    }
+
+    async seedWheels() {
+        const wheels = JSON.parse(
+            fs.readFileSync(process.cwd() + '/public/data/wheels.json', 'utf8'),
+        );
+
+        this.logger.debug('Seeding wheels');
+        const count = await this.wheelsService.model.countDocuments({});
+
+        if (count > 0) {
+            return;
+        }
+
+        const result = wheels.map((item) => {
+            delete item.createdAt;
+            delete item.updatedAt;
+            delete item.createdBy;
+            delete item.updatedBy;
+            return {
+                ...item,
+                _id: new Types.ObjectId(item._id.$oid),
+            };
+        });
+
+        await this.wheelsService.model.insertMany(result);
     }
 }
