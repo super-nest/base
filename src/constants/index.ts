@@ -23,6 +23,7 @@ export enum COLLECTION_NAMES {
     PAGE = 'pages',
     WHEEL = 'wheels',
     USER_WHEEL = 'userWheels',
+    USER_WHEEL_TICKET = 'userWheelTickets',
     USER_SWAP = 'userSwaps',
     JETTON_TRANSACTION = 'jettonTransactions',
 }

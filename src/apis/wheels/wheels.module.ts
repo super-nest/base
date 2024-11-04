@@ -6,6 +6,7 @@ import { UserModule } from '../users/user.module';
 import { TelegramBotModule } from '../telegram-bot/telegram-bot.module';
 import { UserWheelsModule } from '../user-wheels/user-wheels.module';
 import { ExtendedMongooseModule } from '@libs/super-core/modules/mongoose/extended-mongoose.module';
+import { UserWheelTicketsModule } from '../user-wheel-tickets/user-wheel-tickets.module';
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { ExtendedMongooseModule } from '@libs/super-core/modules/mongoose/extend
         UserModule,
         TelegramBotModule,
         UserWheelsModule,
+        UserWheelTicketsModule,
     ],
     controllers: [],
     providers: [WheelsService],

@@ -25,6 +25,22 @@ export class WheelsController {
         return await this.wheelsService.getWheel(user);
     }
 
+    @SuperGet({ route: 'count-ticket' })
+    @SuperAuthorize(PERMISSION.GET)
+    async countTicket(@Me() user: UserPayload) {
+        return await this.wheelsService.getTicket(user);
+    }
+
+    @SuperPost({ route: 'buy' })
+    @SuperAuthorize(PERMISSION.POST)
+    async buyTicket(
+        @Req() req: { headers: Record<string, string> },
+        @Me() user: UserPayload,
+    ) {
+        const origin = req.headers['origin'];
+        return await this.wheelsService.buyTicket(user, origin);
+    }
+
     @SuperPost({ route: 'play' })
     @SuperAuthorize(PERMISSION.POST)
     async play(
@@ -32,6 +48,7 @@ export class WheelsController {
         @Me() user: UserPayload,
     ) {
         const origin = req.headers['origin'];
+
         return await this.wheelsService.play(user, origin);
     }
 }
