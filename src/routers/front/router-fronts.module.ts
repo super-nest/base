@@ -32,8 +32,6 @@ import { UserReferralsModule } from 'src/apis/user-referrals/user-referrals.modu
 import { PagesModule } from 'src/apis/pages/pages.module';
 import { PagesController } from 'src/apis/pages/controllers/pages.controller';
 import { UserReferralsController } from 'src/apis/user-referrals/controller/user-referrals.controller';
-import { UserWheelTicketsModule } from 'src/apis/user-wheel-tickets/user-wheel-tickets.module';
-import { UserWheelTicketsController } from 'src/apis/user-wheel-tickets/controllers/user-wheel-tickets.controller';
 import { WheelsModule } from 'src/apis/wheels/wheels.module';
 import { WheelsController } from 'src/apis/wheels/controllers/wheels.controller';
 
@@ -56,7 +54,6 @@ import { WheelsController } from 'src/apis/wheels/controllers/wheels.controller'
         UserReferralsModule,
         PagesModule,
         MissionModule,
-        UserWheelTicketsModule,
         WheelsModule,
     ],
     controllers: [
@@ -76,7 +73,6 @@ import { WheelsController } from 'src/apis/wheels/controllers/wheels.controller'
         PagesController,
         UserReferralsController,
         MissionController,
-        UserWheelTicketsController,
         WheelsController,
     ],
     providers: [],

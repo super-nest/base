@@ -6,8 +6,6 @@ import {
     UserWheelTicketSchema,
 } from './entities/user-wheel-ticket.entity';
 import { ExtendedMongooseModule } from '@libs/super-core/modules/mongoose/extended-mongoose.module';
-import { WheelsModule } from '../wheels/wheels.module';
-import { UserModule } from '../users/user.module';
 
 @Module({
     imports: [
@@ -18,8 +16,6 @@ import { UserModule } from '../users/user.module';
                 entity: UserWheelTicket,
             },
         ]),
-        WheelsModule,
-        UserModule,
     ],
     controllers: [],
     providers: [UserWheelTicketsService],
