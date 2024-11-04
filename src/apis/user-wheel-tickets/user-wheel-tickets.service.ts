@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { BaseService } from 'src/base/service/base.service';
 import { COLLECTION_NAMES } from 'src/constants';
 import { ExtendedInjectModel } from '@libs/super-core';
@@ -29,27 +29,31 @@ export class UserWheelTicketsService extends BaseService<UserWheelTicketDocument
         createUserWheelTicketDto: CreateUserWheelTicketDto,
         user: UserPayload,
     ) {
-        const { _id } = user;
-        const startOfDay = dayjs().startOf('day');
-        const timestamp = startOfDay.unix();
-
         const wheel = await this.WheelService.getWheel(user);
 
+        const { _id } = user;
+
+        const now = dayjs();
+        const startDay = now.startOf('day').toDate();
+        const endDay = now.endOf('day').toDate();
         const countTicketToday =
             await this.userWheelTicketsModel.countDocuments({
                 createdBy: _id,
-                createdAt: { $gte: timestamp },
+                createdAt: {
+                    $gte: startDay,
+                    $lte: endDay,
+                },
             });
         if (countTicketToday > wheel.limit) {
-            throw new Error(
-                'The number of tickets you can buy today has been set to the maximum',
+            throw new BadRequestException(
+                `You can only buy tickets ${wheel.limit} times a day`,
             );
         }
 
         await this.userService.createUserTransaction(
             _id,
             UserTransactionType.SUB,
-            5,
+            wheel.fee,
             COLLECTION_NAMES.USER_WHEEL_TICKET,
             null,
             UserTransactionAction.BUY_TICKET,

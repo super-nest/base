@@ -7,7 +7,7 @@ import { TicketStatus } from '../constant';
 export class CreateUserWheelTicketDto extends PartialType(ExcludeDto) {
     @SuperApiProperty({
         type: String,
-        required: false,
+        required: true,
         description: 'Status for Ticket',
         title: 'Status',
         enum: TicketStatus,

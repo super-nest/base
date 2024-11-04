@@ -1,5 +1,5 @@
-import { Body, Controller, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Param, Query } from '@nestjs/common';
+import { ApiParam, ApiTags } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { COLLECTION_NAMES } from 'src/constants';
 import {
@@ -16,7 +16,9 @@ import { Me } from 'src/decorators/me.decorator';
 import { UserWheelTicketsService } from '../user-wheel-tickets.service';
 import { CreateUserWheelTicketDto } from '../dto/create-user-wheel-ticket.dto';
 import { TicketStatus } from '../constant';
-import { SuperPost } from '@libs/super-core';
+import { SuperPost, SuperPut } from '@libs/super-core';
+import { UpdateUserWheelTicketDto } from '../dto/update-user-wheel-ticket.dto';
+import { ParseObjectIdPipe } from 'src/pipes/parse-object-id.pipe';
 
 @Controller('user-wheel-tickets')
 @Resource('user-wheel-tickets')
@@ -52,6 +54,22 @@ export class UserWheelTicketsController {
     ) {
         const result = await this.userWheelTicketsService.createTicket(
             createUserWheelTicketDto,
+            user,
+        );
+        return result;
+    }
+
+    @SuperPut({ route: ':id', dto: UpdateUserWheelTicketDto })
+    @SuperAuthorize(PERMISSION.PUT)
+    @ApiParam({ name: 'id', type: String })
+    async update(
+        @Param('id', ParseObjectIdPipe) _id: Types.ObjectId,
+        @Body() updateUserWheelTicketDto: UpdateUserWheelTicketDto,
+        @Me() user: UserPayload,
+    ) {
+        const result = await this.userWheelTicketsService.updateOneById(
+            _id,
+            updateUserWheelTicketDto,
             user,
         );
         return result;
