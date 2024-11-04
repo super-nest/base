@@ -45,7 +45,7 @@ export class AppsControllerAdmin {
     @SuperGet({ route: 'get-app-count-by-status' })
     @SuperAuthorize(PERMISSION.GET)
     async getStatus() {
-        const result = await this.appsService.GetAppCountByStatus();
+        const result = await this.appsService.getAppCountByStatus();
         return result;
     }
 

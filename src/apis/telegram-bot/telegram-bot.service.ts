@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { BaseService } from 'src/base/service/base.service';
 import { TelegramBotDocument } from './entities/telegram-bot.entity';
 import { COLLECTION_NAMES } from 'src/constants';
@@ -15,10 +15,14 @@ export class TelegramBotService extends BaseService<TelegramBotDocument> {
     }
 
     async findByDomain(domain: string): Promise<TelegramBotDocument> {
-        if (!domain) {
-            return null;
-        }
         const result = await this.telegramBotModel.findOne({ domain });
+
+        if (!result) {
+            throw new ForbiddenException(
+                'You must use telegram mini app for this feature',
+            );
+        }
+
         return result;
     }
 

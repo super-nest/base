@@ -16,6 +16,7 @@ export class UserTransactionService extends BaseService<UserTransactionDocument>
     ) {
         super(userTransactionModel);
     }
+
     async getTotalEarn(userId: Types.ObjectId) {
         const aggregate = await this.userTransactionModel.aggregate([
             {
