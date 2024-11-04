@@ -34,6 +34,8 @@ import { FormBuilderModule } from 'src/apis/form-builders/form-builders.module';
 import { FormBuilderControllerAdmin } from 'src/apis/form-builders/controllers/form-builders.controller.admin';
 import { PagesControllerAdmin } from 'src/apis/pages/controllers/pages.controller.admin';
 import { PagesModule } from 'src/apis/pages/pages.module';
+import { WheelsModule } from 'src/apis/wheels/wheels.module';
+import { WheelsControllerAdmin } from 'src/apis/wheels/controllers/wheels.controller.admin';
 
 @Module({
     imports: [
@@ -56,6 +58,7 @@ import { PagesModule } from 'src/apis/pages/pages.module';
         UserTransactionModule,
         FormBuilderModule,
         PagesModule,
+        WheelsModule,
     ],
     controllers: [
         MediaControllerAdmin,
@@ -74,6 +77,7 @@ import { PagesModule } from 'src/apis/pages/pages.module';
         UserTransactionControllerAdmin,
         FormBuilderControllerAdmin,
         PagesControllerAdmin,
+        WheelsControllerAdmin,
     ],
     providers: [],
 })
