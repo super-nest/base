@@ -27,6 +27,7 @@ export class UserTransactionController {
     constructor(
         private readonly userTransactionService: UserTransactionService,
     ) {}
+
     @SuperGet({ route: '/earn/total' })
     @ApiBearerAuth()
     @SuperAuthorize(PERMISSION.GET)

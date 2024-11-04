@@ -10,6 +10,7 @@ import { UserReferralsModule } from '../user-referrals/user-referrals.module';
 import { RolesModule } from '@libs/super-authorize/modules/roles/roles.module';
 import { AppsModule } from '../apps/apps.module';
 import { ExtendedMongooseModule } from '@libs/super-core/modules/mongoose/extended-mongoose.module';
+import { TelegramBotModule } from '../telegram-bot/telegram-bot.module';
 @Module({
     imports: [
         ExtendedMongooseModule.forFeature([
@@ -26,6 +27,7 @@ import { ExtendedMongooseModule } from '@libs/super-core/modules/mongoose/extend
         UserTransactionModule,
         MetadataModule,
         WebsocketModule,
+        TelegramBotModule,
     ],
     controllers: [],
     providers: [UserService],

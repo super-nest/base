@@ -47,7 +47,7 @@ export class AppsService extends BaseService<AppDocument> {
         return await this.appModel.findOne({ _id: appId }).autoPopulate();
     }
 
-    async GetAppCountByStatus() {
+    async getAppCountByStatus() {
         const statusApp = [
             SubmitStatus.Draft,
             SubmitStatus.Pending,
