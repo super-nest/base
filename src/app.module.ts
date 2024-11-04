@@ -40,12 +40,12 @@ import { CorsMiddleware } from './middlewares/cors.middleware';
             },
         }),
         SuperCacheModule.forRoot({
-            // redis: {
-            //     host: appSettings.redis.host,
-            //     port: appSettings.redis.port,
-            //     username: appSettings.redis.username,
-            //     password: appSettings.redis.password,
-            // },
+            redis: {
+                host: appSettings.redis.host,
+                port: appSettings.redis.port,
+                username: appSettings.redis.username,
+                password: appSettings.redis.password,
+            },
         }),
         SeedsModule,
     ],

@@ -32,9 +32,10 @@ import { UserReferralsModule } from 'src/apis/user-referrals/user-referrals.modu
 import { PagesModule } from 'src/apis/pages/pages.module';
 import { PagesController } from 'src/apis/pages/controllers/pages.controller';
 import { UserReferralsController } from 'src/apis/user-referrals/controller/user-referrals.controller';
-import { User } from 'src/apis/users/entities/user.entity';
 import { UserWheelTicketsModule } from 'src/apis/user-wheel-tickets/user-wheel-tickets.module';
 import { UserWheelTicketsController } from 'src/apis/user-wheel-tickets/controllers/user-wheel-tickets.controller';
+import { WheelsModule } from 'src/apis/wheels/wheels.module';
+import { WheelsController } from 'src/apis/wheels/controllers/wheels.controller';
 
 @Module({
     imports: [
@@ -56,6 +57,7 @@ import { UserWheelTicketsController } from 'src/apis/user-wheel-tickets/controll
         PagesModule,
         MissionModule,
         UserWheelTicketsModule,
+        WheelsModule,
     ],
     controllers: [
         UserController,
@@ -75,6 +77,7 @@ import { UserWheelTicketsController } from 'src/apis/user-wheel-tickets/controll
         UserReferralsController,
         MissionController,
         UserWheelTicketsController,
+        WheelsController,
     ],
     providers: [],
 })

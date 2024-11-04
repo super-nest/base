@@ -36,6 +36,8 @@ import { PagesControllerAdmin } from 'src/apis/pages/controllers/pages.controlle
 import { PagesModule } from 'src/apis/pages/pages.module';
 import { UserWheelTicketsModule } from 'src/apis/user-wheel-tickets/user-wheel-tickets.module';
 import { UserWheelTicketsAminController } from 'src/apis/user-wheel-tickets/controllers/user-wheel-tickets.controller.admin';
+import { WheelsModule } from 'src/apis/wheels/wheels.module';
+import { WheelsControllerAdmin } from 'src/apis/wheels/controllers/wheels.controller.admin';
 
 @Module({
     imports: [
@@ -59,6 +61,7 @@ import { UserWheelTicketsAminController } from 'src/apis/user-wheel-tickets/cont
         FormBuilderModule,
         PagesModule,
         UserWheelTicketsModule,
+        WheelsModule,
     ],
     controllers: [
         MediaControllerAdmin,
@@ -78,6 +81,7 @@ import { UserWheelTicketsAminController } from 'src/apis/user-wheel-tickets/cont
         FormBuilderControllerAdmin,
         PagesControllerAdmin,
         UserWheelTicketsAminController,
+        WheelsControllerAdmin,
     ],
     providers: [],
 })
