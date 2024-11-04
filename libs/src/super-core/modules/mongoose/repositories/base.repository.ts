@@ -55,6 +55,7 @@ export class BaseRepositories<T extends AggregateRoot, E>
             this.moduleRef,
             filter,
             clonedPipeline,
+            CustomQueryFindAllService.name,
         );
     }
 
@@ -70,6 +71,7 @@ export class BaseRepositories<T extends AggregateRoot, E>
             this.moduleRef,
             filter,
             clonedPipeline,
+            CustomQueryFindOneService.name,
         );
     }
 
@@ -81,6 +83,7 @@ export class BaseRepositories<T extends AggregateRoot, E>
             this.moduleRef,
             { _id: new Types.ObjectId(id.toString()) },
             pipeline,
+            CustomQueryFindOneService.name + 'findById',
         );
     }
 
@@ -158,6 +161,7 @@ export class BaseRepositories<T extends AggregateRoot, E>
             this.moduleRef,
             filter,
             clonedPipeline,
+            CustomQueryFindAllService.name,
         );
     }
 
