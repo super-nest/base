@@ -14,7 +14,7 @@ export class UserLoginDto {
     @IsEmail()
     readonly email: string;
 
-    @SuperApiProperty({ default: '0934551744' })
+    @SuperApiProperty({ default: 'admin123!@#' })
     @IsString()
     @IsNotEmpty()
     @MinLength(6)
