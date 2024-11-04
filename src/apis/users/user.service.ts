@@ -28,7 +28,10 @@ import { NOTIFICATION_EVENT_HANDLER } from '../notifications/constants';
 import { CreateNotificationModel } from '../notifications/models/create-notification.model';
 import { EMissionType } from '../user-app-histories/constants';
 import { UserReferralsService } from '../user-referrals/user-referrals.service';
-import { UserTransactionType } from '../user-transaction/constants';
+import {
+    UserTransactionAction,
+    UserTransactionType,
+} from '../user-transaction/constants';
 import { UserTransactionService } from '../user-transaction/user-transaction.service';
 import { generateRandomString } from './common/generate-random-string.util';
 import { UserCacheKey, UserStatus } from './constants';
@@ -41,6 +44,8 @@ import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interf
 import { BaseService } from 'src/base/service/base.service';
 import { ExtendedPagingDto } from 'src/pipes/page-result.dto.pipe';
 import bcrypt from 'bcrypt';
+import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
+import { TelegramBotDocument } from '../telegram-bot/entities/telegram-bot.entity';
 
 @Injectable()
 export class UserService
@@ -59,6 +64,7 @@ export class UserService
         private readonly websocketGateway: WebsocketGateway,
         private readonly eventEmitter: EventEmitter2,
         private readonly userReferralsService: UserReferralsService,
+        private readonly telegramBotService: TelegramBotService,
     ) {
         super(userModel);
     }
@@ -85,6 +91,70 @@ export class UserService
         }
 
         await this.addInviteCodeForUser();
+    }
+
+    async createUserTransaction(
+        userId: Types.ObjectId,
+        userTransactionType: UserTransactionType,
+        amount: number,
+        refSource: string,
+        refId: Types.ObjectId,
+        userTransactionAction: UserTransactionAction,
+        origin?: string,
+    ) {
+        if (amount == 0 || amount < 0) {
+            return;
+        }
+
+        let after = 0;
+        const user = await this.userModel.findOne({ _id: userId });
+
+        if (!user) {
+            throw new UnauthorizedException('user_not_found', 'User not found');
+        }
+
+        if (userTransactionType === UserTransactionType.SUB) {
+            after = user.currentPoint - amount;
+        }
+
+        if (userTransactionType === UserTransactionType.SUM) {
+            after = user.currentPoint + amount;
+        }
+
+        if (after < 0) {
+            throw new BadRequestException(
+                'point_not_enough',
+                'Point not enough',
+            );
+        }
+
+        let telegramBot: TelegramBotDocument;
+        if (origin) {
+            telegramBot = await this.telegramBotService.findByDomain(origin);
+        }
+
+        const userTransaction = await this.userTransactionService.model.create({
+            createdBy: user._id,
+            type: userTransactionType,
+            amount,
+            before: user.currentPoint,
+            after,
+            refSource,
+            refId,
+            action: userTransactionAction,
+            telegramBot: telegramBot?._id,
+        });
+
+        if (userTransaction) {
+            await this.userModel.updateOne(
+                { _id: user._id },
+                {
+                    currentPoint: after,
+                },
+            );
+
+            this.websocketGateway.sendPointsUpdate(user._id, after);
+        }
     }
 
     async getAllAdmin(queryParams: ExtendedPagingDto) {
@@ -155,6 +225,7 @@ export class UserService
 
         return result;
     }
+
     async addPointUserCompletedMission(
         userPayload: UserPayload,
         addPointForUserDto: AddPointMissionDto,

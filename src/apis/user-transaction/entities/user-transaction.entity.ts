@@ -100,6 +100,37 @@ export class UserTransaction extends AggregateRoot {
     })
     action?: string;
 
+    @SuperProp({
+        type: Types.ObjectId,
+        cms: {
+            label: 'Ref ID',
+            tableShow: true,
+            columnPosition: 7,
+        },
+    })
+    refId: Types.ObjectId;
+
+    @SuperProp({
+        type: String,
+        cms: {
+            label: 'Ref Source',
+            tableShow: true,
+            columnPosition: 8,
+        },
+    })
+    refSource: string;
+
+    @SuperProp({
+        type: Types.ObjectId,
+        ref: COLLECTION_NAMES.TELEGRAM_BOT,
+        cms: {
+            label: 'Telegram Bot',
+            tableShow: true,
+            columnPosition: 9,
+        },
+    })
+    telegramBot: Types.ObjectId;
+
     @Prop({
         required: false,
         type: Mission,

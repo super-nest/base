@@ -225,9 +225,6 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         let isCreated = false;
         let swapId = new Types.ObjectId();
         try {
-            const telegramBot = await this.telegramBotService.findByDomain(
-                origin,
-            );
             const { amount, walletAddress } = createSwapsDto;
             const minAmount = await this.metadataService.getOneSwapInfoByKey(
                 'min-amount',
@@ -241,14 +238,6 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 throw new BadRequestException(
                     `Amount must be between ${minAmount.value} and ${maxAmount.value}`,
                 );
-            }
-
-            const user = await this.userService.getMe(userPayload);
-
-            const after = user.currentPoint - amount;
-
-            if (after < 0) {
-                throw new BadRequestException('Not enough point');
             }
 
             const signer = await mnemonicToPrivateKey(
@@ -276,7 +265,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
 
             const swap = await this.swapModel.create({
                 amount: coin,
-                createdBy: user._id,
+                createdBy: userPayload._id,
                 signature: signature.toString('hex'),
                 walletAddress,
                 expire,
@@ -287,18 +276,15 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 isCreated = true;
                 swapId = swap._id;
 
-                // await this.userService.createUserTransaction(
-                //     user._id,
-                //     userPayload.telegramUserId,
-                //     UserTransactionType.SUB,
-                //     amount,
-                //     user.currentPoint,
-                //     after,
-                //     COLLECTION_NAMES.USER_SWAP,
-                //     swap._id,
-                //     telegramBot._id,
-                //     UserTransactionAction.SWAP,
-                // );
+                await this.userService.createUserTransaction(
+                    userPayload._id,
+                    UserTransactionType.SUB,
+                    amount,
+                    COLLECTION_NAMES.USER_SWAP,
+                    swap._id,
+                    UserTransactionAction.SWAP,
+                    origin,
+                );
             }
 
             return {
@@ -322,23 +308,16 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         });
 
         if (userSwap) {
-            const user = await this.userService.model.findOne({
-                _id: userId,
-                status: UserStatus.ACTIVE,
-            });
+            await this.userService.createUserTransaction(
+                userId,
+                UserTransactionType.SUM,
+                userSwap.point,
+                COLLECTION_NAMES.USER_SWAP,
+                userSwap._id,
+                UserTransactionAction.ROLLBACK_SWAP,
+                null,
+            );
 
-            // await this.userService.createUserTransaction(
-            //     user._id,
-            //     user.telegramUserId,
-            //     UserTransactionType.SUB,
-            //     userSwap.point,
-            //     user.currentPoint,
-            //     user.currentPoint + userSwap.point,
-            //     COLLECTION_NAMES.USER_SWAP,
-            //     userSwap._id,
-            //     null,
-            //     UserTransactionAction.ROLLBACK_SWAP,
-            // );
             await this.swapModel.updateOne(
                 { _id: userSwap._id },
                 {
