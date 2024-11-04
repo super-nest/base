@@ -47,6 +47,8 @@ export class WheelsController {
         @Req() req: { headers: Record<string, string> },
         @Me() user: UserPayload,
     ) {
-        return await this.wheelsService.play(user);
+        const origin = req.headers['origin'];
+
+        return await this.wheelsService.play(user, origin);
     }
 }

@@ -19,7 +19,7 @@ import {
 } from '../user-transaction/constants';
 import { UserWheelTicketsService } from '../user-wheel-tickets/user-wheel-tickets.service';
 import dayjs from 'dayjs';
-import { TicketStatus } from '../user-wheel-tickets/constant';
+import { TicketStatus, TypeTicket } from '../user-wheel-tickets/constant';
 
 @Injectable()
 export class WheelsService extends BaseService<WheelDocument> {
@@ -54,40 +54,6 @@ export class WheelsService extends BaseService<WheelDocument> {
                 wheel.freeDaily,
             ),
         };
-    }
-
-    async getTicket(user: UserPayload) {
-        const result = await this.userWheelTicketsService.model.countDocuments({
-            createdBy: new Types.ObjectId(user._id),
-            status: TicketStatus.NEW,
-        });
-        return result;
-    }
-
-    async play(user: UserPayload) {
-        const { _id: userId } = user;
-        const ticket = await this.userWheelTicketsService.model.findOne({
-            createdBy: userId,
-            status: TicketStatus.NEW,
-        });
-        console.log('find ticket', ticket);
-        if (!ticket) {
-            throw new BadRequestException('Not found ticket');
-        }
-        const result =
-            await this.userWheelTicketsService.model.findOneAndUpdate(
-                { _id: ticket._id },
-                { status: TicketStatus.USED },
-            );
-        if (!result) {
-            throw new Error('Failed to update ticket');
-        }
-        const count = await this.userWheelTicketsService.model.countDocuments({
-            createdBy: userId,
-            status: TicketStatus.NEW,
-        });
-
-        return count;
     }
 
     async createOne(
@@ -130,10 +96,69 @@ export class WheelsService extends BaseService<WheelDocument> {
 
         return result;
     }
+    async getTicket(user: UserPayload) {
+        const result = await this.userWheelTicketsService.model.countDocuments({
+            createdBy: new Types.ObjectId(user._id),
+            status: TicketStatus.NEW,
+        });
+        return result;
+    }
+
+    async play(user: UserPayload, origin: string) {
+        const { _id: userId } = user;
+        const wheels = await this.wheelsModel.find({}).limit(1);
+        const [wheel] = wheels;
+        const ticket = await this.userWheelTicketsService.model.findOne({
+            createdBy: userId,
+            status: TicketStatus.NEW,
+        });
+        if (!ticket) {
+            throw new BadRequestException('Not found ticket');
+        }
+
+        const { prizes } = wheel;
+        const totalRate = prizes.reduce((sum, prize) => {
+            const currentSum = sum + prize.rate;
+            return currentSum;
+        }, 0);
+
+        const randomValue = Math.random() * totalRate;
+
+        let accumulatedRate = 0;
+        let selectedPrize: WheelPrize | null = null;
+        let indexSelectedPrize = 0;
+        for (let i = 0; i < prizes.length; i++) {
+            const prize = prizes[i];
+            accumulatedRate += prize.rate;
+            if (randomValue <= accumulatedRate) {
+                selectedPrize = prize;
+                indexSelectedPrize = i;
+                break;
+            }
+        }
+
+        if (!selectedPrize) {
+            throw new BadRequestException('Not found any prize');
+        }
+
+        const { prize } = selectedPrize;
+
+        const result =
+            await this.userWheelTicketsService.model.findOneAndUpdate(
+                { _id: ticket._id },
+                { status: TicketStatus.USED },
+            );
+        if (!result) {
+            throw new Error('Failed to update ticket');
+        }
+
+        await this.addPrizeForUser(userId, origin, result._id, prize);
+        return { ...selectedPrize, indexSelectedPrize, rate: null };
+    }
 
     async addPrizeForUser(
         userId: Types.ObjectId,
-        telegramBot: TelegramBotDocument,
+        origin: string,
         wheelId: Types.ObjectId,
         prize: number,
     ) {
@@ -143,22 +168,15 @@ export class WheelsService extends BaseService<WheelDocument> {
             throw new BadRequestException('Not found user');
         }
 
-        const { currentPoint, telegramUserId } = user;
-        const { _id: telegramBotId } = telegramBot || {};
-        const after = currentPoint + prize;
-
-        // await this.userService.createUserTransaction(
-        //     userId,
-        //     telegramUserId,
-        //     UserTransactionType.SUM,
-        //     prize,
-        //     currentPoint,
-        //     after,
-        //     COLLECTION_NAMES.WHEEL,
-        //     wheelId,
-        //     telegramBotId,
-        //     UserTransactionAction.WHEEL,
-        // );
+        await this.userService.createUserTransaction(
+            userId,
+            UserTransactionType.SUM,
+            prize,
+            COLLECTION_NAMES.USER_WHEEL_TICKET,
+            wheelId,
+            UserTransactionAction.WHEEL,
+            origin,
+        );
 
         return prize;
     }
@@ -191,7 +209,7 @@ export class WheelsService extends BaseService<WheelDocument> {
                     $lte: endDay,
                 },
             });
-        if (countTicketToday > wheel.limit) {
+        if (countTicketToday >= wheel.limit) {
             throw new BadRequestException(
                 `You can only buy tickets ${wheel.limit} times a day`,
             );
@@ -199,6 +217,7 @@ export class WheelsService extends BaseService<WheelDocument> {
 
         const result = await this.userWheelTicketsService.model.create({
             status: TicketStatus.NEW,
+            type: TypeTicket.BUY,
             createdBy: userPayload._id,
         });
 
@@ -209,7 +228,7 @@ export class WheelsService extends BaseService<WheelDocument> {
             COLLECTION_NAMES.USER_WHEEL_TICKET,
             result.id,
             UserTransactionAction.BUY_TICKET,
-            null,
+            origin,
         );
     }
 }
