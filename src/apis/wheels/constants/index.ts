@@ -1,5 +1,5 @@
 export enum WheelPrizeType {
-    PISTON = 'PISTON',
+    TON = 'TON',
     GOLD = 'GOLD',
     OTHER = 'OTHER',
 }

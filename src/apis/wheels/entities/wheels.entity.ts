@@ -24,6 +24,9 @@ export class WheelPrize extends Prize {
     @SuperProp({ type: String })
     name: string;
 
+    @SuperProp({ type: String })
+    description: string;
+
     @SuperProp({ type: String, enum: WheelPrizeType })
     type: WheelPrizeType;
 

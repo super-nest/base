@@ -34,7 +34,18 @@ export class WheelPrizeDto extends WheelPrize {
 
     @SuperApiProperty({
         type: String,
-        description: `Type of the wheel. Available values: ${WheelPrizeType.GOLD} | ${WheelPrizeType.PISTON} | ${WheelPrizeType.OTHER}`,
+        description: 'Description of the wheel',
+        example: 'description',
+        required: false,
+        title: 'Description',
+    })
+    @IsOptional()
+    @IsString()
+    description: string;
+
+    @SuperApiProperty({
+        type: String,
+        description: `Type of the wheel. Available values: ${WheelPrizeType.GOLD} | ${WheelPrizeType.TON} | ${WheelPrizeType.OTHER}`,
         example: 'money',
         enum: WheelPrizeType,
         required: true,
