@@ -307,5 +307,7 @@ export class WheelsService extends BaseService<WheelDocument> {
             COLLECTION_NAMES.USER_WHEEL_TICKET,
             result._id,
         );
+
+        return await this.getTicket(userPayload);
     }
 }

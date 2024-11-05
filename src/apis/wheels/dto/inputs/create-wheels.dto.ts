@@ -14,7 +14,7 @@ import {
 import { Transform, Type } from 'class-transformer';
 import { SuperApiProperty } from '@libs/super-core';
 import { WheelPrize } from '../../entities/wheels.entity';
-import { WheelPrizeType } from '../../constants';
+import { WheelPrizeCategory, WheelPrizeType } from '../../constants';
 import { convertStringToObjectId } from 'src/utils/helper';
 import { COLLECTION_NAMES } from 'src/constants';
 import { IsExist } from 'src/common/services/is-exist-constraint.service';
@@ -54,6 +54,17 @@ export class WheelPrizeDto extends WheelPrize {
     @IsNotEmpty()
     @IsEnum(WheelPrizeType)
     type: WheelPrizeType;
+
+    @SuperApiProperty({
+        type: String,
+        description: `Category of the wheel. Available values: ${WheelPrizeCategory.COMMON} | ${WheelPrizeCategory.MEDIUM} | ${WheelPrizeCategory.JACKPOT} | ${WheelPrizeCategory.SUPER_JACKPOT}`,
+        enum: WheelPrizeCategory,
+        required: true,
+        title: 'Category',
+    })
+    @IsNotEmpty()
+    @IsEnum(WheelPrizeCategory)
+    category: WheelPrizeCategory;
 
     @SuperApiProperty({
         type: Number,

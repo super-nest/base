@@ -3,7 +3,7 @@ import { Document, Types } from 'mongoose';
 import { AggregateRoot } from 'src/base/entities/aggregate-root.schema';
 import { COLLECTION_NAMES } from 'src/constants';
 import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft-delete';
-import { WheelPrizeType } from '../constants';
+import { WheelPrizeCategory, WheelPrizeType } from '../constants';
 import { SuperProp } from '@libs/super-core';
 import { User } from 'src/apis/users/entities/user.entity';
 import { AutoPopulate } from '@libs/super-search';
@@ -29,6 +29,9 @@ export class WheelPrize extends Prize {
 
     @SuperProp({ type: String, enum: WheelPrizeType })
     type: WheelPrizeType;
+
+    @SuperProp({ type: String, enum: WheelPrizeCategory })
+    category: WheelPrizeCategory;
 
     @SuperProp({
         type: Types.ObjectId,
