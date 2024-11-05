@@ -22,6 +22,8 @@ import { UpdateWheelsDto } from './dto/inputs/update-wheels.dto';
 import { PlayWheelDTO } from './dto/inputs/play-wheel.dto';
 import { UserWheelTicketDocument } from '../user-wheel-tickets/entities/user-wheel-ticket.entity';
 import _ from 'lodash';
+import { appSettings } from 'src/configs/app-settings';
+import { populateGroupPrizeAggregate } from './common/populate-group.aggregate';
 
 @Injectable()
 export class WheelsService extends BaseService<WheelDocument> {
@@ -36,10 +38,31 @@ export class WheelsService extends BaseService<WheelDocument> {
         super(wheelsModel);
     }
 
+    async getOne(
+        _id: Types.ObjectId,
+        options?: Record<string, any>,
+    ): Promise<any> {
+        const result = await this.model
+            .findOne(
+                {
+                    $or: [{ _id }, { slug: _id }],
+                    ...options,
+                },
+                populateGroupPrizeAggregate,
+            )
+            .autoPopulate()
+            .multipleLanguage(appSettings.mainLanguage);
+
+        return result;
+    }
+
     async getWheel(userPayload: UserPayload) {
-        const wheels = await this.wheelsModel.find({}).limit(1).select({
-            'prizes.rate': 0,
-        });
+        const wheels = await this.wheelsModel
+            .find({}, populateGroupPrizeAggregate)
+            .limit(1)
+            .select({
+                'prizes.rate': 0,
+            });
 
         if (!wheels.length) {
             throw new BadRequestException('Not found any wheel');
