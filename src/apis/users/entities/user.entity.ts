@@ -4,7 +4,7 @@ import { COLLECTION_NAMES } from 'src/constants';
 import { UserStatus } from '../constants';
 import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft-delete';
 import { AutoPopulate } from '@libs/super-search';
-import { File } from 'src/apis/media/entities/files.entity';
+import { File, FileDocument } from 'src/apis/media/entities/files.entity';
 import { AggregateRoot } from 'src/base/entities/aggregate-root.schema';
 import { generateRandomString } from '../common/generate-random-string.util';
 import { SuperProp } from '@libs/super-core/decorators/super-prop.decorator';
@@ -79,7 +79,7 @@ export class User extends AggregateRoot {
     @AutoPopulate({
         ref: COLLECTION_NAMES.FILE,
     })
-    avatar: File;
+    avatar: FileDocument;
 
     @SuperProp({
         type: Number,
@@ -106,7 +106,7 @@ export class User extends AggregateRoot {
     @AutoPopulate({
         ref: COLLECTION_NAMES.ROLE,
     })
-    role: Types.ObjectId | RoleDocument;
+    role: RoleDocument;
 
     @SuperProp({
         type: String,

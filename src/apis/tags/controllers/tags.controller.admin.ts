@@ -10,8 +10,8 @@ import {
 } from 'src/pipes/page-result.dto.pipe';
 import { ParseObjectIdPipe } from 'src/pipes/parse-object-id.pipe';
 import { ParseObjectIdArrayPipe } from 'src/pipes/parse-object-ids.pipe';
-import { CreateTagDto } from '../dto/create-tags.dto';
-import { UpdateTagDto } from '../dto/update-tags.dto';
+import { CreateTagDto } from '../dto/inputs/create-tags.dto';
+import { UpdateTagDto } from '../dto/inputs/update-tags.dto';
 import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
 import { AUDIT_EVENT } from 'src/packages/audits/constants';
 import { SuperPost } from '@libs/super-core/decorators/super-post.decorator';
@@ -21,6 +21,8 @@ import { SuperGet } from '@libs/super-core/decorators/super-get.decorator';
 import { SuperAuthorize } from '@libs/super-authorize/decorators/authorize.decorator';
 import { PERMISSION, Resource } from '@libs/super-authorize';
 import { Me } from 'src/decorators/me.decorator';
+import { Tag } from '../entities/tags.entity';
+import { ResultTagDto } from '../dto/outputs/result-tag.dto';
 
 @Controller('tags')
 @Resource('tags')
@@ -32,7 +34,7 @@ import { Me } from 'src/decorators/me.decorator';
 export class TagsControllerAdmin {
     constructor(private readonly tagsService: TagsService) {}
 
-    @SuperGet()
+    @SuperGet({ output: Tag, isArrayOutput: true })
     @SuperAuthorize(PERMISSION.GET)
     async getAll(
         @Query(new PagingDtoPipe())
@@ -42,7 +44,7 @@ export class TagsControllerAdmin {
         return result;
     }
 
-    @SuperGet({ route: ':id' })
+    @SuperGet({ route: ':id', output: ResultTagDto })
     @SuperAuthorize(PERMISSION.GET)
     @ApiParam({ name: 'id', type: String })
     async getOne(@Param('id', ParseObjectIdPipe) _id: Types.ObjectId) {
@@ -50,7 +52,7 @@ export class TagsControllerAdmin {
         return result;
     }
 
-    @SuperPost({ dto: CreateTagDto })
+    @SuperPost({ input: CreateTagDto })
     @SuperAuthorize(PERMISSION.POST)
     async create(@Body() createTagDto: CreateTagDto, @Me() user: UserPayload) {
         const { name } = createTagDto;

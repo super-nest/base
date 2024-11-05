@@ -1,6 +1,5 @@
 import { PartialType } from '@nestjs/swagger';
 import { ExcludeDto } from 'src/base/dto/exclude.dto';
-import { WheelPrize } from '../entities/wheels.entity';
 
 import {
     IsEnum,
@@ -13,8 +12,9 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { WheelPrizeType } from '../constants';
 import { SuperApiProperty } from '@libs/super-core';
+import { WheelPrize } from '../../entities/wheels.entity';
+import { WheelPrizeType } from '../../constants';
 
 export class WheelPrizeDto extends WheelPrize {
     @SuperApiProperty({

@@ -53,7 +53,7 @@ export class AdvertisersControllerAdmin {
     }
 
     @SuperPost({
-        dto: CreateAdvertiserDto,
+        input: CreateAdvertiserDto,
     })
     @SuperAuthorize(PERMISSION.POST)
     async create(

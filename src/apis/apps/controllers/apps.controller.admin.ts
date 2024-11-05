@@ -58,7 +58,7 @@ export class AppsControllerAdmin {
     }
 
     @SuperPost({
-        dto: CreateAppDto,
+        input: CreateAppDto,
     })
     @SuperAuthorize(PERMISSION.POST)
     async create(@Body() createAppDto: CreateAppDto, @Me() user: UserPayload) {

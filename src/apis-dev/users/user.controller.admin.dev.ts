@@ -21,7 +21,7 @@ class _UserControllerAdminDevExport {
 
     @SuperPost({
         route: 'dev-only-route/truncate-all-info-user',
-        dto: TruncateAllInfoUserDto,
+        input: TruncateAllInfoUserDto,
     })
     @SuperAuthorize(PERMISSION.POST)
     async truncateAllInfoUser(

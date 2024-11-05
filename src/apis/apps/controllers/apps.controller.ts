@@ -33,7 +33,7 @@ export class AppsController {
     constructor(private readonly appsService: AppsService) {}
 
     @SuperPost({
-        dto: SubmitAppDto,
+        input: SubmitAppDto,
     })
     @SuperAuthorize(PERMISSION.POST)
     async create(@Body() data: SubmitAppDto, @Me() user: UserPayload) {

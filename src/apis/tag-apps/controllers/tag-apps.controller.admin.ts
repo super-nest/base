@@ -44,7 +44,7 @@ export class TagAppsControllerAdmin {
     }
 
     @SuperPost({
-        dto: CreateTagAppDto,
+        input: CreateTagAppDto,
     })
     @SuperAuthorize(PERMISSION.POST)
     async create(

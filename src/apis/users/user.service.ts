@@ -35,9 +35,9 @@ import {
 import { UserTransactionService } from '../user-transaction/user-transaction.service';
 import { generateRandomString } from './common/generate-random-string.util';
 import { UserCacheKey, UserStatus } from './constants';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateMeDto } from './dto/update-me.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from './dto/inputs/create-user.dto';
+import { UpdateMeDto } from './dto/inputs/update-me.dto';
+import { UpdateUserDto } from './dto/inputs/update-user.dto';
 import { UserDocument } from './entities/user.entity';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
@@ -46,6 +46,7 @@ import { ExtendedPagingDto } from 'src/pipes/page-result.dto.pipe';
 import bcrypt from 'bcrypt';
 import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { TelegramBotDocument } from '../telegram-bot/entities/telegram-bot.entity';
+import { UserTransactionDocument } from '../user-transaction/entities/user-transaction.entity';
 
 @Injectable()
 export class UserService
@@ -97,10 +98,10 @@ export class UserService
         userId: Types.ObjectId,
         userTransactionType: UserTransactionType,
         amount: number,
-        refSource: string,
-        refId: Types.ObjectId,
         userTransactionAction: UserTransactionAction,
         origin?: string,
+        refSource?: COLLECTION_NAMES,
+        refId?: Types.ObjectId,
     ) {
         if (amount == 0 || amount < 0) {
             return;
@@ -154,7 +155,23 @@ export class UserService
             );
 
             this.websocketGateway.sendPointsUpdate(user._id, after);
+
+            return userTransaction;
         }
+    }
+
+    async afterCreateUserTransaction(
+        userTransaction: UserTransactionDocument,
+        refSource: COLLECTION_NAMES,
+        refId: Types.ObjectId,
+    ) {
+        await this.userModel.updateOne(
+            { _id: userTransaction.createdBy },
+            {
+                refSource,
+                refId,
+            },
+        );
     }
 
     async getAllAdmin(queryParams: ExtendedPagingDto) {

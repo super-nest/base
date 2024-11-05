@@ -46,7 +46,7 @@ export class PagesControllerAdmin {
         return result;
     }
 
-    @SuperPost({ dto: CreatePagesDto })
+    @SuperPost({ input: CreatePagesDto })
     @SuperAuthorize(PERMISSION.POST)
     @ApiParam({
         name: 'locale',

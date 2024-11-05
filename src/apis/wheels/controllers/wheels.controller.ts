@@ -1,5 +1,5 @@
 import { Controller, Req } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { WheelsService } from '../wheels.service';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { PERMISSION, Resource, SuperAuthorize } from '@libs/super-authorize';
@@ -8,6 +8,8 @@ import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
 import { AUDIT_EVENT } from 'src/packages/audits/constants';
 import { COLLECTION_NAMES } from 'src/constants';
 import { Me } from 'src/decorators/me.decorator';
+import { CountTicketResponseDTO } from '../dto/outputs/cout-ticket-response.dto';
+import { GetWheelResponseDTO } from '../dto/outputs/get-wheel-resonse.dto';
 
 @Controller('wheels')
 @Resource('wheels')
@@ -19,19 +21,19 @@ import { Me } from 'src/decorators/me.decorator';
 export class WheelsController {
     constructor(private readonly wheelsService: WheelsService) {}
 
-    @SuperGet()
+    @SuperGet({ output: GetWheelResponseDTO })
     @SuperAuthorize(PERMISSION.GET)
     async getScratch(@Me() user: UserPayload) {
         return await this.wheelsService.getWheel(user);
     }
 
-    @SuperGet({ route: 'count-ticket' })
+    @SuperGet({ route: 'count-ticket', output: CountTicketResponseDTO })
     @SuperAuthorize(PERMISSION.GET)
     async countTicket(@Me() user: UserPayload) {
         return await this.wheelsService.getTicket(user);
     }
 
-    @SuperPost({ route: 'buy' })
+    @SuperPost({ route: 'buy-ticket' })
     @SuperAuthorize(PERMISSION.POST)
     async buyTicket(
         @Req() req: { headers: Record<string, string> },

@@ -1,21 +1,18 @@
 import { applyDecorators, Post } from '@nestjs/common';
 import { addDtoProperties } from '../modules/data-transfer-objects/common/add-dto-properties.utils';
-import { ApiBearerAuth, ApiBody, ApiQuery } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { appSettings } from 'src/configs/app-settings';
 
 export interface SuperPostOptions {
     route?: string;
-    dto?: new () => any;
+    input?: new () => any;
+    output?: new () => any;
 }
 
 export const SuperPost = (option?: SuperPostOptions) => {
-    const { route, dto } = option || {};
+    const { route, input, output } = option || {};
 
-    if (dto) {
-        addDtoProperties(dto);
-    }
-
-    return applyDecorators(
+    const decorators = [
         ApiBearerAuth(),
         ApiQuery({
             name: 'locale',
@@ -24,7 +21,23 @@ export const SuperPost = (option?: SuperPostOptions) => {
             description: 'Locale of the request',
             example: appSettings.mainLanguage,
         }),
-        ApiBody({ type: dto }),
         Post(route),
-    );
+    ];
+
+    if (input) {
+        addDtoProperties(input);
+        decorators.push(ApiBody({ type: input }));
+    }
+
+    if (output) {
+        decorators.push(
+            ApiResponse({
+                status: 201,
+                description: 'Successful response',
+                type: output,
+            }),
+        );
+    }
+
+    return applyDecorators(...decorators);
 };

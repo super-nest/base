@@ -8,7 +8,7 @@ import { BaseService } from 'src/base/service/base.service';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
 import { UserPayload } from 'src/base/models/user-payload.model';
-import { UpdateRoleDto } from './dto/update-role.dto';
+import { UpdateRoleDto } from './dto/inputs/update-role.dto';
 
 @Injectable()
 export class RolesService extends BaseService<RoleDocument> {

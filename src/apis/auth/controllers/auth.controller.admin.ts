@@ -26,7 +26,7 @@ import { Me } from 'src/decorators/me.decorator';
 export class AuthControllerAdmin {
     constructor(private readonly authService: AuthService) {}
 
-    @SuperPost({ route: 'login', dto: UserLoginDto })
+    @SuperPost({ route: 'login', input: UserLoginDto })
     @UseGuards(LocalAuthGuard)
     async login(@Me() user: UserPayload) {
         if (!user) {

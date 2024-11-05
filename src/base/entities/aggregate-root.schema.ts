@@ -33,4 +33,5 @@ export abstract class AggregateRoot extends Document<Types.ObjectId> {
 
     createdAt: Date;
     updatedAt: Date;
+    _id: Types.ObjectId;
 }

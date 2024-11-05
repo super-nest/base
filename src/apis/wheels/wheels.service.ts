@@ -2,8 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { BaseService } from 'src/base/service/base.service';
 import { WheelDocument, WheelPrize } from './entities/wheels.entity';
 import { COLLECTION_NAMES } from 'src/constants';
-import { UpdateWheelsDto } from './dto/update-wheels.dto';
-import { CreateWheelsDto } from './dto/create-wheels.dto';
 import { Types } from 'mongoose';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { UserService } from '../users/user.service';
@@ -19,6 +17,8 @@ import {
 import { UserWheelTicketsService } from '../user-wheel-tickets/user-wheel-tickets.service';
 import dayjs from 'dayjs';
 import { TicketStatus, TypeTicket } from '../user-wheel-tickets/constant';
+import { CreateWheelsDto } from './dto/inputs/create-wheels.dto';
+import { UpdateWheelsDto } from './dto/inputs/update-wheels.dto';
 
 @Injectable()
 export class WheelsService extends BaseService<WheelDocument> {
@@ -33,7 +33,7 @@ export class WheelsService extends BaseService<WheelDocument> {
         super(wheelsModel);
     }
 
-    async getWheel(user: UserPayload) {
+    async getWheel(userPayload: UserPayload) {
         const wheels = await this.wheelsModel.find({}).limit(1).select({
             'prizes.rate': 0,
         });
@@ -44,7 +44,19 @@ export class WheelsService extends BaseService<WheelDocument> {
 
         const [wheel] = wheels;
 
-        return wheel;
+        const now = dayjs();
+        const startDay = now.startOf('day').toDate();
+        const endDay = now.endOf('day').toDate();
+        const countTicketToday =
+            await this.userWheelTicketsService.model.countDocuments({
+                createdBy: userPayload._id,
+                createdAt: {
+                    $gte: startDay,
+                    $lte: endDay,
+                },
+            });
+
+        return { ...wheel, todayBuy: countTicketToday };
     }
 
     async createOne(
@@ -153,20 +165,14 @@ export class WheelsService extends BaseService<WheelDocument> {
         wheelId: Types.ObjectId,
         prize: number,
     ) {
-        const user = await this.userService.model.findOne({ _id: userId });
-
-        if (!user) {
-            throw new BadRequestException('Not found user');
-        }
-
         await this.userService.createUserTransaction(
             userId,
             UserTransactionType.SUM,
             prize,
-            COLLECTION_NAMES.USER_WHEEL_TICKET,
-            wheelId,
             UserTransactionAction.WHEEL,
             origin,
+            COLLECTION_NAMES.USER_WHEEL_TICKET,
+            wheelId,
         );
 
         return prize;
@@ -182,12 +188,13 @@ export class WheelsService extends BaseService<WheelDocument> {
             throw new BadRequestException('Not found user');
         }
 
-        const { currentPoint } = user;
-
-        const after = currentPoint - wheel.fee;
-        if (after < 0) {
-            throw new BadRequestException('Not enough point');
-        }
+        const userTransaction = await this.userService.createUserTransaction(
+            userPayload._id,
+            UserTransactionType.SUB,
+            wheel.fee,
+            UserTransactionAction.BUY_TICKET,
+            origin,
+        );
 
         const now = dayjs();
         const startDay = now.startOf('day').toDate();
@@ -212,14 +219,10 @@ export class WheelsService extends BaseService<WheelDocument> {
             createdBy: userPayload._id,
         });
 
-        await this.userService.createUserTransaction(
-            userPayload._id,
-            UserTransactionType.SUB,
-            wheel.fee,
+        await this.userService.afterCreateUserTransaction(
+            userTransaction,
             COLLECTION_NAMES.USER_WHEEL_TICKET,
-            result.id,
-            UserTransactionAction.BUY_TICKET,
-            origin,
+            result._id,
         );
     }
 }

@@ -52,7 +52,7 @@ export class ReviewRatingController {
     }
 
     @SuperPost({
-        dto: CreateReviewRatingDto,
+        input: CreateReviewRatingDto,
     })
     @SuperAuthorize(PERMISSION.POST)
     async create(

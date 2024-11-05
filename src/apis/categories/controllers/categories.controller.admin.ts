@@ -51,7 +51,7 @@ export class CategoriesControllerAdmin {
     }
 
     @SuperPost({
-        dto: CreateCategoryDto,
+        input: CreateCategoryDto,
     })
     @SuperAuthorize(PERMISSION.POST)
     async create(

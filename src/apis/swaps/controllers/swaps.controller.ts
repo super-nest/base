@@ -25,7 +25,7 @@ import { AfterSwapsDto } from '../dto/after-swaps.dto';
 export class SwapsController {
     constructor(private readonly swapsService: SwapsService) {}
 
-    @SuperPost({ route: 'after-swap', dto: AfterSwapsDto })
+    @SuperPost({ route: 'after-swap', input: AfterSwapsDto })
     @SuperAuthorize(PERMISSION.POST)
     async afterSwap(
         @Me() user: UserPayload,
@@ -47,7 +47,7 @@ export class SwapsController {
         return result;
     }
 
-    @SuperPost({ dto: CreateSwapsDto })
+    @SuperPost({ input: CreateSwapsDto })
     @SuperAuthorize(PERMISSION.POST)
     async swap(
         @Body() createSwapsDto: CreateSwapsDto,
