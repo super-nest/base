@@ -68,17 +68,6 @@ export class Wheel extends AggregateRoot {
     })
     limit: number;
 
-    @SuperProp({
-        type: Number,
-        required: true,
-        cms: {
-            label: 'Free Daily',
-            tableShow: true,
-            columnPosition: 4,
-        },
-    })
-    freeDaily: number;
-
     @SuperProp({ type: [WheelPrize] })
     prizes: WheelPrize[];
 

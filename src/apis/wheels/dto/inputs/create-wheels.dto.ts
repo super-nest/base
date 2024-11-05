@@ -1,6 +1,5 @@
 import { PartialType } from '@nestjs/swagger';
 import { ExcludeDto } from 'src/base/dto/exclude.dto';
-import { WheelPrize } from '../entities/wheels.entity';
 
 import {
     IsEnum,
@@ -13,8 +12,9 @@ import {
     ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { WheelPrizeType } from '../constants';
 import { SuperApiProperty } from '@libs/super-core';
+import { WheelPrize } from '../../entities/wheels.entity';
+import { WheelPrizeType } from '../../constants';
 
 export class WheelPrizeDto extends WheelPrize {
     @SuperApiProperty({
@@ -89,14 +89,14 @@ export class CreateWheelsDto extends PartialType(ExcludeDto) {
 
     @SuperApiProperty({
         type: Number,
-        description: 'Free daily of the wheel',
+        description: 'Limit ticket can buy',
         example: 1,
         required: true,
-        title: 'Free Daily Of Wheel',
+        title: 'Limit Ticket Can Buy',
     })
     @IsNotEmpty()
     @IsNumber()
-    freeDaily: number;
+    limit: number;
 
     @SuperApiProperty({
         type: [WheelPrizeDto],

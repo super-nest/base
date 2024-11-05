@@ -7,7 +7,7 @@ import { IUploadedMulterFile } from 'src/packages/s3/s3.service';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
 import { AUDIT_EVENT } from 'src/packages/audits/constants';
-import { UploadMediaDto } from '../dto/upload-media.dto';
+import { UploadMediaDto } from '../dto/inputs/upload-media.dto';
 import { MediaService } from '../medias.service';
 import { SuperPost } from '@libs/super-core/decorators/super-post.decorator';
 import { SuperAuthorize } from '@libs/super-authorize/decorators/authorize.decorator';
@@ -24,7 +24,7 @@ import { Me } from 'src/decorators/me.decorator';
 export class MediaController {
     constructor(private readonly mediaService: MediaService) {}
 
-    @SuperPost({ dto: UploadMediaDto })
+    @SuperPost({ input: UploadMediaDto })
     @ApiConsumes('multipart/form-data')
     @SuperAuthorize(PERMISSION.POST)
     @UseInterceptors(

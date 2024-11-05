@@ -51,7 +51,7 @@ export class TelegramBotControllerAdmin {
     }
 
     @SuperPost({
-        dto: CreateTelegramBotDto,
+        input: CreateTelegramBotDto,
     })
     @SuperAuthorize(PERMISSION.POST)
     async create(

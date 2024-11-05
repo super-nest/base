@@ -18,7 +18,7 @@ import { Resource } from '@libs/super-authorize';
 export class FormBuilderController {
     constructor(private readonly formBuilderService: FormBuilderService) {}
 
-    @SuperPost({ dto: CreateFormBuildersDto })
+    @SuperPost({ input: CreateFormBuildersDto })
     async create(@Body() createFormBuilderDto: CreateFormBuildersDto) {
         const result = await this.formBuilderService.createOne(
             createFormBuilderDto,

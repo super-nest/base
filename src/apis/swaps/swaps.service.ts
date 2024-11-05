@@ -240,6 +240,15 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 );
             }
 
+            const userTransaction =
+                await this.userService.createUserTransaction(
+                    userPayload._id,
+                    UserTransactionType.SUB,
+                    amount,
+                    UserTransactionAction.SWAP,
+                    origin,
+                );
+
             const signer = await mnemonicToPrivateKey(
                 appSettings.swap.walletMNEMONIC.split(' '),
             );
@@ -276,14 +285,10 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 isCreated = true;
                 swapId = swap._id;
 
-                await this.userService.createUserTransaction(
-                    userPayload._id,
-                    UserTransactionType.SUB,
-                    amount,
+                await this.userService.afterCreateUserTransaction(
+                    userTransaction,
                     COLLECTION_NAMES.USER_SWAP,
                     swap._id,
-                    UserTransactionAction.SWAP,
-                    origin,
                 );
             }
 
@@ -312,10 +317,10 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 userId,
                 UserTransactionType.SUM,
                 userSwap.point,
-                COLLECTION_NAMES.USER_SWAP,
-                userSwap._id,
                 UserTransactionAction.ROLLBACK_SWAP,
                 null,
+                COLLECTION_NAMES.USER_SWAP,
+                userSwap._id,
             );
 
             await this.swapModel.updateOne(

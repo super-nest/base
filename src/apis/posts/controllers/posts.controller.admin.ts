@@ -68,7 +68,7 @@ export class PostsControllerAdmin {
         return result;
     }
 
-    @SuperPost({ route: ':type', dto: CreatePostDto })
+    @SuperPost({ route: ':type', input: CreatePostDto })
     @SuperAuthorize(PERMISSION.POST)
     @ApiParam({
         name: 'locale',

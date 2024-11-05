@@ -29,7 +29,7 @@ export class AuthController {
 
     @SuperPost({
         route: 'login-telegram-provider',
-        dto: UserLoginTelegramDto,
+        input: UserLoginTelegramDto,
     })
     @UseGuards(LoginTelegramProviderGuard)
     async loginTelegramProvider(

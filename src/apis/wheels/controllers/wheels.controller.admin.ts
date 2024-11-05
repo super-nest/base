@@ -9,14 +9,14 @@ import { ParseObjectIdPipe } from 'src/pipes/parse-object-id.pipe';
 import { ParseObjectIdArrayPipe } from 'src/pipes/parse-object-ids.pipe';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { Types } from 'mongoose';
-import { CreateWheelsDto } from '../dto/create-wheels.dto';
-import { UpdateWheelsDto } from '../dto/update-wheels.dto';
 import { PERMISSION, Resource, SuperAuthorize } from '@libs/super-authorize';
 import { SuperGet, SuperPost, SuperPut, SuperDelete } from '@libs/super-core';
 import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
 import { AUDIT_EVENT } from 'src/packages/audits/constants';
 import { COLLECTION_NAMES } from 'src/constants';
 import { Me } from 'src/decorators/me.decorator';
+import { CreateWheelsDto } from '../dto/inputs/create-wheels.dto';
+import { UpdateWheelsDto } from '../dto/inputs/update-wheels.dto';
 
 @Controller('wheels')
 @Resource('wheels')
@@ -47,7 +47,7 @@ export class WheelsControllerAdmin {
     }
 
     @SuperPost({
-        dto: CreateWheelsDto,
+        input: CreateWheelsDto,
     })
     @SuperAuthorize(PERMISSION.POST)
     async create(
