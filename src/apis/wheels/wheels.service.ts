@@ -19,6 +19,9 @@ import dayjs from 'dayjs';
 import { TicketStatus, TypeTicket } from '../user-wheel-tickets/constant';
 import { CreateWheelsDto } from './dto/inputs/create-wheels.dto';
 import { UpdateWheelsDto } from './dto/inputs/update-wheels.dto';
+import { PlayWheelDTO } from './dto/inputs/play-wheel.dto';
+import { UserWheelTicketDocument } from '../user-wheel-tickets/entities/user-wheel-ticket.entity';
+import _ from 'lodash';
 
 @Injectable()
 export class WheelsService extends BaseService<WheelDocument> {
@@ -107,56 +110,100 @@ export class WheelsService extends BaseService<WheelDocument> {
         return result;
     }
 
-    async play(user: UserPayload, origin: string) {
+    async playWheels(
+        playWheelDTO: PlayWheelDTO,
+        user: UserPayload,
+        origin: string,
+    ) {
         const { _id: userId } = user;
+        const { spinCount = 1 } = playWheelDTO || {};
+
         const wheels = await this.wheelsModel.find({}).limit(1);
-        const [wheel] = wheels;
-        const ticket = await this.userWheelTicketsService.model.findOne({
-            createdBy: userId,
-            status: TicketStatus.NEW,
-        });
-        if (!ticket) {
-            throw new BadRequestException('Not found ticket');
+        const wheel = wheels[0];
+
+        const tickets = await this.userWheelTicketsService.model
+            .find({
+                createdBy: userId,
+                status: TicketStatus.NEW,
+            })
+            .limit(spinCount);
+
+        if (!_.size(tickets) || _.size(tickets) < spinCount) {
+            throw new BadRequestException(`Not enough ticket to play`);
         }
 
-        const { prizes } = wheel;
-        const totalRate = prizes.reduce((sum, prize) => {
-            const currentSum = sum + prize.rate;
-            return currentSum;
-        }, 0);
-
-        const randomValue = Math.random() * totalRate;
-
-        let accumulatedRate = 0;
-        let selectedPrize: WheelPrize | null = null;
-        let indexSelectedPrize = 0;
-        for (let i = 0; i < prizes.length; i++) {
-            const prize = prizes[i];
-            accumulatedRate += prize.rate;
-            if (randomValue <= accumulatedRate) {
-                selectedPrize = prize;
-                indexSelectedPrize = i;
-                break;
-            }
-        }
-
-        if (!selectedPrize) {
-            throw new BadRequestException('Not found any prize');
-        }
-
-        const { prize } = selectedPrize;
-
-        const result =
-            await this.userWheelTicketsService.model.findOneAndUpdate(
-                { _id: ticket._id },
-                { status: TicketStatus.USED },
+        const result = [];
+        for (let i = 0; i < tickets.length; i++) {
+            const currentTicket = tickets[i];
+            const playResult = await this.play(
+                wheel,
+                currentTicket,
+                user,
+                origin,
             );
-        if (!result) {
-            throw new Error('Failed to update ticket');
+            result.push(playResult);
         }
 
-        await this.addPrizeForUser(userId, origin, result._id, prize);
-        return { ...selectedPrize, indexSelectedPrize, rate: null };
+        return result;
+    }
+
+    async play(
+        wheel: WheelDocument,
+        ticket: UserWheelTicketDocument,
+        user: UserPayload,
+        origin: string,
+    ) {
+        let userWheelTicketId: Types.ObjectId;
+        try {
+            const { prizes } = wheel;
+            const totalRate = prizes.reduce((sum, prize) => {
+                const currentSum = sum + prize.rate;
+                return currentSum;
+            }, 0);
+
+            const randomValue = Math.random() * totalRate;
+
+            let accumulatedRate = 0;
+            let selectedPrize: WheelPrize | null = null;
+            let indexSelectedPrize = 0;
+            for (let i = 0; i < prizes.length; i++) {
+                const prize = prizes[i];
+                accumulatedRate += prize.rate;
+                if (randomValue <= accumulatedRate) {
+                    selectedPrize = prize;
+                    indexSelectedPrize = i;
+                    break;
+                }
+            }
+
+            if (!selectedPrize) {
+                throw new BadRequestException('Not found any prize');
+            }
+
+            const { prize } = selectedPrize;
+
+            const result =
+                await this.userWheelTicketsService.model.findOneAndUpdate(
+                    { _id: ticket._id },
+                    { status: TicketStatus.USED },
+                );
+
+            if (!result) {
+                throw new Error('Failed to update ticket');
+            }
+
+            userWheelTicketId = result._id;
+            await this.addPrizeForUser(user._id, origin, result._id, prize);
+            return { ...selectedPrize, indexSelectedPrize, rate: null };
+        } catch (error) {
+            if (userWheelTicketId) {
+                await this.userWheelTicketsService.model.findOneAndUpdate(
+                    { _id: userWheelTicketId },
+                    { status: TicketStatus.NEW },
+                );
+            }
+            throw error;
+        }
     }
 
     async addPrizeForUser(
@@ -170,7 +217,7 @@ export class WheelsService extends BaseService<WheelDocument> {
             UserTransactionType.SUM,
             prize,
             UserTransactionAction.WHEEL,
-            origin,
+            null,
             COLLECTION_NAMES.USER_WHEEL_TICKET,
             wheelId,
         );

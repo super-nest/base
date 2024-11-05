@@ -11,10 +11,14 @@ import {
     Min,
     ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { SuperApiProperty } from '@libs/super-core';
 import { WheelPrize } from '../../entities/wheels.entity';
 import { WheelPrizeType } from '../../constants';
+import { convertStringToObjectId } from 'src/utils/helper';
+import { COLLECTION_NAMES } from 'src/constants';
+import { IsExist } from 'src/common/services/is-exist-constraint.service';
+import { Types } from 'mongoose';
 
 export class WheelPrizeDto extends WheelPrize {
     @SuperApiProperty({
@@ -65,14 +69,20 @@ export class WheelPrizeDto extends WheelPrize {
 
     @SuperApiProperty({
         type: String,
-        description: 'Color of the wheel',
-        example: '#000000',
-        required: false,
-        title: 'Color Of Wheel',
+        description: 'Featured image id of the app',
+        default: '60f3b3b3b3b3b3b3b3b3b3',
+        title: 'Featured Image',
+        cms: {
+            ref: COLLECTION_NAMES.FILE,
+        },
     })
     @IsOptional()
-    @IsString()
-    color: string;
+    @Transform(({ value }) => convertStringToObjectId(value))
+    @IsExist({
+        collectionName: COLLECTION_NAMES.FILE,
+        message: 'Featured image does not exist',
+    })
+    image: Types.ObjectId;
 }
 
 export class CreateWheelsDto extends PartialType(ExcludeDto) {

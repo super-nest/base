@@ -1,4 +1,4 @@
-import { Controller, Req } from '@nestjs/common';
+import { Body, Controller, Req } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { WheelsService } from '../wheels.service';
 import { UserPayload } from 'src/base/models/user-payload.model';
@@ -10,6 +10,7 @@ import { COLLECTION_NAMES } from 'src/constants';
 import { Me } from 'src/decorators/me.decorator';
 import { CountTicketResponseDTO } from '../dto/outputs/cout-ticket-response.dto';
 import { GetWheelResponseDTO } from '../dto/outputs/get-wheel-resonse.dto';
+import { PlayWheelDTO } from '../dto/inputs/play-wheel.dto';
 
 @Controller('wheels')
 @Resource('wheels')
@@ -46,11 +47,11 @@ export class WheelsController {
     @SuperPost({ route: 'play' })
     @SuperAuthorize(PERMISSION.POST)
     async play(
+        @Body() playWheelDTO: PlayWheelDTO,
         @Req() req: { headers: Record<string, string> },
         @Me() user: UserPayload,
     ) {
         const origin = req.headers['origin'];
-
-        return await this.wheelsService.play(user, origin);
+        return await this.wheelsService.playWheels(playWheelDTO, user, origin);
     }
 }

@@ -7,11 +7,13 @@ import { WheelPrizeType } from '../constants';
 import { SuperProp } from '@libs/super-core';
 import { User } from 'src/apis/users/entities/user.entity';
 import { AutoPopulate } from '@libs/super-search';
+import { File } from 'src/apis/media/entities/files.entity';
 
 export class Prize {
     rate: number;
 }
 
+@Schema({})
 export class WheelPrize extends Prize {
     @SuperProp({ type: Number })
     prize: number;
@@ -22,11 +24,23 @@ export class WheelPrize extends Prize {
     @SuperProp({ type: String })
     name: string;
 
-    @SuperProp({ type: String })
-    color: string;
-
     @SuperProp({ type: String, enum: WheelPrizeType })
     type: WheelPrizeType;
+
+    @SuperProp({
+        type: Types.ObjectId,
+        ref: COLLECTION_NAMES.FILE,
+        refClass: File,
+        cms: {
+            label: 'Featured Image',
+            tableShow: true,
+            columnPosition: 3,
+        },
+    })
+    @AutoPopulate({
+        ref: COLLECTION_NAMES.FILE,
+    })
+    image: Types.ObjectId;
 }
 
 @Schema({
