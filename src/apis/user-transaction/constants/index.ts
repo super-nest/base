@@ -18,6 +18,7 @@ export enum UserTransactionAction {
     WHEEL = 'WHEEL',
     SWAP = 'SWAP',
     ROLLBACK_SWAP = 'ROLLBACK_SWAP',
+    BUY_TICKET = 'BUY_TICKET',
 }
 
 export enum ParamTimeType {

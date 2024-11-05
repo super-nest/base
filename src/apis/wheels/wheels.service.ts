@@ -6,7 +6,6 @@ import { UpdateWheelsDto } from './dto/update-wheels.dto';
 import { CreateWheelsDto } from './dto/create-wheels.dto';
 import { Types } from 'mongoose';
 import { UserPayload } from 'src/base/models/user-payload.model';
-import { TelegramBotDocument } from '../telegram-bot/entities/telegram-bot.entity';
 import { UserService } from '../users/user.service';
 import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { UserWheelsService } from '../user-wheels/user-wheels.service';
@@ -17,6 +16,9 @@ import {
     UserTransactionAction,
     UserTransactionType,
 } from '../user-transaction/constants';
+import { UserWheelTicketsService } from '../user-wheel-tickets/user-wheel-tickets.service';
+import dayjs from 'dayjs';
+import { TicketStatus, TypeTicket } from '../user-wheel-tickets/constant';
 
 @Injectable()
 export class WheelsService extends BaseService<WheelDocument> {
@@ -26,6 +28,7 @@ export class WheelsService extends BaseService<WheelDocument> {
         private readonly userService: UserService,
         private readonly telegramBotService: TelegramBotService,
         private readonly userWheelsService: UserWheelsService,
+        private readonly userWheelTicketsService: UserWheelTicketsService,
     ) {
         super(wheelsModel);
     }
@@ -42,47 +45,6 @@ export class WheelsService extends BaseService<WheelDocument> {
         const [wheel] = wheels;
 
         return wheel;
-    }
-
-    async play(user: UserPayload, origin: string) {
-        const { _id: userId } = user;
-        const telegramBot = await this.telegramBotService.findByDomain(origin);
-
-        const wheels = await this.wheelsModel.find({}).limit(1);
-
-        const [wheel] = wheels;
-
-        if (!wheel) {
-            throw new BadRequestException('Not found any wheel');
-        }
-
-        await this.buyTicket(userId, wheel, telegramBot);
-
-        const { prizes } = wheel;
-        const totalRate = prizes.reduce((sum, prize) => sum + prize.rate, 0);
-        const randomValue = Math.random() * totalRate;
-
-        let accumulatedRate = 0;
-        let selectedPrize: WheelPrize | null = null;
-        let indexSelectedPrize = 0;
-        for (let i = 0; i < prizes.length; i++) {
-            const prize = prizes[i];
-            accumulatedRate += prize.rate;
-            if (randomValue <= accumulatedRate) {
-                selectedPrize = prize;
-                indexSelectedPrize = i;
-                break;
-            }
-        }
-
-        if (!selectedPrize) {
-            throw new BadRequestException('Not found any prize');
-        }
-
-        const { prize } = selectedPrize;
-
-        await this.addPrizeForUser(userId, telegramBot, wheel._id, prize);
-        return { ...selectedPrize, indexSelectedPrize, rate: null };
     }
 
     async createOne(
@@ -125,10 +87,69 @@ export class WheelsService extends BaseService<WheelDocument> {
 
         return result;
     }
+    async getTicket(user: UserPayload) {
+        const result = await this.userWheelTicketsService.model.countDocuments({
+            createdBy: new Types.ObjectId(user._id),
+            status: TicketStatus.NEW,
+        });
+        return result;
+    }
+
+    async play(user: UserPayload, origin: string) {
+        const { _id: userId } = user;
+        const wheels = await this.wheelsModel.find({}).limit(1);
+        const [wheel] = wheels;
+        const ticket = await this.userWheelTicketsService.model.findOne({
+            createdBy: userId,
+            status: TicketStatus.NEW,
+        });
+        if (!ticket) {
+            throw new BadRequestException('Not found ticket');
+        }
+
+        const { prizes } = wheel;
+        const totalRate = prizes.reduce((sum, prize) => {
+            const currentSum = sum + prize.rate;
+            return currentSum;
+        }, 0);
+
+        const randomValue = Math.random() * totalRate;
+
+        let accumulatedRate = 0;
+        let selectedPrize: WheelPrize | null = null;
+        let indexSelectedPrize = 0;
+        for (let i = 0; i < prizes.length; i++) {
+            const prize = prizes[i];
+            accumulatedRate += prize.rate;
+            if (randomValue <= accumulatedRate) {
+                selectedPrize = prize;
+                indexSelectedPrize = i;
+                break;
+            }
+        }
+
+        if (!selectedPrize) {
+            throw new BadRequestException('Not found any prize');
+        }
+
+        const { prize } = selectedPrize;
+
+        const result =
+            await this.userWheelTicketsService.model.findOneAndUpdate(
+                { _id: ticket._id },
+                { status: TicketStatus.USED },
+            );
+        if (!result) {
+            throw new Error('Failed to update ticket');
+        }
+
+        await this.addPrizeForUser(userId, origin, result._id, prize);
+        return { ...selectedPrize, indexSelectedPrize, rate: null };
+    }
 
     async addPrizeForUser(
         userId: Types.ObjectId,
-        telegramBot: TelegramBotDocument,
+        origin: string,
         wheelId: Types.ObjectId,
         prize: number,
     ) {
@@ -138,61 +159,67 @@ export class WheelsService extends BaseService<WheelDocument> {
             throw new BadRequestException('Not found user');
         }
 
-        const { currentPoint, telegramUserId } = user;
-        const { _id: telegramBotId } = telegramBot || {};
-        const after = currentPoint + prize;
-
-        // await this.userService.createUserTransaction(
-        //     userId,
-        //     telegramUserId,
-        //     UserTransactionType.SUM,
-        //     prize,
-        //     currentPoint,
-        //     after,
-        //     COLLECTION_NAMES.WHEEL,
-        //     wheelId,
-        //     telegramBotId,
-        //     UserTransactionAction.WHEEL,
-        // );
+        await this.userService.createUserTransaction(
+            userId,
+            UserTransactionType.SUM,
+            prize,
+            COLLECTION_NAMES.USER_WHEEL_TICKET,
+            wheelId,
+            UserTransactionAction.WHEEL,
+            origin,
+        );
 
         return prize;
     }
 
-    async buyTicket(
-        userId: Types.ObjectId,
-        wheel: WheelDocument,
-        telegramBot: TelegramBotDocument,
-    ) {
-        const user = await this.userService.model.findOne({ _id: userId });
+    async buyTicket(userPayload: UserPayload, origin: string) {
+        const user = await this.userService.model.findOne({
+            _id: userPayload._id,
+        });
+        const wheel = await this.getWheel(userPayload);
 
         if (!user) {
             throw new BadRequestException('Not found user');
         }
 
-        const { currentPoint, telegramUserId } = user;
-        const { _id: telegramBotId } = telegramBot || {};
+        const { currentPoint } = user;
 
         const after = currentPoint - wheel.fee;
         if (after < 0) {
             throw new BadRequestException('Not enough point');
         }
 
-        // await this.userService.createUserTransaction(
-        //     userId,
-        //     telegramUserId,
-        //     UserTransactionType.SUB,
-        //     wheel.fee,
-        //     currentPoint,
-        //     after,
-        //     COLLECTION_NAMES.WHEEL,
-        //     wheel._id,
-        //     telegramBotId,
-        //     UserTransactionAction.WHEELS,
-        // );
+        const now = dayjs();
+        const startDay = now.startOf('day').toDate();
+        const endDay = now.endOf('day').toDate();
+        const countTicketToday =
+            await this.userWheelTicketsService.model.countDocuments({
+                createdBy: userPayload._id,
+                createdAt: {
+                    $gte: startDay,
+                    $lte: endDay,
+                },
+            });
+        if (countTicketToday >= wheel.limit) {
+            throw new BadRequestException(
+                `You can only buy tickets ${wheel.limit} times a day`,
+            );
+        }
 
-        await this.userWheelsService.model.create({
-            createdBy: new Types.ObjectId(userId),
-            wheel: new Types.ObjectId(wheel._id),
+        const result = await this.userWheelTicketsService.model.create({
+            status: TicketStatus.NEW,
+            type: TypeTicket.BUY,
+            createdBy: userPayload._id,
         });
+
+        await this.userService.createUserTransaction(
+            userPayload._id,
+            UserTransactionType.SUB,
+            wheel.fee,
+            COLLECTION_NAMES.USER_WHEEL_TICKET,
+            result.id,
+            UserTransactionAction.BUY_TICKET,
+            origin,
+        );
     }
 }

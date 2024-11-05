@@ -57,6 +57,10 @@ async function bootstrap() {
         });
     }
 
-    await app.listen(appSettings.port);
+    await app.listen(appSettings.port).then(() => {
+        console.log(
+            `Document is running on http://localhost:${appSettings.port}/document`,
+        );
+    });
 }
 bootstrap();
