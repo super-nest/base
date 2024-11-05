@@ -11,6 +11,7 @@ import { Me } from 'src/decorators/me.decorator';
 import { CountTicketResponseDTO } from '../dto/outputs/cout-ticket-response.dto';
 import { GetWheelResponseDTO } from '../dto/outputs/get-wheel-resonse.dto';
 import { PlayWheelDTO } from '../dto/inputs/play-wheel.dto';
+import { BuyTicketDto } from '../dto/inputs/buy-ticket.dto';
 
 @Controller('wheels')
 @Resource('wheels')
@@ -37,11 +38,12 @@ export class WheelsController {
     @SuperPost({ route: 'buy-ticket' })
     @SuperAuthorize(PERMISSION.POST)
     async buyTicket(
+        @Body() buyTicketDto: BuyTicketDto,
         @Req() req: { headers: Record<string, string> },
         @Me() user: UserPayload,
     ) {
         const origin = req.headers['origin'];
-        return await this.wheelsService.buyTicket(user, origin);
+        return await this.wheelsService.buyTicket(buyTicketDto, user, origin);
     }
 
     @SuperPost({ route: 'play' })

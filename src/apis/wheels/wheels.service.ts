@@ -25,6 +25,7 @@ import _ from 'lodash';
 import { appSettings } from 'src/configs/app-settings';
 import { populateGroupPrizeAggregate } from './common/populate-group.aggregate';
 import { WheelPrizeType } from './constants';
+import { BuyTicketDto } from './dto/inputs/buy-ticket.dto';
 
 @Injectable()
 export class WheelsService extends BaseService<WheelDocument> {
@@ -261,7 +262,12 @@ export class WheelsService extends BaseService<WheelDocument> {
         return prize;
     }
 
-    async buyTicket(userPayload: UserPayload, origin: string) {
+    async buyTicket(
+        buyTicketDto: BuyTicketDto,
+        userPayload: UserPayload,
+        origin: string,
+    ) {
+        const { quantity } = buyTicketDto;
         const user = await this.userService.model.findOne({
             _id: userPayload._id,
         });
@@ -290,23 +296,26 @@ export class WheelsService extends BaseService<WheelDocument> {
                     $lte: endDay,
                 },
             });
-        if (countTicketToday >= wheel.limit) {
+
+        if (countTicketToday + quantity > wheel.limit) {
             throw new BadRequestException(
                 `You can only buy tickets ${wheel.limit} times a day`,
             );
         }
 
-        const result = await this.userWheelTicketsService.model.create({
-            status: TicketStatus.NEW,
-            type: TypeTicket.BUY,
-            createdBy: userPayload._id,
-        });
+        for (let i = 0; i < quantity; i++) {
+            const result = await this.userWheelTicketsService.model.create({
+                status: TicketStatus.NEW,
+                type: TypeTicket.BUY,
+                createdBy: userPayload._id,
+            });
 
-        await this.userService.afterCreateUserTransaction(
-            userTransaction,
-            COLLECTION_NAMES.USER_WHEEL_TICKET,
-            result._id,
-        );
+            await this.userService.afterCreateUserTransaction(
+                userTransaction,
+                COLLECTION_NAMES.USER_WHEEL_TICKET,
+                result._id,
+            );
+        }
 
         return await this.getTicket(userPayload);
     }
