@@ -3,7 +3,8 @@ export enum TicketStatus {
     USED = 'USED',
 }
 
-export enum TypeTicket {
+export enum TicketType {
     BUY = 'BUY',
-    REFERRAL = 'USED',
+    REFERRAL = 'REFERRAL',
+    SPIN = 'SPIN',
 }

@@ -16,7 +16,7 @@ import {
 } from '../user-transaction/constants';
 import { UserWheelTicketsService } from '../user-wheel-tickets/user-wheel-tickets.service';
 import dayjs from 'dayjs';
-import { TicketStatus, TypeTicket } from '../user-wheel-tickets/constant';
+import { TicketStatus, TicketType } from '../user-wheel-tickets/constant';
 import { CreateWheelsDto } from './dto/inputs/create-wheels.dto';
 import { UpdateWheelsDto } from './dto/inputs/update-wheels.dto';
 import { PlayWheelDTO } from './dto/inputs/play-wheel.dto';
@@ -222,16 +222,20 @@ export class WheelsService extends BaseService<WheelDocument> {
             if (type === WheelPrizeType.GOLD) {
                 userWheelTicketId = result._id;
                 await this.addPrizeForUser(user._id, origin, result._id, prize);
-                return { ...selectedPrize, indexSelectedPrize, rate: null };
             }
 
             if (type === WheelPrizeType.TON) {
-                return { ...selectedPrize, indexSelectedPrize, rate: null };
             }
 
-            if (type === WheelPrizeType.OTHER) {
-                return { ...selectedPrize, indexSelectedPrize, rate: null };
+            if (type === WheelPrizeType.TICKET) {
+                await this.userWheelTicketsService.model.create({
+                    status: TicketStatus.NEW,
+                    type: TicketType.SPIN,
+                    createdBy: user._id,
+                });
             }
+
+            return { ...selectedPrize, indexSelectedPrize, rate: null };
         } catch (error) {
             if (userWheelTicketId) {
                 await this.userWheelTicketsService.model.findOneAndUpdate(
@@ -306,7 +310,7 @@ export class WheelsService extends BaseService<WheelDocument> {
         for (let i = 0; i < quantity; i++) {
             const result = await this.userWheelTicketsService.model.create({
                 status: TicketStatus.NEW,
-                type: TypeTicket.BUY,
+                type: TicketType.BUY,
                 createdBy: userPayload._id,
             });
 

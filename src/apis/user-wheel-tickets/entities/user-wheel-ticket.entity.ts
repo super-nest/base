@@ -6,7 +6,7 @@ import { COLLECTION_NAMES } from 'src/constants';
 import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft-delete';
 import { User } from 'src/apis/users/entities/user.entity';
 import { AutoPopulate } from '@libs/super-search';
-import { TicketStatus } from '../constant';
+import { TicketStatus, TicketType } from '../constant';
 @Schema({
     timestamps: true,
     collection: COLLECTION_NAMES.USER_WHEEL_TICKET,
@@ -23,6 +23,12 @@ export class UserWheelTicket extends AggregateRoot {
         },
     })
     status: TicketStatus;
+
+    @SuperProp({
+        type: String,
+        enum: TicketType,
+    })
+    type: TicketType;
 
     @SuperProp({
         type: Types.ObjectId,

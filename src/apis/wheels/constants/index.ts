@@ -1,6 +1,7 @@
 export enum WheelPrizeType {
     TON = 'TON',
     GOLD = 'GOLD',
+    TICKET = 'TICKET',
     OTHER = 'OTHER',
 }
 
