@@ -164,7 +164,6 @@ export class SeedsService implements OnModuleInit {
             delete item.updatedBy;
             return {
                 ...item,
-                _id: new Types.ObjectId(item._id.$oid),
             };
         });
 

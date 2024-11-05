@@ -5,7 +5,6 @@ import { COLLECTION_NAMES } from 'src/constants';
 import { Types } from 'mongoose';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { UserService } from '../users/user.service';
-import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { UserWheelsService } from '../user-wheels/user-wheels.service';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
@@ -26,6 +25,8 @@ import { appSettings } from 'src/configs/app-settings';
 import { populateGroupPrizeAggregate } from './common/populate-group.aggregate';
 import { WheelPrizeType } from './constants';
 import { BuyTicketDto } from './dto/inputs/buy-ticket.dto';
+import { ExtendedPagingDto } from 'src/pipes/page-result.dto.pipe';
+import { pagination } from '@libs/super-search';
 
 @Injectable()
 export class WheelsService extends BaseService<WheelDocument> {
@@ -33,7 +34,6 @@ export class WheelsService extends BaseService<WheelDocument> {
         @ExtendedInjectModel(COLLECTION_NAMES.WHEEL)
         private readonly wheelsModel: ExtendedModel<WheelDocument>,
         private readonly userService: UserService,
-        private readonly telegramBotService: TelegramBotService,
         private readonly userWheelsService: UserWheelsService,
         private readonly userWheelTicketsService: UserWheelTicketsService,
     ) {
@@ -127,6 +127,49 @@ export class WheelsService extends BaseService<WheelDocument> {
 
         return result;
     }
+
+    async history(queryParams: ExtendedPagingDto, user: UserPayload) {
+        const { page, limit, sortBy, sortDirection, skip, filterPipeline } =
+            queryParams;
+
+        const wheels = await this.wheelsModel
+            .find({}, populateGroupPrizeAggregate)
+            .limit(1)
+            .select({
+                'prizes.rate': 0,
+            });
+        const [wheel] = wheels;
+
+        const userWheels = await this.userWheelsService.model
+            .find({
+                createdBy: user._id,
+            })
+            .limit(limit)
+            .skip(skip)
+            .sort({ [sortBy]: sortDirection })
+            .autoPopulate();
+
+        const items = userWheels.map((userWheel) => {
+            const { wheelPrize } = userWheel;
+            const prize = wheel.prizes.find(
+                (prize) => prize._id.toString() === wheelPrize.toString(),
+            );
+            return { ...prize, ...userWheel };
+        });
+
+        const total = await this.model
+            .countDocuments(
+                {
+                    createdBy: user._id,
+                },
+                filterPipeline,
+            )
+            .autoPopulate();
+
+        const meta = pagination(items, page, limit, total);
+        return { items, meta };
+    }
+
     async getTicket(user: UserPayload) {
         const result = await this.userWheelTicketsService.model.countDocuments({
             createdBy: new Types.ObjectId(user._id),
@@ -235,6 +278,10 @@ export class WheelsService extends BaseService<WheelDocument> {
                 });
             }
 
+            await this.userWheelsService.model.create({
+                wheelPrize: selectedPrize._id,
+                createdBy: user._id,
+            });
             return { ...selectedPrize, indexSelectedPrize, rate: null };
         } catch (error) {
             if (userWheelTicketId) {
@@ -258,7 +305,7 @@ export class WheelsService extends BaseService<WheelDocument> {
             UserTransactionType.SUM,
             prize,
             UserTransactionAction.WHEEL,
-            null,
+            origin,
             COLLECTION_NAMES.USER_WHEEL_TICKET,
             wheelId,
         );

@@ -1,4 +1,4 @@
-import { Body, Controller, Req } from '@nestjs/common';
+import { Body, Controller, Query, Req } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { WheelsService } from '../wheels.service';
 import { UserPayload } from 'src/base/models/user-payload.model';
@@ -12,6 +12,10 @@ import { CountTicketResponseDTO } from '../dto/outputs/cout-ticket-response.dto'
 import { GetWheelResponseDTO } from '../dto/outputs/get-wheel-resonse.dto';
 import { PlayWheelDTO } from '../dto/inputs/play-wheel.dto';
 import { BuyTicketDto } from '../dto/inputs/buy-ticket.dto';
+import {
+    ExtendedPagingDto,
+    PagingDtoPipe,
+} from 'src/pipes/page-result.dto.pipe';
 
 @Controller('wheels')
 @Resource('wheels')
@@ -55,5 +59,15 @@ export class WheelsController {
     ) {
         const origin = req.headers['origin'];
         return await this.wheelsService.playWheels(playWheelDTO, user, origin);
+    }
+
+    @SuperGet({ route: 'history' })
+    @SuperAuthorize(PERMISSION.POST)
+    async history(
+        @Query(new PagingDtoPipe())
+        queryParams: ExtendedPagingDto,
+        @Me() user: UserPayload,
+    ) {
+        return await this.wheelsService.history(queryParams, user);
     }
 }

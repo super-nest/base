@@ -1,124 +1,123 @@
 [
     {
-        "_id": {
-            "$oid": "66cc4ad354ccbcd6d677fbc4"
-        },
         "deletedAt": null,
-        "createdBy": {
-            "$oid": "667a4598531a324b19865ea0"
-        },
         "fee": 10,
         "limit": 5,
+        "freeDaily": 1,
         "prizes": [
             {
-                "name": "Next Lucky",
                 "prize": 0,
-                "rate": 63,
-                "color": "#F65F55",
-                "type": "OTHER"
+                "rate": 64.5,
+                "name": "Lucky Next Time",
+                "description": "Luck wasn’t on your side today. Keep spinning!",
+                "type": "OTHER",
+                "category": "COMMON"
             },
             {
-                "name": "0.01 PISTON",
-                "prize": 0.01,
-                "rate": 0,
-                "color": "#00A0B9",
-                "type": "PISTON"
-            },
-            {
-                "name": "20 Gold",
-                "prize": 20,
-                "rate": 25,
-                "color": "#5E3BBC",
-                "type": "GOLD"
-            },
-            {
-                "name": "0.05 PISTON",
-                "prize": 0.05,
-                "rate": 0,
-                "color": "#0089BA",
-                "type": "PISTON"
-            },
-            {
-                "name": "50 Gold",
                 "prize": 50,
-                "rate": 10.35,
-                "color": "#5E3BBC",
-                "type": "GOLD"
+                "rate": 25,
+                "name": "50 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "COMMON"
             },
             {
-                "name": "0.1 PISTON",
                 "prize": 0.1,
                 "rate": 0,
-                "color": "#0061BA",
-                "type": "PISTON"
+                "name": "0.1 TON",
+                "type": "TON",
+                "category": "JACKPOT"
             },
             {
-                "name": "100 Gold",
                 "prize": 100,
-                "rate": 1.5,
-                "color": "#9C3BBC",
-                "type": "GOLD"
+                "rate": 10.35,
+                "name": "100 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "COMMON"
             },
             {
-                "name": "0.5 PISTON",
-                "prize": 0.5,
-                "rate": 0,
-                "color": "#214AAD",
-                "type": "PISTON"
-            },
-            {
-                "name": "200 Gold",
-                "prize": 200,
-                "rate": 0.05,
-                "color": "#7A3BBC",
-                "type": "GOLD"
-            },
-            {
-                "name": "1 PISTON",
                 "prize": 1,
                 "rate": 0,
-                "color": "#6542B0",
-                "type": "PISTON"
+                "name": "1 Tickets",
+                "description": "You've won a Free Spin Ticket and 2 Shareable Tickets! Use your Free Spin Ticket right away, and share the 2 Shareable Tickets with friends through a unique link. Please copy and save this link now!",
+                "type": "OTHER",
+                "category": "MEDIUM"
             },
             {
-                "name": "500 Gold",
+                "prize": 200,
+                "rate": 0,
+                "name": "200 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "MEDIUM"
+            },
+            {
+                "prize": 300,
+                "rate": 0,
+                "name": "300 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "MEDIUM"
+            },
+            {
+                "prize": 0.2,
+                "rate": 0.05,
+                "name": "0.2 TON",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "TON",
+                "category": "JACKPOT"
+            },
+            {
                 "prize": 500,
+                "rate": 0,
+                "name": "500 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "MEDIUM"
+            },
+            {
+                "prize": 1,
                 "rate": 0.09,
-                "color": "#9C3BBC",
-                "type": "GOLD"
+                "name": "1 TON",
+                "description": "You’ve hit the jackpot! Bask in your victory!",
+                "type": "TON",
+                "category": "SUPER_JACKPOT"
             },
             {
-                "name": "5 PISTON",
-                "prize": 5,
-                "rate": 0,
-                "color": "#9342B0",
-                "type": "PISTON"
-            },
-            {
-                "name": "1000 Gold",
                 "prize": 1000,
-                "rate": 0.01,
-                "color": "#AD3BBC",
-                "type": "GOLD"
+                "rate": 0,
+                "name": "1,000 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "JACKPOT"
             },
             {
-                "name": "100 PISTON",
-                "prize": 100,
+                "prize": 2000,
+                "rate": 0.01,
+                "name": "2,000 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "JACKPOT"
+            },
+            {
+                "prize": 5000,
                 "rate": 0,
-                "color": "#65027E",
-                "type": "PISTON"
+                "name": "5,000 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "SUPER_JACKPOT"
             }
         ],
+        "__v": 0,
         "createdAt": {
-            "$date": "2024-08-26T09:28:51.052Z"
+            "$date": "2024-11-04T07:02:31.802Z"
         },
         "updatedAt": {
-            "$date": "2024-10-28T08:10:14.106Z"
+            "$date": "2024-11-05T06:19:54.679Z"
         },
-        "__v": 0,
         "updatedBy": {
-            "$oid": "671f138db7392ad7d0de3af3"
-        },
-        "freeDaily": 1
+            "$oid": "66dabf7a2ae92ad3f2ad327d"
+        }
     }
 ]

@@ -9,12 +9,8 @@ import { User } from 'src/apis/users/entities/user.entity';
 import { AutoPopulate } from '@libs/super-search';
 import { File } from 'src/apis/media/entities/files.entity';
 
-export class Prize {
-    rate: number;
-}
-
 @Schema({})
-export class WheelPrize extends Prize {
+export class WheelPrize extends Document {
     @SuperProp({ type: Number })
     prize: number;
 

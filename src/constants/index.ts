@@ -22,6 +22,7 @@ export enum COLLECTION_NAMES {
     USER_REFERRAL = 'userReferrals',
     PAGE = 'pages',
     WHEEL = 'wheels',
+    WHEEL_PRIZE = 'wheelPrizes',
     USER_WHEEL = 'userWheels',
     USER_WHEEL_TICKET = 'userWheelTickets',
     USER_SWAP = 'userSwaps',

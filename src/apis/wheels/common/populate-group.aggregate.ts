@@ -35,6 +35,7 @@ export const populateGroupPrizeAggregate = [
                     image: '$fileDetails',
                     description: '$prizes.description',
                     category: '$prizes.category',
+                    _id: '$prizes._id',
                 },
             },
             createdAt: { $first: '$createdAt' },
