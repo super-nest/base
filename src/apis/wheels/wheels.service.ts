@@ -24,6 +24,7 @@ import { UserWheelTicketDocument } from '../user-wheel-tickets/entities/user-whe
 import _ from 'lodash';
 import { appSettings } from 'src/configs/app-settings';
 import { populateGroupPrizeAggregate } from './common/populate-group.aggregate';
+import { WheelPrizeType } from './constants';
 
 @Injectable()
 export class WheelsService extends BaseService<WheelDocument> {
@@ -141,7 +142,9 @@ export class WheelsService extends BaseService<WheelDocument> {
         const { _id: userId } = user;
         const { spinCount = 1 } = playWheelDTO || {};
 
-        const wheels = await this.wheelsModel.find({}).limit(1);
+        const wheels = await this.wheelsModel
+            .find({}, populateGroupPrizeAggregate)
+            .limit(1);
         const wheel = wheels[0];
 
         const tickets = await this.userWheelTicketsService.model
@@ -203,7 +206,7 @@ export class WheelsService extends BaseService<WheelDocument> {
                 throw new BadRequestException('Not found any prize');
             }
 
-            const { prize } = selectedPrize;
+            const { prize, type } = selectedPrize;
 
             const result =
                 await this.userWheelTicketsService.model.findOneAndUpdate(
@@ -215,9 +218,19 @@ export class WheelsService extends BaseService<WheelDocument> {
                 throw new Error('Failed to update ticket');
             }
 
-            userWheelTicketId = result._id;
-            await this.addPrizeForUser(user._id, origin, result._id, prize);
-            return { ...selectedPrize, indexSelectedPrize, rate: null };
+            if (type === WheelPrizeType.GOLD) {
+                userWheelTicketId = result._id;
+                await this.addPrizeForUser(user._id, origin, result._id, prize);
+                return { ...selectedPrize, indexSelectedPrize, rate: null };
+            }
+
+            if (type === WheelPrizeType.TON) {
+                return { ...selectedPrize, indexSelectedPrize, rate: null };
+            }
+
+            if (type === WheelPrizeType.OTHER) {
+                return { ...selectedPrize, indexSelectedPrize, rate: null };
+            }
         } catch (error) {
             if (userWheelTicketId) {
                 await this.userWheelTicketsService.model.findOneAndUpdate(
