@@ -23,7 +23,7 @@ import { UserWheelTicketDocument } from '../user-wheel-tickets/entities/user-whe
 import _ from 'lodash';
 import { appSettings } from 'src/configs/app-settings';
 import { populateGroupPrizeAggregate } from './common/populate-group-wheel.aggregate';
-import { WheelPrizeType } from './constants';
+import { WheelPrizeCategory, WheelPrizeType } from './constants';
 import { BuyTicketDto } from './dto/inputs/buy-ticket.dto';
 import { ExtendedPagingDto } from 'src/pipes/page-result.dto.pipe';
 import { pagination } from '@libs/super-search';
@@ -132,14 +132,6 @@ export class WheelsService extends BaseService<WheelDocument> {
         const { page, limit, sortBy, sortDirection, skip, filterPipeline } =
             queryParams;
 
-        const wheels = await this.wheelsModel
-            .find({}, populateGroupPrizeAggregate)
-            .limit(1)
-            .select({
-                'prizes.rate': 0,
-            });
-        const [wheel] = wheels;
-
         const result = this.userWheelsService.model
             .find(
                 {
@@ -243,10 +235,11 @@ export class WheelsService extends BaseService<WheelDocument> {
         ticket: UserWheelTicketDocument,
         user: UserPayload,
         origin: string,
+        isLimit = false,
     ) {
         let userWheelTicketId: Types.ObjectId;
         try {
-            const { prizes } = wheel;
+            const { prizes, coolDownTime = 0, coolDownValue } = wheel;
             const totalRate = prizes.reduce((sum, prize) => {
                 const currentSum = sum + prize.rate;
                 return currentSum;
@@ -271,7 +264,7 @@ export class WheelsService extends BaseService<WheelDocument> {
                 throw new BadRequestException('Not found any prize');
             }
 
-            const { prize, type } = selectedPrize;
+            const { prize, type, category } = selectedPrize;
 
             const result =
                 await this.userWheelTicketsService.model.findOneAndUpdate(
@@ -297,6 +290,24 @@ export class WheelsService extends BaseService<WheelDocument> {
                     type: TicketType.SPIN,
                     createdBy: user._id,
                 });
+            }
+
+            if (
+                [
+                    WheelPrizeCategory.JACKPOT,
+                    WheelPrizeCategory.SUPER_JACKPOT,
+                ].includes(category)
+            ) {
+                if (coolDownTime > dayjs().unix()) {
+                    return await this.play(wheel, ticket, user, origin, true);
+                }
+
+                await this.wheelsModel.findOneAndUpdate(
+                    { _id: wheel._id },
+                    {
+                        coolDownTime: dayjs().add(coolDownValue, 'hour').unix(),
+                    },
+                );
             }
 
             await this.userWheelsService.model.create({

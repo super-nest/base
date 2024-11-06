@@ -4,6 +4,7 @@
         "fee": 10,
         "limit": 5,
         "freeDaily": 1,
+        "coolDownTime": 8,
         "prizes": [
             {
                 "prize": 0,

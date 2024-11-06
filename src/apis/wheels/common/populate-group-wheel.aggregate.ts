@@ -26,6 +26,8 @@ export const populateGroupPrizeAggregate = [
             _id: '$_id',
             fee: { $first: '$fee' },
             limit: { $first: '$limit' },
+            coolDownTime: { $first: '$coolDownTime' },
+            coolDownValue: { $first: '$coolDownValue' },
             prizes: {
                 $push: {
                     prize: '$prizes.prize',
