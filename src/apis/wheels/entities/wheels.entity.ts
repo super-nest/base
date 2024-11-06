@@ -10,7 +10,7 @@ import { AutoPopulate } from '@libs/super-search';
 import { File } from 'src/apis/media/entities/files.entity';
 
 @Schema({})
-export class WheelPrize extends Document {
+export class WheelPrize {
     @SuperProp({ type: Number })
     prize: number;
 
@@ -83,6 +83,29 @@ export class Wheel extends AggregateRoot {
         },
     })
     limit: number;
+
+    @SuperProp({
+        type: Number,
+        required: true,
+        cms: {
+            label: 'Cool Down value',
+            tableShow: true,
+            columnPosition: 3,
+        },
+    })
+    coolDownValue: number;
+
+    @SuperProp({
+        type: Number,
+        required: false,
+        cms: {
+            label: 'Cool Down Time',
+            tableShow: true,
+            columnPosition: 4,
+        },
+        default: 0,
+    })
+    coolDownTime: number;
 
     @SuperProp({ type: [WheelPrize] })
     prizes: WheelPrize[];
