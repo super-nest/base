@@ -235,7 +235,6 @@ export class WheelsService extends BaseService<WheelDocument> {
         ticket: UserWheelTicketDocument,
         user: UserPayload,
         origin: string,
-        isLimit = false,
     ) {
         let userWheelTicketId: Types.ObjectId;
         try {
@@ -299,7 +298,7 @@ export class WheelsService extends BaseService<WheelDocument> {
                 ].includes(category)
             ) {
                 if (coolDownTime > dayjs().unix()) {
-                    return await this.play(wheel, ticket, user, origin, true);
+                    return await this.play(wheel, ticket, user, origin);
                 }
 
                 await this.wheelsModel.findOneAndUpdate(
@@ -363,14 +362,6 @@ export class WheelsService extends BaseService<WheelDocument> {
             throw new BadRequestException('Not found user');
         }
 
-        const userTransaction = await this.userService.createUserTransaction(
-            userPayload._id,
-            UserTransactionType.SUB,
-            wheel.fee,
-            UserTransactionAction.BUY_TICKET,
-            origin,
-        );
-
         const now = dayjs();
         const startDay = now.startOf('day').toDate();
         const endDay = now.endOf('day').toDate();
@@ -390,6 +381,15 @@ export class WheelsService extends BaseService<WheelDocument> {
         }
 
         for (let i = 0; i < quantity; i++) {
+            const userTransaction =
+                await this.userService.createUserTransaction(
+                    userPayload._id,
+                    UserTransactionType.SUB,
+                    wheel.fee,
+                    UserTransactionAction.BUY_TICKET,
+                    origin,
+                );
+
             const result = await this.userWheelTicketsService.model.create({
                 status: TicketStatus.NEW,
                 type: TicketType.BUY,
