@@ -107,6 +107,30 @@ export class Wheel extends AggregateRoot {
     })
     coolDownTime: number;
 
+    @SuperProp({
+        type: Number,
+        required: false,
+        cms: {
+            label: 'Ticket Prize',
+            tableShow: true,
+            columnPosition: 5,
+        },
+        default: 0,
+    })
+    ticketPrize: number;
+
+    @SuperProp({
+        type: Number,
+        required: false,
+        cms: {
+            label: 'Ticket Prize Share',
+            tableShow: true,
+            columnPosition: 6,
+        },
+        default: 0,
+    })
+    ticketPrizeShare: number;
+
     @SuperProp({ type: [WheelPrize] })
     prizes: WheelPrize[];
 

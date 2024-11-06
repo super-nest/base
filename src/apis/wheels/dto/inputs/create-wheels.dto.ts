@@ -143,6 +143,28 @@ export class CreateWheelsDto extends PartialType(ExcludeDto) {
     coolDownValue: number;
 
     @SuperApiProperty({
+        type: Number,
+        description: 'Ticket prize of the wheel',
+        example: 1,
+        required: false,
+        title: 'Ticket Prize',
+    })
+    @IsOptional()
+    @IsNumber()
+    ticketPrize: number;
+
+    @SuperApiProperty({
+        type: Number,
+        description: 'Ticket prize share of the wheel',
+        example: 2,
+        required: false,
+        title: 'Ticket Prize Share',
+    })
+    @IsOptional()
+    @IsNumber()
+    ticketPrizeShare: number;
+
+    @SuperApiProperty({
         type: [WheelPrizeDto],
         description: 'Prizes of the wheel',
         default: [

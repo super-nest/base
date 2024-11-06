@@ -1,5 +1,5 @@
-import { Body, Controller, Query, Req } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Param, Query, Req } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { WheelsService } from '../wheels.service';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { PERMISSION, Resource, SuperAuthorize } from '@libs/super-authorize';
@@ -69,5 +69,14 @@ export class WheelsController {
         @Me() user: UserPayload,
     ) {
         return await this.wheelsService.history(queryParams, user);
+    }
+
+    @SuperGet({ route: ':inviteCode/referral' })
+    @SuperAuthorize(PERMISSION.POST)
+    async referral(
+        @Param('inviteCode') inviteCode: string,
+        @Me() user: UserPayload,
+    ) {
+        return await this.wheelsService.referral(inviteCode, user);
     }
 }

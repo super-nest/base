@@ -31,6 +31,23 @@ export class UserWheelTicket extends AggregateRoot {
     type: TicketType;
 
     @SuperProp({
+        type: String,
+        cms: {
+            label: 'Invite Code',
+            tableShow: true,
+            columnPosition: 9,
+        },
+    })
+    inviteCode: string;
+
+    @SuperProp({
+        type: Types.ObjectId,
+        ref: COLLECTION_NAMES.USER,
+        refClass: User,
+    })
+    referrer: Types.ObjectId;
+
+    @SuperProp({
         type: Types.ObjectId,
         ref: COLLECTION_NAMES.USER,
         refClass: User,

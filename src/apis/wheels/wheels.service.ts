@@ -27,6 +27,7 @@ import { WheelPrizeCategory, WheelPrizeType } from './constants';
 import { BuyTicketDto } from './dto/inputs/buy-ticket.dto';
 import { ExtendedPagingDto } from 'src/pipes/page-result.dto.pipe';
 import { pagination } from '@libs/super-search';
+import { generateRandomString } from '../users/common/generate-random-string.util';
 
 @Injectable()
 export class WheelsService extends BaseService<WheelDocument> {
@@ -238,7 +239,13 @@ export class WheelsService extends BaseService<WheelDocument> {
     ) {
         let userWheelTicketId: Types.ObjectId;
         try {
-            const { prizes, coolDownTime = 0, coolDownValue } = wheel;
+            const {
+                prizes,
+                coolDownTime = 0,
+                coolDownValue,
+                ticketPrizeShare,
+                ticketPrize,
+            } = wheel;
             const totalRate = prizes.reduce((sum, prize) => {
                 const currentSum = sum + prize.rate;
                 return currentSum;
@@ -284,11 +291,30 @@ export class WheelsService extends BaseService<WheelDocument> {
             }
 
             if (type === WheelPrizeType.TICKET) {
-                await this.userWheelTicketsService.model.create({
-                    status: TicketStatus.NEW,
-                    type: TicketType.SPIN,
-                    createdBy: user._id,
-                });
+                for (let i = 0; i < ticketPrize; i++) {
+                    await this.userWheelTicketsService.model.create({
+                        status: TicketStatus.NEW,
+                        type: TicketType.SPIN,
+                        createdBy: user._id,
+                    });
+                }
+
+                const inviteCode = generateRandomString(16);
+                for (let i = 0; i < ticketPrizeShare; i++) {
+                    await this.userWheelTicketsService.model.create({
+                        status: TicketStatus.PENDING,
+                        type: TicketType.REFERRAL,
+                        inviteCode,
+                        referrer: user._id,
+                    });
+                }
+
+                return {
+                    ...selectedPrize,
+                    indexSelectedPrize,
+                    inviteCode,
+                    rate: null,
+                };
             }
 
             if (
@@ -402,6 +428,36 @@ export class WheelsService extends BaseService<WheelDocument> {
                 result._id,
             );
         }
+
+        return await this.getTicket(userPayload);
+    }
+
+    async referral(inviteCode: string, userPayload: UserPayload) {
+        const exist = await this.userWheelTicketsService.model.findOne({
+            type: TicketType.REFERRAL,
+            createdBy: userPayload._id,
+        });
+
+        if (exist) {
+            return;
+        }
+
+        const ticket = await this.userWheelTicketsService.model.findOne({
+            inviteCode,
+            status: TicketStatus.PENDING,
+            referrer: {
+                $ne: userPayload._id,
+            },
+        });
+
+        if (!ticket) {
+            return;
+        }
+
+        await this.userWheelTicketsService.model.findOneAndUpdate(
+            { _id: ticket._id },
+            { status: TicketStatus.NEW, createdBy: userPayload._id },
+        );
 
         return await this.getTicket(userPayload);
     }
