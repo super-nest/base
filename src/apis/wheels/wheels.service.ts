@@ -22,7 +22,7 @@ import { PlayWheelDTO } from './dto/inputs/play-wheel.dto';
 import { UserWheelTicketDocument } from '../user-wheel-tickets/entities/user-wheel-ticket.entity';
 import _ from 'lodash';
 import { appSettings } from 'src/configs/app-settings';
-import { populateGroupPrizeAggregate } from './common/populate-group.aggregate';
+import { populateGroupPrizeAggregate } from './common/populate-group-wheel.aggregate';
 import { WheelPrizeType } from './constants';
 import { BuyTicketDto } from './dto/inputs/buy-ticket.dto';
 import { ExtendedPagingDto } from 'src/pipes/page-result.dto.pipe';
@@ -140,24 +140,34 @@ export class WheelsService extends BaseService<WheelDocument> {
             });
         const [wheel] = wheels;
 
-        const userWheels = await this.userWheelsService.model
-            .find({
-                createdBy: user._id,
-            })
+        const result = this.userWheelsService.model
+            .find(
+                {
+                    createdBy: user._id,
+                },
+                [
+                    {
+                        $lookup: {
+                            from: COLLECTION_NAMES.FILE,
+                            localField: 'prize.image',
+                            foreignField: '_id',
+                            as: 'prize.image',
+                        },
+                    },
+                    {
+                        $unwind: {
+                            path: '$prize.image',
+                            preserveNullAndEmptyArrays: true,
+                        },
+                    },
+                ],
+            )
             .limit(limit)
             .skip(skip)
             .sort({ [sortBy]: sortDirection })
             .autoPopulate();
 
-        const items = userWheels.map((userWheel) => {
-            const { wheelPrize } = userWheel;
-            const prize = wheel.prizes.find(
-                (prize) => prize._id.toString() === wheelPrize.toString(),
-            );
-            return { ...prize, ...userWheel };
-        });
-
-        const total = await this.model
+        const total = this.model
             .countDocuments(
                 {
                     createdBy: user._id,
@@ -166,8 +176,19 @@ export class WheelsService extends BaseService<WheelDocument> {
             )
             .autoPopulate();
 
-        const meta = pagination(items, page, limit, total);
-        return { items, meta };
+        return Promise.all([result, total]).then(([items, total]) => {
+            const meta = pagination(items, page, limit, total);
+            return {
+                items: items.map((item) => {
+                    return {
+                        ...item,
+                        ..._.get(item, 'prize', {}),
+                        rate: null,
+                    };
+                }),
+                meta,
+            };
+        });
     }
 
     async getTicket(user: UserPayload) {
@@ -279,7 +300,10 @@ export class WheelsService extends BaseService<WheelDocument> {
             }
 
             await this.userWheelsService.model.create({
-                wheelPrize: selectedPrize._id,
+                prize: {
+                    ...selectedPrize,
+                    image: _.get(selectedPrize, 'image._id', null),
+                },
                 createdBy: user._id,
             });
             return { ...selectedPrize, indexSelectedPrize, rate: null };

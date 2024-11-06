@@ -4,6 +4,7 @@ import { TelegramBotDocument } from './entities/telegram-bot.entity';
 import { COLLECTION_NAMES } from 'src/constants';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
+import { appSettings } from 'src/configs/app-settings';
 
 @Injectable()
 export class TelegramBotService extends BaseService<TelegramBotDocument> {
@@ -17,7 +18,7 @@ export class TelegramBotService extends BaseService<TelegramBotDocument> {
     async findByDomain(domain: string): Promise<TelegramBotDocument> {
         const result = await this.telegramBotModel.findOne({ domain });
 
-        if (!result) {
+        if (!result && !appSettings.development) {
             throw new ForbiddenException(
                 'You must use telegram mini app for this feature',
             );

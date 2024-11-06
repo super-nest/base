@@ -16,7 +16,6 @@ import { MetadataService } from '../metadata/metadata.service';
 import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { AfterSwapsDto } from './dto/after-swaps.dto';
 import { TonApiClient } from '@ton-api/client';
-import { UserStatus } from '../users/constants';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import {
     JettonTransaction,

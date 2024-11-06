@@ -3,6 +3,7 @@ import { AutoPopulate } from '@libs/super-search';
 import { Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { User } from 'src/apis/users/entities/user.entity';
+import { WheelPrize } from 'src/apis/wheels/entities/wheels.entity';
 import { AggregateRoot } from 'src/base/entities/aggregate-root.schema';
 import { COLLECTION_NAMES } from 'src/constants';
 import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft-delete';
@@ -12,10 +13,8 @@ import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft
     collection: COLLECTION_NAMES.USER_WHEEL,
 })
 export class UserWheels extends AggregateRoot {
-    @SuperProp({
-        type: Types.ObjectId,
-    })
-    wheelPrize: Types.ObjectId;
+    @SuperProp({ type: WheelPrize })
+    prize: WheelPrize;
 
     @SuperProp({
         type: Types.ObjectId,
