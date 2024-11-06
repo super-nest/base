@@ -38,6 +38,8 @@ import { WheelsModule } from 'src/apis/wheels/wheels.module';
 import { WheelsControllerAdmin } from 'src/apis/wheels/controllers/wheels.controller.admin';
 import { UserWheelTicketsAminController } from 'src/apis/user-wheel-tickets/controllers/user-wheel-tickets.controller.admin';
 import { UserWheelTicketsModule } from 'src/apis/user-wheel-tickets/user-wheel-tickets.module';
+import { SwapsModule } from 'src/apis/swaps/swaps.module';
+import { SwapsControllerAdmin } from 'src/apis/swaps/controllers/swaps.controller.admin';
 
 @Module({
     imports: [
@@ -62,6 +64,7 @@ import { UserWheelTicketsModule } from 'src/apis/user-wheel-tickets/user-wheel-t
         PagesModule,
         WheelsModule,
         UserWheelTicketsModule,
+        SwapsModule,
     ],
     controllers: [
         MediaControllerAdmin,
@@ -82,6 +85,7 @@ import { UserWheelTicketsModule } from 'src/apis/user-wheel-tickets/user-wheel-t
         PagesControllerAdmin,
         WheelsControllerAdmin,
         UserWheelTicketsAminController,
+        SwapsControllerAdmin,
     ],
     providers: [],
 })

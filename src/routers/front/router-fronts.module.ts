@@ -34,6 +34,8 @@ import { PagesController } from 'src/apis/pages/controllers/pages.controller';
 import { UserReferralsController } from 'src/apis/user-referrals/controller/user-referrals.controller';
 import { WheelsModule } from 'src/apis/wheels/wheels.module';
 import { WheelsController } from 'src/apis/wheels/controllers/wheels.controller';
+import { SwapsModule } from 'src/apis/swaps/swaps.module';
+import { SwapsController } from 'src/apis/swaps/controllers/swaps.controller';
 
 @Module({
     imports: [
@@ -55,6 +57,7 @@ import { WheelsController } from 'src/apis/wheels/controllers/wheels.controller'
         PagesModule,
         MissionModule,
         WheelsModule,
+        SwapsModule,
     ],
     controllers: [
         UserController,
@@ -74,6 +77,7 @@ import { WheelsController } from 'src/apis/wheels/controllers/wheels.controller'
         UserReferralsController,
         MissionController,
         WheelsController,
+        SwapsController,
     ],
     providers: [],
 })
