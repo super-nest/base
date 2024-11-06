@@ -186,7 +186,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         });
 
         if (!userSwap) {
-            return;
+            return false;
         }
 
         await this.swapModel.updateOne(
@@ -197,6 +197,8 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 },
             },
         );
+
+        return true;
     }
 
     async swap(
