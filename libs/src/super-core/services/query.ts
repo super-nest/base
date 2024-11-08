@@ -30,7 +30,9 @@ export function applyAutoPopulate(
         return pipeline;
     }
     const dynamicLookupPipeline = dynamicLookupAggregates(entity);
-    pipeline.push(...dynamicLookupPipeline);
+    if (dynamicLookupPipeline) {
+        pipeline.push(...dynamicLookupPipeline);
+    }
 }
 
 export function applySkip(
@@ -85,5 +87,8 @@ export function applyMultipleLanguage(
         entity,
         defaultLocale,
     );
-    pipeline.push(...multipleLanguagePipeline);
+
+    if (multipleLanguagePipeline) {
+        pipeline.push(...multipleLanguagePipeline);
+    }
 }
