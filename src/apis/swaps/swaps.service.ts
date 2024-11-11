@@ -249,7 +249,6 @@ export class SwapsService extends BaseService<UserSwapDocument> {
             const maxAmount = await this.metadataService.getOneSwapInfoByKey(
                 'max-amount',
             );
-            const fee = await this.metadataService.getOneSwapInfoByKey('fee');
 
             if (amount < minAmount.value || amount > maxAmount.value) {
                 throw new BadRequestException(
@@ -274,7 +273,16 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                     walletAddress,
                     amount,
                     expire,
-                    fee,
+                );
+            }
+
+            if (type === UserSwapType.DRAFT_TON) {
+                swapData = await this.swapDraftTon(
+                    userPayload._id,
+                    origin,
+                    walletAddress,
+                    amount,
+                    expire,
                 );
             }
 
@@ -320,8 +328,9 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         walletAddress: string,
         amount: number,
         expire: number,
-        fee: GetMetadataSwapDto,
     ): Promise<SwapData> {
+        const fee = await this.metadataService.getOneSwapInfoByKey('fee');
+
         const userTransaction = await this.userService.createUserTransaction(
             userId,
             UserTransactionType.SUB,
@@ -347,26 +356,27 @@ export class SwapsService extends BaseService<UserSwapDocument> {
 
     async swapDraftTon(
         userId: Types.ObjectId,
+        origin: string,
         walletAddress: string,
-        coin: number,
+        amount: number,
         expire: number,
     ): Promise<SwapData> {
         const userTransaction = await this.userService.createUserTransaction(
             userId,
             UserTransactionType.SUB,
-            coin,
+            amount,
             UserTransactionAction.DRAFT_TON,
             origin,
         );
 
         const signatureData = beginCell()
             .storeAddress(Address.parse(walletAddress))
-            .storeCoins(toNano(coin))
+            .storeCoins(toNano(amount))
             .storeUint(expire, 32)
             .endCell()
             .hash();
 
-        return { signatureData, coin, userTransaction };
+        return { signatureData, coin: amount, userTransaction };
     }
 
     async rollBackSwap(userSwapId: Types.ObjectId, userId: Types.ObjectId) {

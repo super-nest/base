@@ -115,13 +115,6 @@ export class UserService
             throw new UnauthorizedException('user_not_found', 'User not found');
         }
 
-        if (after < 0) {
-            throw new BadRequestException(
-                'point_not_enough',
-                'Point not enough',
-            );
-        }
-
         if (userTransactionAction === UserTransactionAction.DRAFT_TON) {
             after = await this.createUserTransactionDraftTon(
                 user,
@@ -134,6 +127,13 @@ export class UserService
                 user,
                 userTransactionType,
                 amount,
+            );
+        }
+
+        if (after < 0) {
+            throw new BadRequestException(
+                'point_not_enough',
+                'Point not enough',
             );
         }
 
