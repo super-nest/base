@@ -93,6 +93,17 @@ export class User extends AggregateRoot {
     currentPoint: number;
 
     @SuperProp({
+        type: Number,
+        default: 0,
+        cms: {
+            label: 'Draft Ton',
+            tableShow: true,
+            columnPosition: 7,
+        },
+    })
+    draftTon: number;
+
+    @SuperProp({
         type: Types.ObjectId,
         required: true,
         ref: COLLECTION_NAMES.ROLE,
@@ -100,7 +111,7 @@ export class User extends AggregateRoot {
         cms: {
             label: 'Role',
             tableShow: true,
-            columnPosition: 7,
+            columnPosition: 8,
         },
     })
     @AutoPopulate({
@@ -115,7 +126,7 @@ export class User extends AggregateRoot {
         cms: {
             label: 'Status',
             tableShow: true,
-            columnPosition: 8,
+            columnPosition: 9,
         },
     })
     status: UserStatus;
@@ -132,7 +143,7 @@ export class User extends AggregateRoot {
         cms: {
             label: 'Invite Code',
             tableShow: true,
-            columnPosition: 9,
+            columnPosition: 10,
         },
     })
     inviteCode: string;

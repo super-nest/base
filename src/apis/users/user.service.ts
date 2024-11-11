@@ -108,24 +108,32 @@ export class UserService
         }
 
         let after = 0;
+        let fieldUpdate = 'currentPoint';
         const user = await this.userModel.findOne({ _id: userId });
 
         if (!user) {
             throw new UnauthorizedException('user_not_found', 'User not found');
         }
 
-        if (userTransactionType === UserTransactionType.SUB) {
-            after = user.currentPoint - amount;
-        }
-
-        if (userTransactionType === UserTransactionType.SUM) {
-            after = user.currentPoint + amount;
-        }
-
         if (after < 0) {
             throw new BadRequestException(
                 'point_not_enough',
                 'Point not enough',
+            );
+        }
+
+        if (userTransactionAction === UserTransactionAction.DRAFT_TON) {
+            after = await this.createUserTransactionDraftTon(
+                user,
+                userTransactionType,
+                amount,
+            );
+            fieldUpdate = 'draftTon';
+        } else {
+            after = await this.createUserTransactionPoint(
+                user,
+                userTransactionType,
+                amount,
             );
         }
 
@@ -150,13 +158,43 @@ export class UserService
             await this.userModel.updateOne(
                 { _id: user._id },
                 {
-                    currentPoint: after,
+                    [fieldUpdate]: after,
                 },
             );
 
-            this.websocketGateway.sendPointsUpdate(user._id, after);
+            if (fieldUpdate === 'currentPoint') {
+                this.websocketGateway.sendPointsUpdate(user._id, after);
+            }
 
             return userTransaction;
+        }
+    }
+
+    async createUserTransactionPoint(
+        user: UserDocument,
+        userTransactionType: UserTransactionType,
+        amount: number,
+    ) {
+        if (userTransactionType === UserTransactionType.SUB) {
+            return user?.currentPoint - amount;
+        }
+
+        if (userTransactionType === UserTransactionType.SUM) {
+            return user?.currentPoint + amount;
+        }
+    }
+
+    async createUserTransactionDraftTon(
+        user: UserDocument,
+        userTransactionType: UserTransactionType,
+        amount: number,
+    ) {
+        if (userTransactionType === UserTransactionType.SUB) {
+            return user?.draftTon - amount;
+        }
+
+        if (userTransactionType === UserTransactionType.SUM) {
+            return user?.draftTon + amount;
         }
     }
 

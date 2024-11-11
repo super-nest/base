@@ -284,10 +284,24 @@ export class WheelsService extends BaseService<WheelDocument> {
 
             if (type === WheelPrizeType.GOLD) {
                 userWheelTicketId = result._id;
-                await this.addPrizeForUser(user._id, origin, result._id, prize);
+                await this.addPrizeForUser(
+                    user._id,
+                    origin,
+                    result._id,
+                    prize,
+                    UserTransactionAction.WHEEL,
+                );
             }
 
             if (type === WheelPrizeType.TON) {
+                userWheelTicketId = result._id;
+                await this.addPrizeForUser(
+                    user._id,
+                    origin,
+                    result._id,
+                    prize,
+                    UserTransactionAction.DRAFT_TON,
+                );
             }
 
             if (type === WheelPrizeType.TICKET) {
@@ -359,12 +373,13 @@ export class WheelsService extends BaseService<WheelDocument> {
         origin: string,
         wheelId: Types.ObjectId,
         prize: number,
+        userTransactionAction: UserTransactionAction,
     ) {
         await this.userService.createUserTransaction(
             userId,
             UserTransactionType.SUM,
             prize,
-            UserTransactionAction.WHEEL,
+            userTransactionAction,
             origin,
             COLLECTION_NAMES.USER_WHEEL_TICKET,
             wheelId,

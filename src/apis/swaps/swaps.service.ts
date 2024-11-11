@@ -355,7 +355,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
             userId,
             UserTransactionType.SUB,
             coin,
-            UserTransactionAction.SWAP,
+            UserTransactionAction.DRAFT_TON,
             origin,
         );
 
