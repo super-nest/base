@@ -78,6 +78,7 @@ import { SwapsController } from 'src/apis/swaps/controllers/swaps.controller';
         MissionController,
         WheelsController,
         SwapsController,
+        MetadataController,
     ],
     providers: [],
 })
