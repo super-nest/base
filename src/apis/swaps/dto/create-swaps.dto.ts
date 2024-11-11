@@ -17,15 +17,15 @@ export class CreateSwapsDto extends PartialType(ExcludeDto) {
 
     @SuperApiProperty({
         type: String,
-        description: `Type of the swap. Available values: ${UserSwapType.DRAFT_TGM} & ${UserSwapType.POINT} & ${UserSwapType.DRAFT_TON}`,
-        default: `${UserSwapType.POINT} | ${UserSwapType.DRAFT_TGM} | ${UserSwapType.DRAFT_TON}`,
+        description: `Type of the swap. Available values: & ${UserSwapType.POINT} & ${UserSwapType.DRAFT_TON}`,
+        default: `${UserSwapType.POINT} | ${UserSwapType.DRAFT_TON}`,
         required: true,
         title: 'Status',
         enum: UserSwapType,
     })
     @IsString()
     @IsEnum(UserSwapType, {
-        message: `status must be a valid enum ${UserSwapType.DRAFT_TGM} | ${UserSwapType.DRAFT_TON} | ${UserSwapType.POINT}`,
+        message: `status must be a valid enum ${UserSwapType.DRAFT_TON} | ${UserSwapType.POINT}`,
     })
     @IsNotEmpty()
     type: UserSwapType;

@@ -30,7 +30,6 @@ import {
     UserTransactionType,
 } from '../user-transaction/constants';
 import { roundDown } from './common/round-down.utils';
-import { GetMetadataSwapDto } from '../metadata/outputs/get-metadata-swap.dto';
 import { UserTransactionDocument } from '../user-transaction/entities/user-transaction.entity';
 
 interface SwapData {
@@ -243,18 +242,6 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         let swapId = new Types.ObjectId();
         try {
             const { amount, walletAddress, type } = createSwapsDto;
-            const minAmount = await this.metadataService.getOneSwapInfoByKey(
-                'min-amount',
-            );
-            const maxAmount = await this.metadataService.getOneSwapInfoByKey(
-                'max-amount',
-            );
-
-            if (amount < minAmount.value || amount > maxAmount.value) {
-                throw new BadRequestException(
-                    `Amount must be between ${minAmount.value} and ${maxAmount.value}`,
-                );
-            }
 
             const signer = await mnemonicToPrivateKey(
                 appSettings.swap.walletMNEMONIC.split(' '),
@@ -329,6 +316,19 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         amount: number,
         expire: number,
     ): Promise<SwapData> {
+        const minAmount = await this.metadataService.getOneSwapInfoByKey(
+            'min-amount',
+        );
+        const maxAmount = await this.metadataService.getOneSwapInfoByKey(
+            'max-amount',
+        );
+
+        if (amount < minAmount.value || amount > maxAmount.value) {
+            throw new BadRequestException(
+                `Amount must be between ${minAmount.value} and ${maxAmount.value}`,
+            );
+        }
+
         const fee = await this.metadataService.getOneSwapInfoByKey('fee');
 
         const userTransaction = await this.userService.createUserTransaction(

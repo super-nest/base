@@ -15,7 +15,6 @@ export enum UserSwapStatus {
 
 export enum UserSwapType {
     POINT = 'POINT',
-    DRAFT_TGM = 'DRAFT_TGM',
     DRAFT_TON = 'DRAFT_TON',
 }
 
