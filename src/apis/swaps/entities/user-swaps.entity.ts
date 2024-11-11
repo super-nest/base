@@ -7,10 +7,16 @@ import { AggregateRoot } from 'src/base/entities/aggregate-root.schema';
 import { COLLECTION_NAMES } from 'src/constants';
 import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft-delete';
 
-export enum UserSwapType {
+export enum UserSwapStatus {
     PENDING = 'pending',
     SUCCESS = 'success',
     FAILED = 'failed',
+}
+
+export enum UserSwapType {
+    POINT = 'POINT',
+    DRAFT_TGM = 'DRAFT_TGM',
+    DRAFT_TON = 'DRAFT_TON',
 }
 
 @Schema({
@@ -21,13 +27,25 @@ export class UserSwap extends AggregateRoot {
     @SuperProp({
         type: String,
         cms: {
-            label: 'Amount',
+            label: 'Status',
             tableShow: true,
             columnPosition: 1,
             index: true,
         },
+        enum: UserSwapStatus,
+        default: UserSwapStatus.PENDING,
+    })
+    status: UserSwapStatus;
+
+    @SuperProp({
+        type: String,
+        cms: {
+            label: 'Type',
+            tableShow: true,
+            columnPosition: 2,
+            index: true,
+        },
         enum: UserSwapType,
-        default: UserSwapType.PENDING,
     })
     type: UserSwapType;
 

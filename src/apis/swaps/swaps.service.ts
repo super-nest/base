@@ -1,6 +1,10 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { BaseService } from 'src/base/service/base.service';
-import { UserSwapDocument, UserSwapType } from './entities/user-swaps.entity';
+import {
+    UserSwapDocument,
+    UserSwapStatus,
+    UserSwapType,
+} from './entities/user-swaps.entity';
 import { COLLECTION_NAMES } from 'src/constants';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
@@ -13,7 +17,6 @@ import { UserPayload } from 'src/base/models/user-payload.model';
 import { UserService } from '../users/user.service';
 import { Types } from 'mongoose';
 import { MetadataService } from '../metadata/metadata.service';
-import { TelegramBotService } from '../telegram-bot/telegram-bot.service';
 import { AfterSwapsDto } from './dto/after-swaps.dto';
 import { TonApiClient } from '@ton-api/client';
 import { Cron, CronExpression } from '@nestjs/schedule';
@@ -27,6 +30,14 @@ import {
     UserTransactionType,
 } from '../user-transaction/constants';
 import { roundDown } from './common/round-down.utils';
+import { GetMetadataSwapDto } from '../metadata/outputs/get-metadata-swap.dto';
+import { UserTransactionDocument } from '../user-transaction/entities/user-transaction.entity';
+
+interface SwapData {
+    signatureData: Buffer;
+    coin: number;
+    userTransaction: UserTransactionDocument;
+}
 
 @Injectable()
 export class SwapsService extends BaseService<UserSwapDocument> {
@@ -39,7 +50,6 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         private readonly jettonTransactionModel: ExtendedModel<JettonTransactionDocument>,
         private readonly userService: UserService,
         private readonly metadataService: MetadataService,
-        private readonly telegramBotService: TelegramBotService,
     ) {
         super(swapModel);
         this.tonApiClient = new TonApiClient({
@@ -52,7 +62,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         this.logger.log('Start cron job jetton transaction');
         const userSwaps = await this.swapModel
             .find({
-                type: UserSwapType.PENDING,
+                status: UserSwapStatus.PENDING,
             })
             .limit(1);
 
@@ -105,6 +115,12 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                         isSuccess: transaction.success,
                     });
                 }
+
+                if (op == 0xdcb17fc0) {
+                    bodyInput.loadAddress();
+                    bodyInput.loadCoins();
+                    bodyInput.loadUint(32);
+                }
             } catch (e) {
                 this.logger.error(e);
                 continue;
@@ -119,7 +135,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         this.logger.log('Start cron job transaction');
         const userSwap = await this.swapModel
             .findOne({
-                type: UserSwapType.PENDING,
+                status: UserSwapStatus.PENDING,
                 expire: {
                     $lte: dayjs().unix(),
                 },
@@ -164,9 +180,9 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         await this.swapModel.updateOne(
             { _id: userSwap._id },
             {
-                type: jettonTransaction.isSuccess
-                    ? UserSwapType.SUCCESS
-                    : UserSwapType.FAILED,
+                status: jettonTransaction.isSuccess
+                    ? UserSwapStatus.SUCCESS
+                    : UserSwapStatus.FAILED,
             },
         );
     }
@@ -215,7 +231,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
             },
             createdBy: userPayload._id,
             status: {
-                $ne: UserSwapType.FAILED,
+                $ne: UserSwapStatus.FAILED,
             },
         });
 
@@ -226,7 +242,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         let isCreated = false;
         let swapId = new Types.ObjectId();
         try {
-            const { amount, walletAddress } = createSwapsDto;
+            const { amount, walletAddress, type } = createSwapsDto;
             const minAmount = await this.metadataService.getOneSwapInfoByKey(
                 'min-amount',
             );
@@ -241,40 +257,30 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 );
             }
 
-            const userTransaction =
-                await this.userService.createUserTransaction(
-                    userPayload._id,
-                    UserTransactionType.SUB,
-                    amount,
-                    UserTransactionAction.SWAP,
-                    origin,
-                );
-
             const signer = await mnemonicToPrivateKey(
                 appSettings.swap.walletMNEMONIC.split(' '),
-            );
-
-            const rate = await this.metadataService.getOneSwapInfoByKey('rate');
-            const coin = roundDown(
-                (amount - (amount * fee.value) / 100) * rate.value,
             );
 
             const expireValue = await this.metadataService.getOneSwapInfoByKey(
                 'expire',
             );
             const expire = dayjs().add(expireValue.value, 'minute').unix();
-            const signatureData = beginCell()
-                .storeAddress(appSettings.swap.walletJettonAddress)
-                .storeAddress(Address.parse(walletAddress))
-                .storeCoins(toNano(coin))
-                .storeUint(expire, 32)
-                .endCell()
-                .hash();
 
-            const signature = sign(signatureData, signer.secretKey);
+            let swapData: SwapData;
+            if (type === UserSwapType.POINT) {
+                swapData = await this.swapPointToJetton(
+                    userPayload._id,
+                    walletAddress,
+                    amount,
+                    expire,
+                    fee,
+                );
+            }
 
-            const swap = await this.swapModel.create({
-                amount: coin,
+            const signature = sign(swapData.signatureData, signer.secretKey);
+
+            const userSwap = await this.swapModel.create({
+                amount: swapData.coin,
                 createdBy: userPayload._id,
                 signature: signature.toString('hex'),
                 walletAddress,
@@ -282,22 +288,22 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 point: amount,
             });
 
-            if (swap) {
+            if (userSwap) {
                 isCreated = true;
-                swapId = swap._id;
+                swapId = userSwap._id;
 
                 await this.userService.afterCreateUserTransaction(
-                    userTransaction,
+                    swapData.userTransaction,
                     COLLECTION_NAMES.USER_SWAP,
-                    swap._id,
+                    userSwap._id,
                 );
             }
 
             return {
-                _id: swap._id,
+                _id: userSwap._id,
                 signature,
                 expire,
-                amount: coin,
+                amount: swapData.coin,
             };
         } catch (error) {
             if (isCreated) {
@@ -307,10 +313,64 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         }
     }
 
+    async swapPointToJetton(
+        userId: Types.ObjectId,
+        walletAddress: string,
+        amount: number,
+        expire: number,
+        fee: GetMetadataSwapDto,
+    ): Promise<SwapData> {
+        const userTransaction = await this.userService.createUserTransaction(
+            userId,
+            UserTransactionType.SUB,
+            amount,
+            UserTransactionAction.SWAP,
+            origin,
+        );
+
+        const rate = await this.metadataService.getOneSwapInfoByKey('rate');
+        const coin = roundDown(
+            (amount - (amount * fee.value) / 100) * rate.value,
+        );
+        const signatureData = beginCell()
+            .storeAddress(appSettings.swap.walletJettonAddress)
+            .storeAddress(Address.parse(walletAddress))
+            .storeCoins(toNano(coin))
+            .storeUint(expire, 32)
+            .endCell()
+            .hash();
+
+        return { signatureData, coin, userTransaction };
+    }
+
+    async swapDraftTon(
+        userId: Types.ObjectId,
+        walletAddress: string,
+        coin: number,
+        expire: number,
+    ): Promise<SwapData> {
+        const userTransaction = await this.userService.createUserTransaction(
+            userId,
+            UserTransactionType.SUB,
+            coin,
+            UserTransactionAction.SWAP,
+            origin,
+        );
+
+        const signatureData = beginCell()
+            .storeAddress(Address.parse(walletAddress))
+            .storeCoins(toNano(coin))
+            .storeUint(expire, 32)
+            .endCell()
+            .hash();
+
+        return { signatureData, coin, userTransaction };
+    }
+
     async rollBackSwap(userSwapId: Types.ObjectId, userId: Types.ObjectId) {
         const userSwap = await this.swapModel.findOne({
             _id: userSwapId,
-            type: UserSwapType.PENDING,
+            status: UserSwapStatus.PENDING,
         });
 
         if (userSwap) {
@@ -328,7 +388,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 { _id: userSwap._id },
                 {
                     $set: {
-                        type: UserSwapType.FAILED,
+                        status: UserSwapStatus.FAILED,
                     },
                 },
             );
