@@ -270,6 +270,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
             if (type === UserSwapType.POINT) {
                 swapData = await this.swapPointToJetton(
                     userPayload._id,
+                    origin,
                     walletAddress,
                     amount,
                     expire,
@@ -315,6 +316,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
 
     async swapPointToJetton(
         userId: Types.ObjectId,
+        origin: string,
         walletAddress: string,
         amount: number,
         expire: number,
