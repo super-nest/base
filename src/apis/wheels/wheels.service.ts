@@ -383,6 +383,7 @@ export class WheelsService extends BaseService<WheelDocument> {
             origin,
             COLLECTION_NAMES.USER_WHEEL_TICKET,
             wheelId,
+            6000,
         );
 
         return prize;
