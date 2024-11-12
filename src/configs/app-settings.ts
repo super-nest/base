@@ -64,11 +64,12 @@ export const appSettings = {
     },
     swap: {
         walletMNEMONIC: process.env.WALLET_MNEMONIC,
-        walletJettonAddress: process.env.WALLET_JETTON_ADDRESS
-            ? Address.parse(process.env.WALLET_JETTON_ADDRESS)
+        contractJettonWalletAddress: process.env
+            .SWAP_CONTRACT_JETTON_WALLET_ADDRESS
+            ? Address.parse(process.env.SWAP_CONTRACT_JETTON_WALLET_ADDRESS)
             : null,
-        walletAddress: process.env.WALLET_JETTON_ADDRESS
-            ? Address.parse(process.env.WALLET_ADDRESS)
+        contractAddress: process.env.SWAP_CONTRACT_ADDRESS
+            ? Address.parse(process.env.SWAP_CONTRACT_ADDRESS)
             : null,
     },
     ton: {

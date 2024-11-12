@@ -77,7 +77,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
 
         const { transactions } =
             await this.tonApiClient.blockchain.getBlockchainAccountTransactions(
-                appSettings.swap.walletAddress,
+                appSettings.swap.contractAddress,
                 {
                     limit,
                     after_lt: jettonTransaction?.lt
@@ -349,7 +349,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
             (amount - (amount * fee.value) / 100) * rate.value,
         );
         const signatureData = beginCell()
-            .storeAddress(appSettings.swap.walletJettonAddress)
+            .storeAddress(appSettings.swap.contractJettonWalletAddress)
             .storeAddress(Address.parse(walletAddress))
             .storeCoins(toNano(coin))
             .storeUint(expire, 32)
