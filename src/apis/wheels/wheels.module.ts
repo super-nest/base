@@ -6,6 +6,7 @@ import { UserModule } from '../users/user.module';
 import { UserWheelsModule } from '../user-wheels/user-wheels.module';
 import { ExtendedMongooseModule } from '@libs/super-core/modules/mongoose/extended-mongoose.module';
 import { UserWheelTicketsModule } from '../user-wheel-tickets/user-wheel-tickets.module';
+import { WebsocketModule } from 'src/packages/websocket/websocket.module';
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import { UserWheelTicketsModule } from '../user-wheel-tickets/user-wheel-tickets
         UserModule,
         UserWheelsModule,
         UserWheelTicketsModule,
+        WebsocketModule,
     ],
     controllers: [],
     providers: [WheelsService],

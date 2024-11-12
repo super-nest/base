@@ -14,7 +14,7 @@ import { Types } from 'mongoose';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { COLLECTION_NAMES } from 'src/constants';
 import { WebsocketGateway } from 'src/packages/websocket/websocket.gateway';
-import { compareToday, sleep } from 'src/utils/helper';
+import { compareToday } from 'src/utils/helper';
 import { AppDocument } from '../apps/entities/apps.entity';
 import {
     AddPointForUserDto,
@@ -170,6 +170,10 @@ export class UserService
 
             if (fieldUpdate === 'currentPoint') {
                 this.websocketGateway.sendPointsUpdate(user._id, after, ms);
+            }
+
+            if (fieldUpdate === 'draftTon') {
+                this.websocketGateway.sendDraftTonUpdate(user._id, after, ms);
             }
 
             return userTransaction;

@@ -28,6 +28,8 @@ import { BuyTicketDto } from './dto/inputs/buy-ticket.dto';
 import { ExtendedPagingDto } from 'src/pipes/page-result.dto.pipe';
 import { pagination } from '@libs/super-search';
 import { generateRandomString } from '../users/common/generate-random-string.util';
+import { sleep } from 'src/utils/helper';
+import { WebsocketGateway } from 'src/packages/websocket/websocket.gateway';
 
 @Injectable()
 export class WheelsService extends BaseService<WheelDocument> {
@@ -37,6 +39,7 @@ export class WheelsService extends BaseService<WheelDocument> {
         private readonly userService: UserService,
         private readonly userWheelsService: UserWheelsService,
         private readonly userWheelTicketsService: UserWheelTicketsService,
+        private readonly websocketGateway: WebsocketGateway,
     ) {
         super(wheelsModel);
     }
@@ -306,11 +309,7 @@ export class WheelsService extends BaseService<WheelDocument> {
 
             if (type === WheelPrizeType.TICKET) {
                 for (let i = 0; i < ticketPrize; i++) {
-                    await this.userWheelTicketsService.model.create({
-                        status: TicketStatus.NEW,
-                        type: TicketType.SPIN,
-                        createdBy: user._id,
-                    });
+                    this.addPrizeTypeTicketForUser(user);
                 }
 
                 const inviteCode = generateRandomString(16);
@@ -366,6 +365,18 @@ export class WheelsService extends BaseService<WheelDocument> {
             }
             throw error;
         }
+    }
+
+    async addPrizeTypeTicketForUser(user: UserPayload) {
+        await sleep(6000);
+
+        await this.userWheelTicketsService.model.create({
+            status: TicketStatus.NEW,
+            type: TicketType.SPIN,
+            createdBy: user._id,
+        });
+        const tickets = await this.getTicket(user);
+        this.websocketGateway.sendTicketUpdate(user._id, tickets);
     }
 
     async addPrizeForUser(

@@ -76,6 +76,20 @@ export class WebsocketGateway
             .emit(EVENT_NAME.POINT_UPDATE, { currentPoint });
     }
 
+    async sendDraftTonUpdate(userId: Types.ObjectId, draftTon: number, ms = 0) {
+        await sleep(ms);
+        this.server
+            .to(userId.toString())
+            .emit(EVENT_NAME.DRAFT_TON_UPDATE, { draftTon });
+    }
+
+    async sendTicketUpdate(userId: Types.ObjectId, tickets: number, ms = 0) {
+        await sleep(ms);
+        this.server
+            .to(userId.toString())
+            .emit(EVENT_NAME.TICKET_UPDATE, { tickets });
+    }
+
     sendNewReviewRating(appId: Types.ObjectId, result: ReviewRatingDocument) {
         this.server
             .to(appId.toString())
