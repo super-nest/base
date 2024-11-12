@@ -169,8 +169,7 @@ export class UserService
             );
 
             if (fieldUpdate === 'currentPoint') {
-                await sleep(ms);
-                this.websocketGateway.sendPointsUpdate(user._id, after);
+                this.websocketGateway.sendPointsUpdate(user._id, after, ms);
             }
 
             return userTransaction;

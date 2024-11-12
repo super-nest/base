@@ -10,6 +10,7 @@ import { Server, Socket } from 'socket.io';
 import { EVENT_NAME } from './constants';
 import { Types } from 'mongoose';
 import { ReviewRatingDocument } from 'src/apis/review-ratings/entities/review-ratings.entity';
+import { sleep } from 'src/utils/helper';
 
 @WebSocketGateway(appSettings.webSocket.port, {
     cors: true,
@@ -64,7 +65,12 @@ export class WebsocketGateway
             .emit(EVENT_NAME.MISSION_UPDATE, { data: true });
     }
 
-    sendPointsUpdate(userId: Types.ObjectId, currentPoint: number) {
+    async sendPointsUpdate(
+        userId: Types.ObjectId,
+        currentPoint: number,
+        ms = 0,
+    ) {
+        await sleep(ms);
         this.server
             .to(userId.toString())
             .emit(EVENT_NAME.POINT_UPDATE, { currentPoint });
