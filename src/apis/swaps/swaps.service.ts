@@ -95,19 +95,29 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         for (const transaction of transactions) {
             try {
                 const bodyInput = transaction.inMsg.rawBody.beginParse();
+                const bodyOutput = transaction.outMsgs[0].decodedBody;
                 const op = bodyInput.loadUint(32);
                 let signature = null;
+                let isSuccess = false;
+                const successStatus = 'Swap to jetton successfully';
                 if (op == 0x25938561) {
                     bodyInput.loadUint(64);
                     bodyInput.loadCoins();
                     bodyInput.loadAddress();
                     signature = bodyInput.loadBuffer(64).toString('hex');
+                    isSuccess =
+                        transaction.success &&
+                        _.get(bodyOutput, 'forwardPayload.value.value.text') ==
+                            successStatus;
                 }
 
                 if (op == 0xdcb17fc0) {
                     bodyInput.loadUint(64);
                     bodyInput.loadCoins();
                     signature = bodyInput.loadBuffer(64).toString('hex');
+                    isSuccess =
+                        transaction.success &&
+                        _.get(bodyOutput, 'text') == successStatus;
                 }
 
                 if (signature) {
@@ -121,7 +131,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                     jettonTransactions.push({
                         signature,
                         lt: BigInt(transaction.lt),
-                        isSuccess: transaction.success,
+                        isSuccess,
                     });
                 }
             } catch (e) {
