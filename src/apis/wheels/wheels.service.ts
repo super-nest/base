@@ -455,7 +455,7 @@ export class WheelsService extends BaseService<WheelDocument> {
         });
 
         if (exist) {
-            return;
+            throw new BadRequestException('You already have referral ticket');
         }
 
         const ticket = await this.userWheelTicketsService.model.findOne({
@@ -467,7 +467,7 @@ export class WheelsService extends BaseService<WheelDocument> {
         });
 
         if (!ticket) {
-            return;
+            throw new BadRequestException('Not found any referral ticket');
         }
 
         await this.userWheelTicketsService.model.findOneAndUpdate(
