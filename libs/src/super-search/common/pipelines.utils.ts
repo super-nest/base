@@ -33,6 +33,10 @@ export const sortPipelines = (pipeline: PipelineStage[]): PipelineStage[] => {
     const skip: PipelineStage[] = [];
     const count: PipelineStage[] = [];
     const sort: PipelineStage[] = [];
+    const topLevelLookup: PipelineStage[] = [];
+    const deeperLevelLookup: PipelineStage[] = [];
+    const topLevelUnwind: PipelineStage[] = [];
+    const deeperLevelUnwind: PipelineStage[] = [];
 
     for (const stage of pipeline) {
         if (_.has(stage, '$match')) {
@@ -54,6 +58,20 @@ export const sortPipelines = (pipeline: PipelineStage[]): PipelineStage[] => {
             count.push(stage);
         } else if (_.has(stage, '$sort')) {
             sort.push(stage);
+        } else if (_.has(stage, '$lookup')) {
+            const level = lookupLevel(stage);
+            if (level === 1) {
+                topLevelLookup.push(stage);
+            } else {
+                deeperLevelLookup.push(stage);
+            }
+        } else if (_.has(stage, '$unwind')) {
+            const level = unwindLevel(stage);
+            if (level === 1) {
+                topLevelUnwind.push(stage);
+            } else {
+                deeperLevelUnwind.push(stage);
+            }
         } else {
             others.push(stage);
         }
@@ -61,6 +79,10 @@ export const sortPipelines = (pipeline: PipelineStage[]): PipelineStage[] => {
 
     return [
         ...topLevelMatches,
+        ...topLevelLookup,
+        ...topLevelUnwind,
+        ...deeperLevelLookup,
+        ...deeperLevelUnwind,
         ...others,
         ...deeperLevelMatches,
         ...project,
@@ -90,6 +112,22 @@ export const matchLevel = (stage: PipelineStage): number => {
         }
 
         return keys.some((key) => key.includes('.')) ? 2 : 1;
+    }
+    return 0;
+};
+
+export const lookupLevel = (stage: PipelineStage): number => {
+    if (_.has(stage, '$lookup')) {
+        const lookupObj = stage.$lookup;
+        return lookupObj['as']?.includes('.') ? 2 : 1;
+    }
+    return 0;
+};
+
+export const unwindLevel = (stage: PipelineStage): number => {
+    if (_.has(stage, '$unwind')) {
+        const unwindObj = stage.$unwind;
+        return unwindObj['path'].includes('.') ? 2 : 1;
     }
     return 0;
 };

@@ -59,7 +59,7 @@ export class ReviewRatingService extends BaseService<ReviewRatingDocument> {
                     ...filterPipeline,
                     {
                         $lookup: {
-                            from: 'files',
+                            from: COLLECTION_NAMES.FILE,
                             localField: 'createdBy.avatar',
                             foreignField: '_id',
                             as: 'createdBy.avatar',
