@@ -31,7 +31,7 @@ export function applyAutoPopulate(
     }
     const dynamicLookupPipeline = dynamicLookupAggregates(entity);
     if (dynamicLookupPipeline) {
-        pipeline.push(...dynamicLookupPipeline);
+        pipeline.unshift(...dynamicLookupPipeline);
     }
 }
 
