@@ -19,6 +19,7 @@ export enum UserTransactionAction {
     SWAP = 'SWAP',
     DRAFT_TON = 'DRAFT_TON',
     ROLLBACK_SWAP = 'ROLLBACK_SWAP',
+    ROLLBACK_SWAP_DRAFT_TON = 'ROLLBACK_SWAP_DRAFT_TON',
     BUY_TICKET = 'BUY_TICKET',
 }
 

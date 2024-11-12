@@ -116,7 +116,12 @@ export class UserService
             throw new UnauthorizedException('user_not_found', 'User not found');
         }
 
-        if (userTransactionAction === UserTransactionAction.DRAFT_TON) {
+        if (
+            [
+                UserTransactionAction.DRAFT_TON,
+                UserTransactionAction.ROLLBACK_SWAP_DRAFT_TON,
+            ].includes(userTransactionAction)
+        ) {
             after = await this.createUserTransactionDraftTon(
                 user,
                 userTransactionType,

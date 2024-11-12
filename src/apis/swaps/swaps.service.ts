@@ -36,6 +36,7 @@ interface SwapData {
     signatureData: Buffer;
     coin: number;
     userTransaction: UserTransactionDocument;
+    type: UserSwapType;
 }
 
 @Injectable()
@@ -95,12 +96,21 @@ export class SwapsService extends BaseService<UserSwapDocument> {
             try {
                 const bodyInput = transaction.inMsg.rawBody.beginParse();
                 const op = bodyInput.loadUint(32);
+                let signature = null;
                 if (op == 0x25938561) {
                     bodyInput.loadUint(64);
                     bodyInput.loadCoins();
                     bodyInput.loadAddress();
-                    const signature = bodyInput.loadBuffer(64).toString('hex');
+                    signature = bodyInput.loadBuffer(64).toString('hex');
+                }
 
+                if (op == 0xdcb17fc0) {
+                    bodyInput.loadUint(64);
+                    bodyInput.loadCoins();
+                    signature = bodyInput.loadBuffer(64).toString('hex');
+                }
+
+                if (signature) {
                     const exits = await this.jettonTransactionModel.findOne({
                         signature,
                     });
@@ -113,12 +123,6 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                         lt: BigInt(transaction.lt),
                         isSuccess: transaction.success,
                     });
-                }
-
-                if (op == 0xdcb17fc0) {
-                    bodyInput.loadAddress();
-                    bodyInput.loadCoins();
-                    bodyInput.loadUint(32);
                 }
             } catch (e) {
                 this.logger.error(e);
@@ -282,6 +286,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 walletAddress,
                 expire,
                 point: amount,
+                type: swapData.type,
             });
 
             if (userSwap) {
@@ -351,7 +356,12 @@ export class SwapsService extends BaseService<UserSwapDocument> {
             .endCell()
             .hash();
 
-        return { signatureData, coin, userTransaction };
+        return {
+            signatureData,
+            coin,
+            userTransaction,
+            type: UserSwapType.POINT,
+        };
     }
 
     async swapDraftTon(
@@ -376,7 +386,12 @@ export class SwapsService extends BaseService<UserSwapDocument> {
             .endCell()
             .hash();
 
-        return { signatureData, coin: amount, userTransaction };
+        return {
+            signatureData,
+            coin: amount,
+            userTransaction,
+            type: UserSwapType.DRAFT_TON,
+        };
     }
 
     async rollBackSwap(userSwapId: Types.ObjectId, userId: Types.ObjectId) {
@@ -390,7 +405,9 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 userId,
                 UserTransactionType.SUM,
                 userSwap.point,
-                UserTransactionAction.ROLLBACK_SWAP,
+                userSwap.type === UserSwapType.POINT
+                    ? UserTransactionAction.ROLLBACK_SWAP
+                    : UserTransactionAction.ROLLBACK_SWAP_DRAFT_TON,
                 null,
                 COLLECTION_NAMES.USER_SWAP,
                 userSwap._id,
