@@ -163,7 +163,7 @@ export class WheelsService extends BaseService<WheelDocument> {
             .sort({ [sortBy]: sortDirection })
             .autoPopulate();
 
-        const total = this.model
+        const total = this.userWheelsService.model
             .countDocuments(
                 {
                     createdBy: user._id,
