@@ -248,7 +248,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
             },
         });
 
-        if (count >= 500) {
+        if (count >= 400) {
             throw new BadRequestException('You can only swap 1 times a day');
         }
 
