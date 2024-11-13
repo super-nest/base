@@ -267,6 +267,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
             const expire = dayjs().add(expireValue.value, 'minute').unix();
 
             let swapData: SwapData;
+            const signatureId = await this.generateSignatureData();
             if (type === UserSwapType.POINT) {
                 swapData = await this.swapPointToJetton(
                     userPayload._id,
@@ -274,6 +275,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                     walletAddress,
                     amount,
                     expire,
+                    signatureId,
                 );
             }
 
@@ -284,6 +286,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                     walletAddress,
                     amount,
                     expire,
+                    signatureId,
                 );
             }
 
@@ -297,6 +300,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 expire,
                 point: amount,
                 type: swapData.type,
+                signatureId,
             });
 
             if (userSwap) {
@@ -330,6 +334,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         walletAddress: string,
         amount: number,
         expire: number,
+        signatureId: number,
     ): Promise<SwapData> {
         const minAmount = await this.metadataService.getOneSwapInfoByKey(
             'min-amount',
@@ -360,9 +365,9 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         );
         const signatureData = beginCell()
             .storeAddress(appSettings.swap.contractJettonWalletAddress)
-            .storeAddress(Address.parse(walletAddress))
             .storeCoins(toNano(coin))
             .storeUint(expire, 32)
+            .storeUint(signatureId, 32)
             .endCell()
             .hash();
 
@@ -380,6 +385,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         walletAddress: string,
         amount: number,
         expire: number,
+        signatureId: number,
     ): Promise<SwapData> {
         const userTransaction = await this.userService.createUserTransaction(
             userId,
@@ -393,6 +399,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
             .storeAddress(Address.parse(walletAddress))
             .storeCoins(toNano(amount))
             .storeUint(expire, 32)
+            .storeUint(signatureId, 32)
             .endCell()
             .hash();
 
@@ -432,5 +439,19 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 },
             );
         }
+    }
+
+    private async generateSignatureData() {
+        const signatureId = Math.floor(10000000 + Math.random() * 90000000);
+
+        const exits = await this.swapModel.findOne({
+            signatureId,
+        });
+
+        if (exits) {
+            return this.generateSignatureData();
+        }
+
+        return signatureId;
     }
 }

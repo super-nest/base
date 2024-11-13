@@ -79,6 +79,16 @@ export class UserSwap extends AggregateRoot {
     walletAddress: string;
 
     @SuperProp({
+        type: Number,
+        cms: {
+            label: 'Signature ID',
+            tableShow: true,
+            columnPosition: 7,
+        },
+    })
+    signatureId: number;
+
+    @SuperProp({
         type: String,
     })
     boc: string;
