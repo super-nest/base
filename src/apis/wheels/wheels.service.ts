@@ -239,6 +239,7 @@ export class WheelsService extends BaseService<WheelDocument> {
         ticket: UserWheelTicketDocument,
         user: UserPayload,
         origin: string,
+        count = 0,
     ) {
         let userWheelTicketId: Types.ObjectId;
         try {
@@ -307,12 +308,13 @@ export class WheelsService extends BaseService<WheelDocument> {
                 );
             }
 
+            let inviteCode = null;
             if (type === WheelPrizeType.TICKET) {
                 for (let i = 0; i < ticketPrize; i++) {
                     this.addPrizeTypeTicketForUser(user);
                 }
 
-                const inviteCode = generateRandomString(16);
+                inviteCode = generateRandomString(16);
                 for (let i = 0; i < ticketPrizeShare; i++) {
                     await this.userWheelTicketsService.model.create({
                         status: TicketStatus.PENDING,
@@ -321,13 +323,6 @@ export class WheelsService extends BaseService<WheelDocument> {
                         referrer: user._id,
                     });
                 }
-
-                return {
-                    ...selectedPrize,
-                    indexSelectedPrize,
-                    inviteCode,
-                    rate: null,
-                };
             }
 
             if (
@@ -338,7 +333,11 @@ export class WheelsService extends BaseService<WheelDocument> {
             ) {
                 const now = dayjs().unix();
                 if (coolDownTime + coolDownValue * 3600 > now) {
-                    return await this.play(wheel, ticket, user, origin);
+                    if (count >= 10) {
+                        throw new BadRequestException('Please play again!');
+                    }
+                    count++;
+                    return await this.play(wheel, ticket, user, origin, count);
                 }
 
                 await this.wheelsModel.findOneAndUpdate(
@@ -356,7 +355,12 @@ export class WheelsService extends BaseService<WheelDocument> {
                 },
                 createdBy: user._id,
             });
-            return { ...selectedPrize, indexSelectedPrize, rate: null };
+            return {
+                ...selectedPrize,
+                indexSelectedPrize,
+                inviteCode,
+                rate: null,
+            };
         } catch (error) {
             if (userWheelTicketId) {
                 await this.userWheelTicketsService.model.findOneAndUpdate(
