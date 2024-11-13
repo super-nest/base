@@ -144,6 +144,16 @@ export class CreateWheelsDto extends PartialType(ExcludeDto) {
 
     @SuperApiProperty({
         type: Number,
+        description:
+            'Cool down time of the wheel prize Jackpot and Super Jackpot',
+        title: 'Cool Down Time',
+    })
+    @IsOptional()
+    @IsNumber()
+    coolDownTime: number;
+
+    @SuperApiProperty({
+        type: Number,
         description: 'Ticket prize of the wheel',
         example: 1,
         required: false,

@@ -336,14 +336,15 @@ export class WheelsService extends BaseService<WheelDocument> {
                     WheelPrizeCategory.SUPER_JACKPOT,
                 ].includes(category)
             ) {
-                if (coolDownTime > dayjs().unix()) {
+                const now = dayjs().unix();
+                if (now > wheel.coolDownTime + coolDownValue * 3600) {
                     return await this.play(wheel, ticket, user, origin);
                 }
 
                 await this.wheelsModel.findOneAndUpdate(
                     { _id: wheel._id },
                     {
-                        coolDownTime: dayjs().add(coolDownValue, 'hour').unix(),
+                        coolDownTime: now,
                     },
                 );
             }
