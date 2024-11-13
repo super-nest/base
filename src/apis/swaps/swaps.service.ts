@@ -272,7 +272,6 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 swapData = await this.swapPointToJetton(
                     userPayload._id,
                     origin,
-                    walletAddress,
                     amount,
                     expire,
                     signatureId,
@@ -283,7 +282,6 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 swapData = await this.swapDraftTon(
                     userPayload._id,
                     origin,
-                    walletAddress,
                     amount,
                     expire,
                     signatureId,
@@ -332,7 +330,6 @@ export class SwapsService extends BaseService<UserSwapDocument> {
     async swapPointToJetton(
         userId: Types.ObjectId,
         origin: string,
-        walletAddress: string,
         amount: number,
         expire: number,
         signatureId: number,
@@ -383,7 +380,6 @@ export class SwapsService extends BaseService<UserSwapDocument> {
     async swapDraftTon(
         userId: Types.ObjectId,
         origin: string,
-        walletAddress: string,
         amount: number,
         expire: number,
         signatureId: number,
@@ -397,7 +393,6 @@ export class SwapsService extends BaseService<UserSwapDocument> {
         );
 
         const signatureData = beginCell()
-            .storeAddress(Address.parse(walletAddress))
             .storeCoins(toNano(amount))
             .storeUint(expire, 32)
             .storeUint(signatureId, 32)
