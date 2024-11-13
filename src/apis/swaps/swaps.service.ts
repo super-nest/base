@@ -319,6 +319,7 @@ export class SwapsService extends BaseService<UserSwapDocument> {
                 signature,
                 expire,
                 amount: swapData.coin,
+                signatureId,
             };
         } catch (error) {
             if (isCreated) {
