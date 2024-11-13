@@ -120,6 +120,7 @@ export class UserService
             [
                 UserTransactionAction.DRAFT_TON,
                 UserTransactionAction.ROLLBACK_SWAP_DRAFT_TON,
+                UserTransactionAction.SWAP_TON,
             ].includes(userTransactionAction)
         ) {
             after = await this.createUserTransactionDraftTon(

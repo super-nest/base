@@ -17,6 +17,7 @@ export enum UserTransactionAction {
     REFERRED = 'REFERRED',
     WHEEL = 'WHEEL',
     SWAP = 'SWAP',
+    SWAP_TON = 'SWAP_TON',
     DRAFT_TON = 'DRAFT_TON',
     ROLLBACK_SWAP = 'ROLLBACK_SWAP',
     ROLLBACK_SWAP_DRAFT_TON = 'ROLLBACK_SWAP_DRAFT_TON',
