@@ -337,7 +337,7 @@ export class WheelsService extends BaseService<WheelDocument> {
                 ].includes(category)
             ) {
                 const now = dayjs().unix();
-                if (now > wheel.coolDownTime + coolDownValue * 3600) {
+                if (coolDownTime + coolDownValue * 3600 > now) {
                     return await this.play(wheel, ticket, user, origin);
                 }
 
