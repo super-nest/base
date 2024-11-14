@@ -1,0 +1,124 @@
+[
+    {
+        "deletedAt": null,
+        "fee": 10,
+        "limit": 5,
+        "freeDaily": 1,
+        "coolDownTime": 8,
+        "prizes": [
+            {
+                "prize": 0,
+                "rate": 64.5,
+                "name": "Lucky Next Time",
+                "description": "Luck wasn’t on your side today. Keep spinning!",
+                "type": "OTHER",
+                "category": "COMMON"
+            },
+            {
+                "prize": 50,
+                "rate": 25,
+                "name": "50 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "COMMON"
+            },
+            {
+                "prize": 0.1,
+                "rate": 0,
+                "name": "0.1 TON",
+                "type": "TON",
+                "category": "JACKPOT"
+            },
+            {
+                "prize": 100,
+                "rate": 10.35,
+                "name": "100 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "COMMON"
+            },
+            {
+                "prize": 1,
+                "rate": 0,
+                "name": "1 Tickets",
+                "description": "You've won a Free Spin Ticket and 2 Shareable Tickets! Use your Free Spin Ticket right away, and share the 2 Shareable Tickets with friends through a unique link. Please copy and save this link now!",
+                "type": "OTHER",
+                "category": "MEDIUM"
+            },
+            {
+                "prize": 200,
+                "rate": 0,
+                "name": "200 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "MEDIUM"
+            },
+            {
+                "prize": 300,
+                "rate": 0,
+                "name": "300 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "MEDIUM"
+            },
+            {
+                "prize": 0.2,
+                "rate": 0.05,
+                "name": "0.2 TON",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "TON",
+                "category": "JACKPOT"
+            },
+            {
+                "prize": 500,
+                "rate": 0,
+                "name": "500 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "MEDIUM"
+            },
+            {
+                "prize": 1,
+                "rate": 0.09,
+                "name": "1 TON",
+                "description": "You’ve hit the jackpot! Bask in your victory!",
+                "type": "TON",
+                "category": "SUPER_JACKPOT"
+            },
+            {
+                "prize": 1000,
+                "rate": 0,
+                "name": "1,000 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "JACKPOT"
+            },
+            {
+                "prize": 2000,
+                "rate": 0.01,
+                "name": "2,000 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "JACKPOT"
+            },
+            {
+                "prize": 5000,
+                "rate": 0,
+                "name": "5,000 Points",
+                "description": "Your luck is shining bright today! Congrats!",
+                "type": "GOLD",
+                "category": "SUPER_JACKPOT"
+            }
+        ],
+        "__v": 0,
+        "createdAt": {
+            "$date": "2024-11-04T07:02:31.802Z"
+        },
+        "updatedAt": {
+            "$date": "2024-11-05T06:19:54.679Z"
+        },
+        "updatedBy": {
+            "$oid": "66dabf7a2ae92ad3f2ad327d"
+        }
+    }
+]

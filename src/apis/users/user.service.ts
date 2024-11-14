@@ -10,15 +10,15 @@ import { BaseService } from 'src/base/service/base.service';
 import { UserDocument } from './entities/user.entity';
 import { COLLECTION_NAMES } from 'src/constants';
 import { UserPayload } from 'src/base/models/user-payload.model';
-import { UpdateMeDto } from './dto/update-me.dto';
 import _ from 'lodash';
 import bcrypt from 'bcrypt';
 import { UserCacheKey, UserStatus } from './constants';
 import { SuperCacheService } from '@libs/super-cache/super-cache.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { ExtendedInjectModel } from '@libs/super-core';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
+import { UpdateUserDto } from './dto/inputs/update-user.dto';
+import { CreateUserDto } from './dto/inputs/create-user.dto';
+import { UpdateMeDto } from './dto/inputs/update-me.dto';
 
 @Injectable()
 export class UserService

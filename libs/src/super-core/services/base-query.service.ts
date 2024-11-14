@@ -17,8 +17,9 @@ export class CustomQueryBaseService<T extends Document> {
         moduleRef: ModuleRef,
         conditions: Record<string, any> = {},
         pipeline: PipelineStage[] = [],
+        id: string = CustomQueryBaseService.name,
     ) {
-        this.id = CustomQueryBaseService.name;
+        this.id = id;
         CustomQueryBaseService.moduleRef = moduleRef;
         this.model = model;
         this.conditions = conditions;

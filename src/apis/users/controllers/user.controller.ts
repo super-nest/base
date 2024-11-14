@@ -4,11 +4,12 @@ import { UserPayload } from 'src/base/models/user-payload.model';
 import { COLLECTION_NAMES } from 'src/constants';
 import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
 import { AUDIT_EVENT } from 'src/packages/audits/constants';
-import { UpdateMeDto } from '../dto/update-me.dto';
+import { UpdateMeDto } from '../dto/inputs/update-me.dto';
 import { UserService } from '../user.service';
 import { PERMISSION, Resource, SuperAuthorize } from '@libs/super-authorize';
 import { SuperGet, SuperPut } from '@libs/super-core';
 import { Me } from 'src/decorators/me.decorator';
+import { ResultUserDto } from '../dto/outputs/result-user.dto';
 
 @Controller('users')
 @Resource('users')
@@ -20,7 +21,7 @@ import { Me } from 'src/decorators/me.decorator';
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    @SuperGet({ route: 'me' })
+    @SuperGet({ route: 'me', output: ResultUserDto })
     @SuperAuthorize(PERMISSION.GET)
     async getMe(@Me() user: UserPayload) {
         const result = await this.userService.getMe(user);

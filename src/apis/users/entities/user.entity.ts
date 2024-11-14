@@ -4,7 +4,7 @@ import { COLLECTION_NAMES } from 'src/constants';
 import { UserStatus } from '../constants';
 import autopopulateSoftDelete from 'src/utils/mongoose-plugins/autopopulate-soft-delete';
 import { AutoPopulate } from '@libs/super-search';
-import { File } from 'src/apis/media/entities/files.entity';
+import { File, FileDocument } from 'src/apis/media/entities/files.entity';
 import { AggregateRoot } from 'src/base/entities/aggregate-root.schema';
 import { SuperProp } from '@libs/super-core';
 import {
@@ -56,7 +56,7 @@ export class User extends AggregateRoot {
     @AutoPopulate({
         ref: COLLECTION_NAMES.FILE,
     })
-    avatar: File;
+    avatar: FileDocument;
 
     @SuperProp({
         type: Types.ObjectId,
@@ -66,13 +66,13 @@ export class User extends AggregateRoot {
         cms: {
             label: 'Role',
             tableShow: true,
-            columnPosition: 7,
+            columnPosition: 8,
         },
     })
     @AutoPopulate({
         ref: COLLECTION_NAMES.ROLE,
     })
-    role: Types.ObjectId | RoleDocument;
+    role: RoleDocument;
 
     @SuperProp({
         type: String,
@@ -81,7 +81,7 @@ export class User extends AggregateRoot {
         cms: {
             label: 'Status',
             tableShow: true,
-            columnPosition: 8,
+            columnPosition: 9,
         },
     })
     status: UserStatus;

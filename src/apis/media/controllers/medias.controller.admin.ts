@@ -9,7 +9,7 @@ import {
 import { ApiConsumes, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { MediaService } from 'src/apis/media/medias.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { UploadMediaDto } from 'src/apis/media/dto/upload-media.dto';
+import { UploadMediaDto } from 'src/apis/media/dto/inputs/upload-media.dto';
 import { IUploadedMulterFile } from 'src/packages/s3/s3.service';
 import {
     ExtendedPagingDto,
@@ -30,7 +30,7 @@ import { SuperDelete } from '@libs/super-core/decorators/super-delete.decorator'
 import { SuperAuthorize } from '@libs/super-authorize/decorators/authorize.decorator';
 import { PERMISSION, Resource } from '@libs/super-authorize';
 import { SuperPut } from '@libs/super-core';
-import { UpdateMediaDto } from '../dto/update-media.dto';
+import { UpdateMediaDto } from '../dto/inputs/update-media.dto';
 import { Me } from 'src/decorators/me.decorator';
 
 @Controller('media')
@@ -61,7 +61,7 @@ export class MediaControllerAdmin {
         return result;
     }
 
-    @SuperPost({ dto: UploadMediaDto })
+    @SuperPost({ input: UploadMediaDto })
     @ApiConsumes('multipart/form-data')
     @SuperAuthorize(PERMISSION.POST)
     @UseInterceptors(

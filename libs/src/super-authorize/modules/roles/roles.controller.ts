@@ -9,8 +9,8 @@ import {
 } from 'src/pipes/page-result.dto.pipe';
 import { ParseObjectIdPipe } from 'src/pipes/parse-object-id.pipe';
 import { ParseObjectIdArrayPipe } from 'src/pipes/parse-object-ids.pipe';
-import { UpdateRoleDto } from './dto/update-role.dto';
-import { CreateRoleDto } from './dto/create-role.dto';
+import { UpdateRoleDto } from './dto/inputs/update-role.dto';
+import { CreateRoleDto } from './dto/inputs/create-role.dto';
 import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
 import { AUDIT_EVENT } from 'src/packages/audits/constants';
 import { SuperPost } from '@libs/super-core/decorators/super-post.decorator';
@@ -52,7 +52,7 @@ export class RolesController {
     }
 
     @SuperPost({
-        dto: CreateRoleDto,
+        input: CreateRoleDto,
     })
     @SuperAuthorize(PERMISSION.POST)
     async create(

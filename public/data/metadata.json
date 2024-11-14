@@ -96,5 +96,106 @@
         "updatedAt": {
             "$date": "2024-09-05T03:10:45.691Z"
         }
+    },
+
+    {
+        "_id": {
+            "$oid": "66bb020ffe713900e234c2af"
+        },
+        "deletedAt": null,
+        "type": "AMOUNT_REFERRAL_REWARD",
+        "value": 10,
+        "createdAt": {
+            "$date": "2024-08-13T06:48:41.265Z"
+        },
+        "updatedAt": {
+            "$date": "2024-08-13T06:48:41.265Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "66bb020ffe713900e234c3af"
+        },
+        "deletedAt": null,
+        "type": "SWAP",
+        "key": "rate",
+        "value": 0.001,
+        "description": "1000 points for 1 token",
+        "createdAt": {
+            "$date": "2024-08-13T06:48:41.265Z"
+        },
+        "updatedAt": {
+            "$date": "2024-08-13T06:48:41.265Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "66bb020ffe713900e234c4af"
+        },
+        "deletedAt": null,
+        "type": "SWAP",
+        "key": "fee",
+        "value": 10,
+        "description": "%",
+        "createdAt": {
+            "$date": "2024-08-13T06:48:41.265Z"
+        },
+        "updatedAt": {
+            "$date": "2024-08-13T06:48:41.265Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "66bb020ffe713900e234c5af"
+        },
+        "deletedAt": null,
+        "type": "SWAP",
+        "key": "min-amount",
+        "value": 1000,
+        "description": "Minimum amount to swap",
+        "createdAt": {
+            "$date": "2024-08-13T06:48:41.265Z"
+        },
+        "updatedAt": {
+            "$date": "2024-08-13T06:48:41.265Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "66bb020ffe713900e234c6af"
+        },
+        "deletedAt": null,
+        "type": "SWAP",
+        "key": "max-amount",
+        "value": 100000,
+        "description": "Maximum amount to swap",
+        "createdAt": {
+            "$date": "2024-08-13T06:48:41.265Z"
+        },
+        "updatedAt": {
+            "$date": "2024-08-13T06:48:41.265Z"
+        },
+        "__v": 0
+    },
+    {
+        "_id": {
+            "$oid": "66bb020ffe713900e234c7af"
+        },
+        "deletedAt": null,
+        "type": "SWAP",
+        "key": "expire",
+        "value": 2,
+        "description": "minute",
+        "createdAt": {
+            "$date": "2024-08-13T06:48:41.265Z"
+        },
+        "updatedAt": {
+            "$date": "2024-08-13T06:48:41.265Z"
+        },
+        "__v": 0
     }
 ]

@@ -54,3 +54,7 @@ export const cleanOrigin = (origin: string): string => {
 export const cleanOrigins = (origins: string[]): string[] => {
     return origins.map((origin) => cleanOrigin(origin));
 };
+
+export const sleep = (ms: number) => {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+};

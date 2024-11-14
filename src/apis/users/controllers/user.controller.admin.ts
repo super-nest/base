@@ -2,15 +2,15 @@ import { Body, Controller, Param, Query } from '@nestjs/common';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import { COLLECTION_NAMES } from 'src/constants';
-import { UpdateMeDto } from 'src/apis/users/dto/update-me.dto';
+import { UpdateMeDto } from 'src/apis/users/dto/inputs/update-me.dto';
 import { UserService } from 'src/apis/users/user.service';
 import { Types } from 'mongoose';
 import { ParseObjectIdPipe } from 'src/pipes/parse-object-id.pipe';
 import { ParseObjectIdArrayPipe } from 'src/pipes/parse-object-ids.pipe';
 import { AuditLog } from 'src/packages/audits/decorators/audits.decorator';
 import { AUDIT_EVENT } from 'src/packages/audits/constants';
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { CreateUserDto } from '../dto/inputs/create-user.dto';
+import { UpdateUserDto } from '../dto/inputs/update-user.dto';
 import { SuperPost } from '@libs/super-core/decorators/super-post.decorator';
 import { SuperPut } from '@libs/super-core/decorators/super-put.decorator';
 import { SuperGet } from '@libs/super-core/decorators/super-get.decorator';
@@ -87,7 +87,7 @@ export class UserControllerAdmin {
     }
 
     @SuperPost({
-        dto: CreateUserDto,
+        input: CreateUserDto,
     })
     @SuperAuthorize(PERMISSION.POST)
     async create(
