@@ -8,6 +8,7 @@ import {
     UpdateWithAggregationPipeline,
     HydratedDocument,
     MergeType,
+    MongooseUpdateQueryOptions,
 } from 'mongoose';
 import {
     CreateWithMultipleLanguage,
@@ -21,6 +22,7 @@ import { CustomQueryCountDocumentsService } from '@libs/super-core/services/cust
 import { AggregateRoot } from 'src/base/entities/aggregate-root.schema';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
 import _ from 'lodash';
+import { UpdateOptions } from 'mongodb';
 
 type AnyKeys<T> = { [P in keyof T]?: T[P] | any };
 
@@ -108,10 +110,12 @@ export class BaseRepositories<T extends AggregateRoot, E>
     async updateOne<ResultDoc = HydratedDocument<T>>(
         filter: FilterQuery<T>,
         update?: UpdateQuery<T> | UpdateWithAggregationPipeline,
+        options?: (UpdateOptions & MongooseUpdateQueryOptions<T>) | null,
     ) {
         const result = await this.model.updateOne(
             { deletedAt: null, ...filter },
             update,
+            options as unknown,
         );
         return result as unknown as ResultDoc;
     }

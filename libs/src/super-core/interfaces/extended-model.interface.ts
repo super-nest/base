@@ -6,10 +6,12 @@ import {
     HydratedDocument,
     Types,
     Document,
+    MongooseUpdateQueryOptions,
 } from 'mongoose';
 import { CustomQueryFindAllService } from '../services/custom-query-find-all.service';
 import { CustomQueryFindOneService } from '../services/custom-query-find-one.service';
 import { CustomQueryCountDocumentsService } from '../services/custom-query-count-documents.service';
+import { UpdateOptions } from 'mongodb';
 
 export interface ExtendedModel<T extends Document> {
     createInstance(doc: Partial<T>): HydratedDocument<T>;
@@ -33,6 +35,7 @@ export interface ExtendedModel<T extends Document> {
     updateOne<ResultDoc = HydratedDocument<T>>(
         filter: FilterQuery<T>,
         update?: UpdateQuery<T> | UpdateWithAggregationPipeline,
+        options?: (UpdateOptions & MongooseUpdateQueryOptions<T>) | null,
     ): Promise<ResultDoc>;
 
     updateMany<ResultDoc = HydratedDocument<T>>(
