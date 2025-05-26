@@ -1,4 +1,5 @@
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { TransformInterceptor } from './interceptors/transform.interceptors';
@@ -6,12 +7,14 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import { appSettings } from './configs/app-settings';
 import compression from 'compression';
+import { join } from 'path';
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule, {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
         cors: true,
         abortOnError: true,
     });
+    app.useStaticAssets(join(__dirname, '..', 'public'));
 
     app.use(
         compression({
@@ -21,6 +24,7 @@ async function bootstrap() {
             threshold: 0,
         }),
     );
+  
 
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
 

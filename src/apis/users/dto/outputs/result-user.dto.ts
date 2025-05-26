@@ -1,7 +1,5 @@
-import { ResultMediaDto } from 'src/apis/media/dto/outputs/result-media.dto';
 import { User } from '../../entities/user.entity';
 import { SuperApiProperty } from '@libs/super-core';
-import { FileDocument } from 'src/apis/media/entities/files.entity';
 import { ResultRoleDto } from '@libs/super-authorize/modules/roles/dto/outputs/result-role.dto';
 import { RoleDocument } from '@libs/super-authorize/modules/roles/entities/roles.entity';
 import { UserStatus } from '../../constants';
@@ -28,11 +26,7 @@ export class ResultUserDto extends User {
     })
     telegramUsername: string;
 
-    @SuperApiProperty({
-        type: ResultMediaDto,
-    })
-    avatar: FileDocument;
-
+ 
     @SuperApiProperty({
         type: Number,
     })

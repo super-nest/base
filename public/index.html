@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+</head>
+<body>
+  <button onclick="googleLogin()">Login with Google</button>
+  <button onclick="logout()">Logout</button>
+  <script>
+    function googleLogin() {
+      window.location.href = 'http://localhost:3000/api/auth/google';
+    }
+
+    async function logout() {
+      try {
+        const token = localStorage.getItem('jwt');
+        if (!token) {
+          console.log('No token, logged out');
+          return;
+        }
+        await fetch('http://localhost:3000/api/auth/logout', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        localStorage.removeItem('jwt');
+        console.log('Logged out');
+      } catch (error) {
+        console.error('Logout error:', error);
+      }
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    if (token) {
+      localStorage.setItem('jwt', token);
+      console.log('Logged in with token:', token);
+      window.history.replaceState({}, document.title, '/'); // Xóa query param
+    } else if (window.location.pathname.includes('error')) {
+      console.error('Login failed');
+    }
+  </script>
+</body>
+</html>

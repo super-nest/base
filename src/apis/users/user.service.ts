@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { BaseService } from 'src/base/service/base.service';
-import { UserDocument } from './entities/user.entity';
+import { User, UserDocument } from './entities/user.entity';
 import { COLLECTION_NAMES } from 'src/constants';
 import { UserPayload } from 'src/base/models/user-payload.model';
 import _ from 'lodash';
@@ -95,7 +95,7 @@ export class UserService
             throw new BadRequestException(`Not found ${_id}`);
         }
 
-        if (user.password === update.password) {
+        if (user.auth.password === update.password) {
             delete update.password;
         }
 
@@ -121,8 +121,8 @@ export class UserService
 
         const isMatch =
             user &&
-            user.password &&
-            (await bcrypt.compare(password, user.password));
+            user.auth.password &&
+            (await bcrypt.compare(password, user.auth.password));
 
         if (isMatch) {
             return user;
@@ -242,4 +242,35 @@ export class UserService
             });
         }
     }
+
+    //
+    async findByGoogleId(googleId: string): Promise<User | null> {
+        return this.userModel.findOne({ 'auth.googleId': googleId });
+      }
+    
+      async findByEmail(email: string): Promise<User | null> {
+        return this.userModel.findOne({ email });
+      }
+    
+      async findByRefreshToken(refreshToken: string): Promise<User | null> {
+        return this.userModel.findOne({ refreshToken });
+      }
+    
+      async findByToken(token: string): Promise<User | null> {
+        return this.userModel.findOne({ token });
+      }
+    
+      async create(userData: Partial<User>): Promise<User> {
+        const user = this.userModel.create(userData);
+        return (await user).save();
+      }
+    
+      async update(id: string, userData: Partial<User>): Promise<User | null> {
+        return this.userModel
+          .findByIdAndUpdate(id, userData);
+      }
+    
+      async findById(id: string): Promise<User | null> {
+        return this.userModel.findById(id);
+      }
 }
