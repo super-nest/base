@@ -21,7 +21,7 @@ import { Me } from 'src/decorators/me.decorator';
         AUDIT_EVENT.PUT,
         AUDIT_EVENT.DELETE,
     ],
-    refSource: COLLECTION_NAMES.NONCE,
+    refSource: COLLECTION_NAMES.USER,
 })
 export class AuthControllerAdmin {
     constructor(private readonly authService: AuthService) {}

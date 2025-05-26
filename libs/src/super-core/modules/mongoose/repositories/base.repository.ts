@@ -78,12 +78,15 @@ export class BaseRepositories<T extends AggregateRoot, E>
     }
 
     findById(id: any, pipeline: PipelineStage[] = []) {
+        if (!id || typeof id !== 'string') {
+            throw new Error('Invalid ID provided');
+        }
         return new CustomQueryFindOneService(
             this.model,
             this.entity,
             this.collectionName,
             this.moduleRef,
-            { _id: new Types.ObjectId(id.toString()) },
+            { _id: Types.ObjectId.createFromHexString(id) },
             pipeline,
             CustomQueryFindOneService.name + 'findById',
         );

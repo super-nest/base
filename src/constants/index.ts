@@ -1,5 +1,5 @@
 export enum COLLECTION_NAMES {
-    NONCE = 'nonces',
+    COUNTRIES = 'countries',
     USER = 'users',
     ROLE = 'roles',
     PERMISSION = 'permissions',
@@ -8,6 +8,7 @@ export enum COLLECTION_NAMES {
     CATEGORIES = 'categories',
     POST = 'posts',
     AUDIT = 'audits',
+    LOGS = 'logs',
 }
 
 export enum CountryCode {

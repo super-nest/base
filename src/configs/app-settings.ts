@@ -29,11 +29,11 @@ export const appSettings = {
         folder: process.env.AWS_FOLDER_NAME_DEFAULT || 'marketplace',
         region: process.env.AWS_REGION,
     },
-    redis: {
-        heathCheck: process.env.REDIS_HOST ? true : false,
-        host: process.env.REDIS_HOST,
-        port: Number(process.env.REDIS_PORT),
-        username: process.env.REDIS_USERNAME,
-        password: process.env.REDIS_PASSWORD,
-    },
+    // redis: {
+    //     heathCheck: process.env.REDIS_HOST ? true : false,
+    //     host: process.env.REDIS_HOST,
+    //     port: Number(process.env.REDIS_PORT),
+    //     username: process.env.REDIS_USERNAME,
+    //     password: process.env.REDIS_PASSWORD,
+    // },
 };
