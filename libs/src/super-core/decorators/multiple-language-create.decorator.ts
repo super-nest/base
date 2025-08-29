@@ -1,9 +1,9 @@
-import { createDocumentMultipleLanguage } from '../common/create.utils';
+import { applyMultipleLanguage } from '../services/query';
 import _ from 'lodash';
 import { appSettings } from 'src/configs/app-settings';
 import { RequestContext } from '@libs/super-request-context';
 
-export function CreateWithMultipleLanguage(localeParam?: string) {
+export function MultipleLanguageCreate(localeParam?: string) {
     return function (
         target: any,
         propertyKey: string,
@@ -23,17 +23,21 @@ export function CreateWithMultipleLanguage(localeParam?: string) {
             }
 
             const query = _.get(req, 'query', {});
-            // Ưu tiên locale được truyền thủ công, sau đó là query locale, cuối cùng là mainLanguage
             const locale =
                 localeParam || _.get(query, 'locale', appSettings.mainLanguage);
             const [doc] = args;
 
-            await createDocumentMultipleLanguage(
-                this.entity,
-                doc,
-                locale,
-                Array.isArray(doc),
-            );
+            // Apply multiple language logic before calling original method
+            if (this.model && doc) {
+                await applyMultipleLanguage(
+                    'create',
+                    this.model,
+                    doc,
+                    locale,
+                    Array.isArray(doc),
+                );
+            }
+
             return originalMethod.apply(this, args);
         };
 

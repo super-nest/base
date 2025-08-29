@@ -7,10 +7,12 @@ import {
     Types,
     Document,
     MongooseUpdateQueryOptions,
+    QueryOptions,
 } from 'mongoose';
 import { CustomQueryFindAllService } from '../services/custom-query-find-all.service';
 import { CustomQueryFindOneService } from '../services/custom-query-find-one.service';
 import { CustomQueryCountDocumentsService } from '../services/custom-query-count-documents.service';
+import { CustomQueryCreateService } from '../services/custom-query-create.service';
 import { UpdateOptions } from 'mongodb';
 
 export interface ExtendedModel<T extends Document> {
@@ -51,6 +53,7 @@ export interface ExtendedModel<T extends Document> {
     findByIdAndUpdate<ResultDoc = HydratedDocument<T>>(
         id: Types.ObjectId | any,
         update: UpdateQuery<T>,
+        options?: QueryOptions<T> | null,
     ): Promise<ResultDoc>;
 
     countDocuments<ResultDoc = HydratedDocument<T>>(

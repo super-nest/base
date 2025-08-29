@@ -9,6 +9,7 @@ import {
     HydratedDocument,
     MergeType,
     MongooseUpdateQueryOptions,
+    QueryOptions,
 } from 'mongoose';
 import {
     CreateWithMultipleLanguage,
@@ -19,6 +20,7 @@ import { ModuleRef } from '@nestjs/core';
 import { CustomQueryFindAllService } from '@libs/super-core/services/custom-query-find-all.service';
 import { CustomQueryFindOneService } from '@libs/super-core/services/custom-query-find-one.service';
 import { CustomQueryCountDocumentsService } from '@libs/super-core/services/custom-query-count-documents.service';
+import { CustomQueryCreateService } from '@libs/super-core/services/custom-query-create.service';
 import { AggregateRoot } from 'src/base/entities/aggregate-root.schema';
 import { ExtendedModel } from '@libs/super-core/interfaces/extended-model.interface';
 import _ from 'lodash';
@@ -89,14 +91,24 @@ export class BaseRepositories<T extends AggregateRoot, E>
         );
     }
 
-    @CreateWithMultipleLanguage()
-    @DeleteCache()
+    // @DeleteCache()
     async create<DocContents = AnyKeys<T>>(doc: DocContents | T): Promise<T> {
-        return await this.model.create(doc);
+        const createService = new CustomQueryCreateService(
+            this.model,
+            this.entity,
+            this.collectionName,
+            this.moduleRef,
+        );
+
+        if (doc) {
+            createService.setData(doc as Partial<T>);
+        }
+
+        return createService;
     }
 
     @CreateWithMultipleLanguage()
-    @DeleteCache()
+    // @DeleteCache()
     async insertMany<DocContents = T>(
         docs: Array<DocContents | T>,
     ): Promise<
@@ -106,7 +118,7 @@ export class BaseRepositories<T extends AggregateRoot, E>
     }
 
     @UpdateWithMultipleLanguage()
-    @DeleteCache()
+    // @DeleteCache()
     async updateOne<ResultDoc = HydratedDocument<T>>(
         filter: FilterQuery<T>,
         update?: UpdateQuery<T> | UpdateWithAggregationPipeline,
@@ -121,7 +133,7 @@ export class BaseRepositories<T extends AggregateRoot, E>
     }
 
     @UpdateWithMultipleLanguage()
-    @DeleteCache()
+    // @DeleteCache()
     async updateMany<ResultDoc = HydratedDocument<T>>(
         filter: FilterQuery<T>,
         update?: UpdateQuery<T> | UpdateWithAggregationPipeline,
@@ -134,7 +146,7 @@ export class BaseRepositories<T extends AggregateRoot, E>
     }
 
     @UpdateWithMultipleLanguage()
-    @DeleteCache()
+    // @DeleteCache()
     async findOneAndUpdate<ResultDoc = HydratedDocument<T>>(
         filter?: FilterQuery<T>,
         update?: UpdateQuery<T>,
@@ -147,12 +159,13 @@ export class BaseRepositories<T extends AggregateRoot, E>
     }
 
     @UpdateWithMultipleLanguage()
-    @DeleteCache()
+    // @DeleteCache()
     async findByIdAndUpdate<ResultDoc = HydratedDocument<T>>(
         id: Types.ObjectId | any,
         update: UpdateQuery<T>,
+        options?: QueryOptions<T> | null,
     ) {
-        const result = await this.model.findByIdAndUpdate(id, update);
+        const result = await this.model.findByIdAndUpdate(id, update, options);
         return result as unknown as ResultDoc;
     }
 
@@ -169,23 +182,23 @@ export class BaseRepositories<T extends AggregateRoot, E>
         );
     }
 
-    @DeleteCache()
+    // @DeleteCache()
     async deleteOne(filter: FilterQuery<T>) {
         const result = await this.model.deleteOne(filter);
         return result as unknown as T;
     }
 
-    @DeleteCache()
+    // @DeleteCache()
     deleteMany(filter?: FilterQuery<T>): Promise<any> {
         return this.model.deleteMany(filter);
     }
 
-    @DeleteCache()
+    // @DeleteCache()
     findByIdAndDelete(id?: Types.ObjectId | any) {
         return this.model.findByIdAndDelete(id);
     }
 
-    @DeleteCache()
+    // @DeleteCache()
     aggregate(pipeline: PipelineStage[]) {
         return this.model.aggregate(pipeline);
     }

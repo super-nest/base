@@ -23,7 +23,7 @@ export class CustomQueryCountDocumentsService<
         return this;
     }
 
-    @SGetCache()
+    // @SGetCache()
     private async exec(): Promise<number> {
         let pipeline: PipelineStage[] = [
             { $match: { deletedAt: null, ...this.conditions } },

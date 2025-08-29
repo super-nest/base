@@ -1,14 +1,15 @@
 import { PipelineStage, Document, Expression } from 'mongoose';
-import { SGetCache } from '../../super-cache';
 import { sortPipelines } from '@libs/super-search';
 import { CustomQueryBaseService } from 'libs/src/super-core/services/base-query.service';
 import {
     applyAutoPopulate,
     applyLimit,
     applyMultipleLanguage,
+    applyPopulate,
     applySelect,
     applySkip,
     applySort,
+    PopulateConfig,
 } from './query';
 
 export class CustomQueryFindAllService<
@@ -39,12 +40,22 @@ export class CustomQueryFindAllService<
         return this;
     }
 
-    multipleLanguage(defaultLocale: string): this {
-        applyMultipleLanguage(this.pipeline, this.entity, defaultLocale);
+    populate(populate: PopulateConfig | PopulateConfig[]): this {
+        applyPopulate(this.pipeline, populate);
         return this;
     }
 
-    @SGetCache()
+    multipleLanguage(defaultLocale: string): this {
+        applyMultipleLanguage(
+            'query',
+            this.entity,
+            this.pipeline,
+            defaultLocale,
+        );
+        return this;
+    }
+
+    // @SGetCache()
     private async exec(): Promise<T[]> {
         let pipeline: PipelineStage[] = [
             { $match: { deletedAt: null, ...this.conditions } },

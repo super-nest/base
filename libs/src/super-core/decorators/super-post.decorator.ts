@@ -2,15 +2,17 @@ import { applyDecorators, Post } from '@nestjs/common';
 import { addDtoProperties } from '../modules/data-transfer-objects/common/add-dto-properties.utils';
 import { ApiBearerAuth, ApiBody, ApiQuery, ApiResponse } from '@nestjs/swagger';
 import { appSettings } from 'src/configs/app-settings';
+import { parseRouteParams } from '../common';
 
 export interface SuperPostOptions {
     route?: string;
+    paramTypes?: Record<string, any>;
     input?: new () => any;
     output?: new () => any;
 }
 
 export const SuperPost = (option?: SuperPostOptions) => {
-    const { route, input, output } = option || {};
+    const { route, input, output, paramTypes } = option || {};
 
     const decorators = [
         ApiBearerAuth(),
@@ -27,6 +29,11 @@ export const SuperPost = (option?: SuperPostOptions) => {
     if (input) {
         addDtoProperties(input);
         decorators.push(ApiBody({ type: input }));
+    }
+
+    if (route) {
+        const paramDecorators = parseRouteParams(route, paramTypes);
+        decorators.push(...paramDecorators);
     }
 
     if (output) {
